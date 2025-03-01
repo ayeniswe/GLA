@@ -1,0 +1,23 @@
+import os
+from pathlib import Path
+from plugins.transformer import Transformer
+from plugins.transformer.log4j_transformer import Log4jTransformer
+from plugins.transformer.json_transformer import JsonTransformer
+from plugins.transformer.syslog_transformer import SyslogTransformer
+from pytest import raises
+
+
+def test_transformer_factory():
+    trans = Transformer([JsonTransformer(), SyslogTransformer(), Log4jTransformer()])
+    trans = trans.get_transformer(
+        os.path.join(os.path.dirname(__file__), "logs", "test-log4j.log")
+    )
+    assert isinstance(trans, Log4jTransformer), "Should resolve as log4j transformer"
+
+
+def test_transformer_factory_undetermined():
+    trans = Transformer([JsonTransformer(), SyslogTransformer(), Log4jTransformer()])
+    with raises(ValueError, match="transformer could not be determined"):
+        trans.get_transformer(
+            os.path.join(os.path.dirname(__file__), "logs", "test-unk.log")
+        )
