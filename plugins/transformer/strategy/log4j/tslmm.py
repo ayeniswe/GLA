@@ -4,23 +4,23 @@ from log import Log
 from plugins.transformer import Transformer
 
 
-class TLSMM(Transformer):
+class TSLMM(Transformer):
     """Transforms a `Log4j` log item with the following order:
 
-    `2020-01-01 12:34:56.789` `ERROR` `[main]` `class.example` - `Error message goes here`
+    `2020-01-01 12:34:56.789` `[main]` 'ERROR` class.example` - `Error message goes here`
     """
 
     @staticmethod
     def transform(line: str):
         match = re.match(
-            r"^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{3}) (ERROR|WARN|INFO|DEBUG|TRACE) \[(\w+)\] (\w+(?:\.\w+)*) - (.+)$",
+            r"^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{3}) \[(\w+)\] (ERROR|WARN|INFO|DEBUG|TRACE) (\w+(?:\.\w+)*) - (.+)$",
             line,
         )
         if match:
             (
                 timestamp,
-                level,
                 source,
+                level,
                 module,
                 message,
             ) = match.groups()
