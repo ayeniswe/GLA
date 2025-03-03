@@ -1,20 +1,26 @@
 from datetime import datetime
+from typing import Union
 
 
 class Log:
     """Represents a log entry in the GLA standard format."""
 
     def __init__(
-        self, level: str, module: str, message: str, timestamp: datetime, source: str
+        self,
+        level: Union[str, None] = None,
+        module: Union[str, None] = None,
+        message: Union[str, None] = None,
+        timestamp: Union[datetime, None] = None,
+        source: Union[str, None] = None,
     ):
         """Initialize a log entry
 
         Args:
-            level (str): The log level
-            module (str): The module name
-            message (str): The log message
-            timestamp (datetime): The timestamp
-            source (str): The source of the log entry
+            level (str | None): The log level
+            module (str | None): The module name
+            message (str | None): The log message
+            timestamp (datetime | None): The timestamp
+            source (str | None): The source of the log entry
         """
         self._level = level
         self._module = module
