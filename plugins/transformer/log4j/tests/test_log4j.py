@@ -1,10 +1,16 @@
 from datetime import datetime
 from log import Log
-from plugins.transformer import TLSMM, TSLMM, LSMM, LM, LTSMM
+from plugins.transformer.log4j.log4j import (
+    LVL_SRC_MOD_MSG,
+    TIME_LVL_SRC_MOD_MSG,
+    TIME_SRC_LVL_MOD_MSG,
+    LVL_MSG,
+    LVL_TIME_SRC_MOD_MSG,
+)
 
 
 def test_ltsmm():
-    assert LTSMM.transform(
+    assert LVL_TIME_SRC_MOD_MSG.transform(
         "ERROR 2020-01-01 12:34:56.789 [main] class.example - Error message goes here"
     ) == Log(
         "ERROR",
@@ -14,7 +20,7 @@ def test_ltsmm():
         "main",
     ), "Expected Level Timestamp Source Module Message order to be processed"
     assert (
-        LTSMM.transform(
+        LVL_TIME_SRC_MOD_MSG.transform(
             "2020-01-01 12:34:56.789 ERROR [main] class.example - Error message goes here"
         )
         is None
@@ -22,7 +28,7 @@ def test_ltsmm():
 
 
 def test_tlsmm():
-    assert TLSMM.transform(
+    assert TIME_LVL_SRC_MOD_MSG.transform(
         "2020-01-01 12:34:56.789 ERROR [main] class.example - Error message goes here"
     ) == Log(
         "ERROR",
@@ -31,7 +37,7 @@ def test_tlsmm():
         datetime.strptime("2020-01-01 12:34:56.789", "%Y-%m-%d %H:%M:%S.%f"),
         "main",
     ), "Expected Timestamp Level Source Module Message order to be processed"
-    assert TLSMM.transform(
+    assert TIME_LVL_SRC_MOD_MSG.transform(
         "2020-01-01 12:34:56.789 ERROR class.example [main] - Error message goes here"
     ) != Log(
         "ERROR",
@@ -43,7 +49,7 @@ def test_tlsmm():
 
 
 def test_tslmm():
-    assert TSLMM.transform(
+    assert TIME_SRC_LVL_MOD_MSG.transform(
         "2020-01-01 12:34:56.789 [main] ERROR class.example - Error message goes here"
     ) == Log(
         "ERROR",
@@ -52,7 +58,7 @@ def test_tslmm():
         datetime.strptime("2020-01-01 12:34:56.789", "%Y-%m-%d %H:%M:%S.%f"),
         "main",
     ), "Expected Timestamp Source Level Module Message order to be processed"
-    assert TSLMM.transform(
+    assert TIME_SRC_LVL_MOD_MSG.transform(
         "2020-01-01 12:34:56.789 ERROR [main] class.example - Error message goes here"
     ) != Log(
         "ERROR",
@@ -64,7 +70,7 @@ def test_tslmm():
 
 
 def test_lsmm():
-    assert LSMM.transform(
+    assert LVL_SRC_MOD_MSG.transform(
         "ERROR [main] class.example - Error message goes here"
     ) == Log(
         "ERROR",
@@ -72,7 +78,7 @@ def test_lsmm():
         "Error message goes here",
         source="main",
     ), "Expected Level Source Module Message to be processed"
-    assert LSMM.transform(
+    assert LVL_SRC_MOD_MSG.transform(
         "ERROR class.example [main] - Error message goes here"
     ) != Log(
         "ERROR",
@@ -81,21 +87,28 @@ def test_lsmm():
         source="main",
     ), "Expected Level Source Module Message to not process source and module correctly"
     assert (
-        LSMM.transform("[main] ERROR class.example - Error message goes here") is None
+        LVL_SRC_MOD_MSG.transform(
+            "[main] ERROR class.example - Error message goes here"
+        )
+        is None
     ), "Expected Level Source Module Message to not be processed"
     assert (
-        LSMM.transform("[main] class.example ERROR - Error message goes here") is None
+        LVL_SRC_MOD_MSG.transform(
+            "[main] class.example ERROR - Error message goes here"
+        )
+        is None
     ), "Expected Level Source Module Message to not be processed"
     assert (
-        LSMM.transform("[main] class.example Error message goes here ERROR") is None
+        LVL_SRC_MOD_MSG.transform("[main] class.example Error message goes here ERROR")
+        is None
     ), "Expected Level Source Module Message to not be processed"
 
 
 def test_lm():
-    assert LM.transform("ERROR - message goes here") == Log(
+    assert LVL_MSG.transform("ERROR - message goes here") == Log(
         "ERROR",
         message="message goes here",
     ), "Expected Level  Message to be processed"
     assert (
-        LM.transform("message goes here - ERROR") is None
+        LVL_MSG.transform("message goes here - ERROR") is None
     ), "Expected Level Message to not be processed"

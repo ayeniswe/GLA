@@ -13,22 +13,9 @@ from plugins.transformer.transformer import (
 )
 
 
-class CustomTransformer(Transformer):
-    def transform(line: str):
-        match = re.match(
-            rf"{TIME_RE} {LEVEL_RE} {SOURCE_RE} {MODULE_RE} {DIVIDER_RE} {MSG_RE}",
-            line,
-        )
-        if match:
-            return Log(
-                level=match["lvl"],
-                module=match["mod"],
-                source=match["src"],
-                timestamp=dateparser.parse(match["time"]),
-                message=match["msg"],
-            )
-        else:
-            return None
+CustomTransformer = Transformer(
+    rf"{TIME_RE} {LEVEL_RE} {SOURCE_RE} {MODULE_RE} {DIVIDER_RE} {MSG_RE}"
+)
 
 
 def test_time_regex():
