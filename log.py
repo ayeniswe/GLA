@@ -39,3 +39,23 @@ class Log:
 
     def __str__(self):
         return f"{self._timestamp.isoformat()} {self._level} [{self._source}] {self._module} - {self._message}"
+
+    def get_level(self) -> str:
+        """Get the log level"""
+        return self._level
+
+    def get_message(self) -> str:
+        """Get the log message"""
+        return self._message
+
+    def get_timestamp(self) -> datetime:
+        """Get the timestamp"""
+        return self._timestamp
+
+    def get_source(self) -> str:
+        """Get the source of the log entry"""
+        return self._source
+
+    def get_module(self) -> str:
+        """Get the module name"""
+        return self._module
