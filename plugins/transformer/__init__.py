@@ -7,5 +7,6 @@ from .strategy.log4j.tlsmm import TLSMM
 from .strategy.log4j.tslmm import TSLMM
 from .strategy.log4j.lsmm import LSMM
 from .strategy.log4j.lm import LM
+from .strategy.log4j.ltsmm import LTSMM
 
-__all__ = ["Transformer", "TLSMM", "TSLMM", "LSMM", "LM", "TLMSM"]
+__all__ = ["Transformer", "TLSMM", "TSLMM", "LSMM", "LM", "TLMSM", "LTSMM"]
