@@ -1,7 +1,15 @@
 import re
-from datetime import datetime
+import dateparser
 from log import Log
-from plugins.transformer import Transformer
+from plugins.transformer.transformer import (
+    Transformer,
+    DIVIDER_RE,
+    LEVEL_RE,
+    MODULE_RE,
+    MSG_RE,
+    SOURCE_RE,
+    TIME_RE,
+)
 
 
 class TLSMM(Transformer):
@@ -13,23 +21,16 @@ class TLSMM(Transformer):
     @staticmethod
     def transform(line: str):
         match = re.match(
-            r"^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{3}) (ERROR|WARN|INFO|DEBUG|TRACE) \[(\w+)\] (\w+(?:\.\w+)*) - (.+)$",
+            rf"{TIME_RE} {LEVEL_RE} {SOURCE_RE} {MODULE_RE} {DIVIDER_RE} {MSG_RE}",
             line,
         )
         if match:
-            (
-                timestamp,
-                level,
-                source,
-                module,
-                message,
-            ) = match.groups()
             return Log(
-                level,
-                module,
-                message,
-                datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S.%f"),
-                source,
+                level=match["lvl"],
+                module=match["mod"],
+                source=match["src"],
+                timestamp=dateparser.parse(match["time"]),
+                message=match["msg"],
             )
         else:
             return None

@@ -1,6 +1,7 @@
 import re
 from log import Log
 from plugins.transformer import Transformer
+from plugins.transformer.transformer import DIVIDER_RE, LEVEL_RE, MSG_RE
 
 
 class LM(Transformer):
@@ -12,18 +13,13 @@ class LM(Transformer):
     @staticmethod
     def transform(line: str):
         match = re.match(
-            r"^(ERROR|WARN|INFO|DEBUG|TRACE) [^\s]* (.+)$",
+            rf"{LEVEL_RE} {DIVIDER_RE} {MSG_RE}",
             line,
         )
         if match:
-            (
-                level,
-                message,
-            ) = match.groups()
-            print(level, message)
             return Log(
-                level,
-                message=message,
+                level=match["lvl"],
+                message=match["msg"],
             )
         else:
             return None

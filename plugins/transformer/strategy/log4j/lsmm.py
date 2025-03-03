@@ -1,6 +1,14 @@
 import re
+import dateparser
 from log import Log
-from plugins.transformer import Transformer
+from plugins.transformer.transformer import (
+    Transformer,
+    DIVIDER_RE,
+    LEVEL_RE,
+    MODULE_RE,
+    MSG_RE,
+    SOURCE_RE,
+)
 
 
 class LSMM(Transformer):
@@ -12,21 +20,15 @@ class LSMM(Transformer):
     @staticmethod
     def transform(line: str):
         match = re.match(
-            r"^(ERROR|WARN|INFO|DEBUG|TRACE) \[(\w+)\] (\w+(?:\.\w+)*) - (.+)$",
+            rf"{LEVEL_RE} {SOURCE_RE} {MODULE_RE} {DIVIDER_RE} {MSG_RE}",
             line,
         )
         if match:
-            (
-                level,
-                source,
-                module,
-                message,
-            ) = match.groups()
             return Log(
-                level,
-                module,
-                message,
-                source=source,
+                level=match["lvl"],
+                module=match["mod"],
+                source=match["src"],
+                message=match["msg"],
             )
         else:
             return None
