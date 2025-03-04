@@ -52,3 +52,4 @@ Transforms a `Log4j` log item with the following order:
 
 `ERROR` - `Error message goes here`
 """
+

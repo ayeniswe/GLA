@@ -31,6 +31,7 @@ class Transformer:
         Args:
             regex (str): A regex string to parse a log
         """
+        print(regex)
         self._regex = re.compile(regex)
 
     def transform(self, line: str) -> Union[Log, None]:
