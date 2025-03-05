@@ -3,19 +3,9 @@ The `transformer` module is an abstraction layer for converting a single log ite
 """
 
 from plugins.transformer.transformer import Transformer
-from plugins.transformer.log4j.log4j import (
-    LVL_SRC_MOD_MSG,
-    TIME_LVL_SRC_MOD_MSG,
-    TIME_SRC_LVL_MOD_MSG,
-    LVL_MSG,
-    LVL_TIME_SRC_MOD_MSG,
-)
+from plugins.transformer.log4j_transformer import Log4jTransformer
 
 __all__ = [
     "Transformer",
-    "LVL_SRC_MOD_MSG",
-    "TIME_LVL_SRC_MOD_MSG",
-    "TIME_SRC_LVL_MOD_MSG",
-    "LVL_MSG",
-    "LVL_TIME_SRC_MOD_MSG",
+    "Log4jTransformer",
 ]
