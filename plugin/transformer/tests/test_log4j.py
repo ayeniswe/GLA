@@ -1,4 +1,4 @@
-from plugins.transformer import Log4jTransformer
+from plugin.transformer import Log4jTransformer
 
 
 def test_log4j_transformation():

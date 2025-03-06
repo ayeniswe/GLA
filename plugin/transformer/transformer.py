@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Union
-from log import Log
+from model.log import Log
 
 
 class Transformer(ABC):

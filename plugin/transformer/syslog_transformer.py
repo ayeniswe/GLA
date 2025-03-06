@@ -2,8 +2,8 @@ from re import compile
 from typing import Pattern, Match
 import dateparser
 from typing import List, Union
-from log import Log
-from plugins.transformer.transformer import Transformer
+from model.log import Log
+from plugin.transformer.transformer import Transformer
 
 
 class SyslogTransformer(Transformer):

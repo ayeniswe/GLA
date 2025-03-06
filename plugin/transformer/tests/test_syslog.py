@@ -1,4 +1,4 @@
-from plugins.transformer.syslog_transformer import SyslogTransformer
+from plugin.transformer.syslog_transformer import SyslogTransformer
 
 
 def test_syslog():
