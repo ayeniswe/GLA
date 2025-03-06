@@ -6,36 +6,104 @@ from log import Log
 from plugins.transformer.transformer import Transformer
 
 
-# Supports the division between two attributes in log message
-# rather that division exists or doesn't
-DIVIDER_RE = r"[^\s]*"
-# Supports the gathering timestamps in log messages
-TIME_RE = r"(?P<time>(?:\d{2,4}-\d{2,4}-\d{2,4})*[T\s]*(\d{2}:\d{2}:\d{2}(?:.\d{3})*)*)"
-# Supports the gathering of common levels in log messages
-LEVEL_RE = r"[^a-zA-Z\s]*(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)[^a-zA-Z\s]*"
-# Support the gathering of abritrary log messages
-MSG_RE = r"(?P<msg>.+)"
-# Supports the gathering of any inner casing for the module or source in log message
-# and allows $, -, . characters to be used in that module or source
-SOURCE_RE = r"[^a-zA-Z\s]*(?P<src>[\w$.]+)[^a-zA-Z\s]*"
-MODULE_RE = r"[^a-zA-Z\s]*(?P<mod>[\w$.]+)[^a-zA-Z\s]*"
-
-
 class Log4jTransformer(Transformer):
     """
     The `Log4jTransformer` class is responsible for handling transformation
     of `log4j` log messages
     """
 
-    def __init__(self, strategies: List[str]):
-        """Create a new `Log4jTransformer`
-
-        Args:
-            regex (list(str)): A list of regex strings to resolve a `log4j` log format
-        """
-        self._strategies: List[Pattern] = []
-        for regex in strategies:
-            self._strategies.append(compile(regex))
+    def __init__(self):
+        """Create a new `Log4jTransformer`"""
+        self._strategies: List[Pattern] = [
+            # Standard log4j format but different orders
+            compile(
+                r"^(?P<time>\d{4}-\d{2}-\d{2})\s+\[(?P<thread>\w+)\]\s+(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+(?P<mod>[\w.]+)\s+-\s+(?P<msg>.+)",
+            ),
+            compile(
+                r"^(?P<time>\d{2}-\d{4}-\d{2})\s+\[(?P<thread>\w+)\]\s+(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+(?P<mod>[\w.]+)\s+-\s+(?P<msg>.+)",
+            ),
+            compile(
+                r"^(?P<time>\d{2}-\d{2}-\d{4})\s+\[(?P<thread>\w+)\]\s+(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+(?P<mod>[\w.]+)\s+-\s+(?P<msg>.+)",
+            ),
+            compile(
+                r"^(?P<time>\d{2}-\d{2}-\d{4})\s+(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+\[(?P<thread>\w+)\]\s+(?P<mod>[\w.]+)\s+-\s+(?P<msg>.+)",
+            ),
+            compile(
+                r"^(?P<time>\d{2}-\d{2}-\d{4})\s+(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+(?P<mod>[\w.]+)\s+(?P<msg>.+)\s+\[(?P<thread>\w+)\]",
+            ),
+            compile(
+                r"^(?P<time>\d{2}-\d{2}-\d{4})\s+(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+(?P<mod>[\w.]+)\s+\[(?P<thread>\w+)\]\s+-\s+(?P<msg>.+)",
+            ),
+            compile(
+                r"^(?P<time>\d{2}-\d{2}-\d{4})\s+(?P<mod>[\w.]+)\s+(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+(?P<msg>.+)\s+\[(?P<thread>\w+)\]",
+            ),
+            compile(
+                r"^(?P<time>\d{2}-\d{2}-\d{4})\s+(?P<mod>[\w.]+)\s+(?P<msg>.+)\s+(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+\[(?P<thread>\w+)\]",
+            ),
+            compile(
+                r"^(?P<time>\d{2}-\d{2}-\d{4})\s+(?P<mod>[\w.]+)\s+(?P<msg>.+)\s+\[(?P<thread>\w+)\]\s+(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)",
+            ),
+            compile(
+                r"^(?P<time>\d{2}-\d{2}-\d{4})\s+(?P<msg>.+)\s+\[(?P<thread>\w+)\]\s+(?P<mod>[\w.]+)\s+(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)",
+            ),
+            compile(
+                r"^(?P<time>\d{2}-\d{2}-\d{4})\s+(?P<msg>.+)\s+\[(?P<thread>\w+)\]\s+(?P<mod>[\w.]+)\s+(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)",
+            ),
+            compile(
+                r"^\[(?P<thread>\w+)\]\s+(?P<time>\d{2}-\d{2}-\d{4})\s+(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+(?P<mod>[\w.]+)\s+-\s+(?P<msg>.+)",
+            ),
+            compile(
+                r"^\[(?P<thread>\w+)\]\s+(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+(?P<time>\d{2}-\d{2}-\d{4})\s+(?P<mod>[\w.]+)\s+-\s+(?P<msg>.+)",
+            ),
+            compile(
+                r"^\[(?P<thread>\w+)\]\s+(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+(?P<mod>[\w.]+)\s+(?P<msg>.+)\s+(?P<time>\d{2}-\d{2}-\d{4})",
+            ),
+            compile(
+                r"^(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+\[(?P<thread>\w+)\]\s+(?P<mod>[\w.]+)\s+(?P<msg>.+)\s+(?P<time>\d{2}-\d{2}-\d{4})",
+            ),
+            compile(
+                r"^(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+(?P<mod>[\w.]+)\s+\[(?P<thread>\w+)\]\s+(?P<msg>.+)\s+(?P<time>\d{2}-\d{2}-\d{4})",
+            ),
+            compile(
+                r"^(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+(?P<mod>[\w.]+)\s+(?P<msg>.+)\s+\[(?P<thread>\w+)\]\s+(?P<time>\d{2}-\d{2}-\d{4})",
+            ),
+            compile(
+                r"^(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+(?P<mod>[\w.]+)\s+(?P<msg>.+)\s+(?P<time>\d{2}-\d{2}-\d{4})\s+\[(?P<thread>\w+)\]",
+            ),
+            compile(
+                r"^(?P<mod>[\w.]+)\s+(?P<time>\d{2}-\d{2}-\d{4})\s+(?P<msg>.+)\s+\[(?P<thread>\w+)\]\s+(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)",
+            ),
+            compile(
+                r"^(?P<mod>[\w.]+)\s+(?P<time>\d{2}-\d{2}-\d{4})\s+\[(?P<thread>\w+)\]\s+(?P<msg>.+)\s+(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)",
+            ),
+            compile(
+                r"^(?P<mod>[\w.]+)\s+(?P<time>\d{2}-\d{2}-\d{4})\s+\[(?P<thread>\w+)\]\s+(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+-\s+(?P<msg>.+)",
+            ),
+            compile(
+                r"^(?P<mod>[\w.]+)\s+\[(?P<thread>\w+)\]\s+(?P<time>\d{2}-\d{2}-\d{4})\s+(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+-\s+(?P<msg>.+)",
+            ),
+            compile(
+                r"^(?P<mod>[\w.]+)\s+\[(?P<thread>\w+)\]\s+(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+(?P<time>\d{2}-\d{2}-\d{4})\s+-\s+(?P<msg>.+)",
+            ),
+            compile(
+                r"^(?P<mod>[\w.]+)\s+\[(?P<thread>\w+)\]\s+(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+(?P<msg>.+)\s+(?P<time>\d{2}-\d{2}-\d{4})",
+            ),
+            compile(
+                r"^(?P<mod>[\w.]+)\s+(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+\[(?P<thread>\w+)\]\s+(?P<msg>.+)\s+(?P<time>\d{2}-\d{2}-\d{4})",
+            ),
+            compile(
+                r"^(?P<mod>[\w.]+)\s+(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+(?P<msg>.+)\s+\[(?P<thread>\w+)\]\s+(?P<time>\d{2}-\d{2}-\d{4})",
+            ),
+            compile(
+                r"^(?P<mod>[\w.]+)\s+(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+(?P<msg>.+)\s+(?P<time>\d{2}-\d{2}-\d{4})\s+\[(?P<thread>\w+)\]",
+            ),
+            compile(
+                r"^(?P<mod>[\w.]+)\s+(?P<msg>.+)\s+(?P<time>\d{2}-\d{2}-\d{4})\s+(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+\[(?P<thread>\w+)\]",
+            ),
+            compile(
+                r"^(?P<mod>[\w.]+)\s+(?P<msg>.+)\s+(?P<time>\d{2}-\d{2}-\d{4})\s+\[(?P<thread>\w+)\]\s+(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)",
+            ),
+        ]
 
     def transform(self, line: str) -> Union[Log, None]:
         match = self._resolve(line)
@@ -45,9 +113,7 @@ class Log4jTransformer(Transformer):
                 level=match.get("lvl"),
                 module=match.get("mod"),
                 source=match.get("thread"),
-                timestamp=(
-                    dateparser.parse(match["time"]) if match.get("time") else None
-                ),
+                timestamp=(dateparser.parse(match["time"])),
                 message=match.get("msg"),
             )
         else:
