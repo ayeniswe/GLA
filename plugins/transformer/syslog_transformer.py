@@ -12,27 +12,28 @@ class SyslogTransformer(Transformer):
     of `syslog` log messages
     """
 
-    def __init__(self, strategies: List[str]):
-        """Create a new `SyslogTransformer`
-
-        Args:
-            regex (list(str)): A list of regex strings to resolve a `syslog` log format
-        """
-        self._strategies: List[Pattern] = []
-        for regex in strategies:
-            self._strategies.append(compile(regex))
+    def __init__(self):
+        """Create a new `SyslogTransformer`"""
+        self._strategies: List[Pattern] = [
+            # BFG RFC 3164 (older)
+            compile(
+                r"^<(?P<pri>\d{1,3})>(?P<time>[A-Z][a-z]{2}\s+\d{1,2} \d{2}:\d{2}:\d{2}) (?P<host>[\w+.]+) (?P<proc>\w+)(?:\[(?P<pid>\d+)\])*:* (?P<msg>.+)"
+            ),
+            # IETF RFC 5424
+            compile(
+                r"^<(?P<pri>\d{1,3})>(?P<ver>\d{1,2}) (?P<time>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:.\d{1,6}(?:Z|[-+]\d{2}:\d{2}))*) (?:(?P<host>[\w+.]+)|-) (?:(?P<proc>\w+)|-) (?:(?P<pid>\d+)|-) (?:(?P<msgid>\w+)|-) (?:\[(?P<struct>.+)\]|-)+ (?:BOM)*(?P<msg>.+)"
+            ),
+        ]
 
     def transform(self, line: str) -> Union[Log, None]:
         match = self._resolve(line)
         if match:
             match = match.groupdict()
             return Log(
-                level=match.get("lvl"),
-                module=match.get("mod"),
-                source=match.get("thread"),
-                timestamp=(
-                    dateparser.parse(match["time"]) if match.get("time") else None
-                ),
+                level=self._priority_to_lvl(match.get("pri")),
+                module=match.get("proc"),
+                source=match.get("host"),
+                timestamp=dateparser.parse(match.get("time")),
                 message=match.get("msg"),
             )
         else:
@@ -49,3 +50,23 @@ class SyslogTransformer(Transformer):
             if match:
                 return match
         return None
+
+    def _priority_to_lvl(self, lvl: str) -> str:
+        """Converts syslog priority levels to respective GLA log levels"""
+        res = int(lvl) % 8
+        if res == 0:
+            return "EMERGENCY"
+        elif res == 1:
+            return "ALERT"
+        elif res == 2:
+            return "CRITICAL"
+        elif res == 3:
+            return "ERROR"
+        elif res == 4:
+            return "WARN"
+        elif res == 5:
+            return "NOTICE"
+        elif res == 6:
+            return "INFO"
+        elif res == 7:
+            return "DEBUG"
