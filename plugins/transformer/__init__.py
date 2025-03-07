@@ -2,10 +2,8 @@
 The `transformer` module is an abstraction layer for converting a single log item capture in a `.log` file to a `Log` object for further processing.
 """
 
-from plugin.transformer.transformer import Transformer
-from plugin.transformer.log4j_transformer import Log4jTransformer
+from plugins.transformer.transformer import Transformer
 
 __all__ = [
     "Transformer",
-    "Log4jTransformer",
 ]
