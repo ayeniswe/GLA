@@ -74,9 +74,9 @@ class JsonTransformer(BaseTransformer, BestResolver):
             cache,
         )
 
-    def _transform(self, line: str) -> Optional[Log]:
+    def _transform(self, entry: str) -> Optional[Log]:
         try:
-            res: dict = loads(line.strip())
+            res: dict = loads(entry.strip())
             mapping: Optional[dict] = self.resolve(res)
             return Log(
                 level=res.get(mapping.get("level")),
