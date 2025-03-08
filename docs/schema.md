@@ -273,3 +273,5 @@ Example
 ```
 
 ## Windows Events
+See http://schemas.microsoft.com/win/2004/08/events/event for schema details
+or Microsoft Learn
