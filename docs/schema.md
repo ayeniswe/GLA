@@ -273,3 +273,153 @@ Example
 ```
 
 ## Windows Events
+See http://schemas.microsoft.com/win/2004/08/events/event for schema details
+or Microsoft Learn
+
+# Common Log Format (CLF)
+
+- **Timestamp** — Date and time of the request or re-
+sponse represented as the number of seconds and
+milliseconds since the Unix epoch.
+- **Size of the SIP CLF record** — The total number of
+bytes that comprise the SIP CLF record. This allows
+systems that do post-analysis on the log ﬁle to skip
+the record if it is not of interest.
+- **Message type** — An indicator of whether the SIP
+message is a request or a response. The allowable
+values for this ﬁeld are R (for Request) and r (for
+response).
+- **Directionality** - An indicator of whether the SIP
+message is received by the SIP entity or sent by the
+SIP entity. The allowable values for this ﬁeld are s
+(for message sent) and r (for message received).
+- **Source:port:xport** — The DNS name or IP address
+of the upstream client, including the port number
+and the transport over which the SIP message was
+received. The port number must be separated from
+the DNS name or IP address by a single `:`. The
+transport must be separated from the port by a sin-
+gle `:`. The allowable values for the transport are
+`tcp`, `tls`, `sctp`, and `udp`
+- **Destination:port:xport** — The DNS name or IP ad-
+dress of the downstream server, including the port
+number. The port number must be separated from
+the DNS name or IP address by a single `:`. The
+transport must be separated from the port by a sin-
+gle `:`. The allowable values for the transport are
+`tcp`, `tls`, `sctp`, and `udp`
+- **From** — The From URI, including the tag. In SIP,
+the From URI speciﬁes the sender of a request. The
+tag is a URI parameter that is used to identify a dia-
+log between two endpoints.
+o — The To URI, including the tag. In SIP, the To
+URI is the logical recipient of the request. The tag
+has the same semantics as that of the From URI.
+- **Callid** — The Call-ID header. In SIP, a Call-ID
+header groups all transactions exchanged between
+a UAC and UAS.
+- **CSeq** — The CSeq header, used for sequencing.
+- **R-URI** — The Request-URI, including any URI
+parameters. In SIP, the R-URI identifies the ulti-
+mate recipient of the request. SIP intermediaries
+use it to route the request towards the destination
+UAS. The R-URI occurs on the topmost line of a
+SIP request (it is not present in a SIP response)
+- **Status** — The SIP response status code (i.e., 100,
+200, etc.) Status lines occur only in responses
+- **Server-Txn** - Server transaction identification code - the transaction identifier associated with the server
+transaction. Implementations can reuse the UAS
+server transaction identifier (the topmost branch-id
+of the incoming request, with or without the magic
+cookie), or they could generate a unique identifi-
+cation string for a server transaction (this identifier
+needs to be locally unique to the server only.) This
+identifier is used to correlate ACKs and CANCELs
+to an INVITE transaction; it is also used to aid in
+forking.
+- **Client-Txn** - Client transaction identification code -
+this field is used to associate client transactions with
+a server transaction for forking proxies or B2BUAs.
+Upon forking, implementations can reuse the value
+they inserted into the topmost Via header’s branch
+parameter, or they can generate a unique identifica-
+tion string for the client transaction.
+
+**Template Format Layout**
+
+Record-size Timestamp Message-type Directionality CSeq R-URI Destination:port:xport Source:port:xport To From Call-ID Status Server-Txn Client-Txn [TLV [TLV]...]
+
+Example
+----------------
+```
+170 1275930748.991 r r INVITE-43 - 203.0.113.200:5060:udp [2001:db8::9]:5060:udp sip:bob@example.net;b2-2
+sip:alice@example.com;tag=a1-1 tr-88h@example.com 487 s-1-tr c-2-tr
+```
+
+# NCSA Common Log Format
+
+The NCSA Common Log Format (CLF) is a standardized text-based logging format used by web servers and various applications to log requests. It provides a consistent way to track access logs and analyze web traffic.
+
+## Types of Common Log Formats
+
+There are three main types of CLF:
+
+###  Common Log Format (CLF)
+
+The Common Log Format is the simplest version, containing essential request details such as the client IP, timestamp, request line, response status, and bytes sent.
+
+- **host**: The IP address or hostname of the client.
+- **ident**: Identity of the user (typically -, as this is rarely used).
+- **authuser**: Authenticated username (if applicable, otherwise -).
+- **date**: Timestamp of the request in [dd/Mon/yyyy:hh:mm:ss z] format.
+- **request**: The HTTP request method, URL, and protocol.
+- **status**: HTTP response status code (e.g., 200, 404).
+- **bytes**	Size of the response body in bytes (- if unknown).
+
+**Template Format**
+
+host ident authuser [date] "request" status bytes
+
+#### Example
+----------------
+```
+192.168.1.1 - - [10/Mar/2025:14:22:35 +0000] "GET /index.html HTTP/1.1" 200 1024
+```
+### Combined Log Format (CLF - Combined)
+
+The Combined Log Format extends the Common Log Format by adding Referer and User-Agent fields, making it useful for tracking user behavior.
+
+- **referrer:** The URL which linked the user to your site. (Optional)
+- **user_agent:** The Web browser and platform used by the visitor to your site.(Optional)
+- **cookies:** Cookies are pieces of information that the HTTP server can send back to client along the with the requested resources. A client's browser may store this information and subsequently send it back to the HTTP server upon making additional resource requests. The HTTP server can establish multiple cookies per HTTP request.
+
+**Template Format**
+
+host ident authuser [date] "request" status bytes "referer" "user-agent" "cookies"
+
+#### Example
+----------------
+```
+125.125.125.125 - dsmith [10/Oct/1999:21:15:05 +0500] "GET /index.html HTTP/1.0" 200 1043 "http://www.ibm.com/" "Mozilla/4.05 [en] (WinNT; I)" "USERID=CustomerA;IMPID=01234"
+```
+
+# Common Event Format
+
+- **CEF:Version**: A mandatory header indicating the CEF version (e.g., CEF:0).
+- **Device Vendor**: The vendor of the device generating the event.
+- **Device Product**: The specific product or device type.
+- **Device Version**: The version of the device product.
+- **Signature ID**: A unique identifier for the security event or rule that triggered the event.
+- **Name**: A descriptive name for the event.
+- **Severity**: A numeric value indicating the severity of the event (e.g., 1-10).
+- **Extension**: A placeholder for additional fields, logged as key-value pairs (e.g., src=10.52.116.160 suser=admin).
+
+**Template Format**
+
+CEF:Version|Device Vendor|Device Product|Device Version|Signature ID|Name|Severity|Extension
+
+Example
+----------------
+```
+CEF:0|Trend Micro|Deep Security Manager|<DSM version>|600|User Signed In|3|src=10.52.116.160 suser=admin target=admin msg=User signed in from 2001:db8::5
+```

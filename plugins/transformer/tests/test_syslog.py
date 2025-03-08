@@ -1,7 +1,7 @@
 from plugins.transformer.syslog_transformer import SyslogTransformer
 
 
-def test_syslog():
+def test_syslog_transformation():
     syslog = SyslogTransformer()
 
     test_cases = [
