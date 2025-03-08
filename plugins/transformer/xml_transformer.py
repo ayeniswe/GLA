@@ -1,3 +1,4 @@
+import ctypes
 from os import PathLike
 from typing import Dict, Optional
 import dateparser
@@ -133,4 +134,7 @@ class XMLTransformer(BaseTransformer, Resolver):
             )
 
     def _validate(self, path: PathLike) -> bool:
-        return from_file(path, True) == "text/xml"
+        try:
+            return from_file(path, True) == "text/xml"
+        except ctypes.ArgumentError:
+            return False
