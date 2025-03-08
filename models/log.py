@@ -6,17 +6,31 @@ from pydantic import BaseModel, Field
 class Log(BaseModel):
     """Represents a log entry"""
 
+    ######
+    ### Instance Attributes
+    ##
     level: Optional[str] = Field(
         default=None,
-        description="The log level",
+        description="The severity of the log message",
         # regex=r"(WARN|INFO|ERROR|NOTICE|CRITICAL|EMERGENCY|DEBUG|TRACE|ALERT)",
     )
-    module: Optional[str] = Field(default=None, description="The module name")
-    message: str = Field(default=..., description="The log message")
-    timestamp: Optional[datetime] = Field(default=None, description="The timestamp")
-    source: Optional[str] = Field(
-        default=None, description="The source of the log entry"
+    """The severity of the log message"""
+    module: Optional[str] = Field(
+        default=None,
+        description="The logger's name or process name that created the log entry",
     )
+    """The logger's name or process name that created the log entry"""
+    message: str = Field(default=..., description="The log message")
+    """The log message"""
+    timestamp: Optional[datetime] = Field(
+        default=None, description="The date and time when the log record was created"
+    )
+    """The date and time when the log record was created"""
+    source: Optional[str] = Field(
+        default=None,
+        description="The name of the host, machine, or thread that generated the log entry",
+    )
+    """The name of the host, machine, or thread that generated the log entry"""
 
     def __str__(self):
         parts = []
@@ -40,3 +54,4 @@ class Log(BaseModel):
 
     class Config:
         allow_population_by_field_name = True
+        validate_assignment = True

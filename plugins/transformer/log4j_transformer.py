@@ -184,8 +184,8 @@ class Log4jTransformer(BaseTransformer, Resolver):
             cache,
         )
 
-    def _transform(self, line: str) -> Optional[Log]:
-        match: Optional[Match[str]] = self.resolve(line)
+    def _transform(self, entry: str) -> Optional[Log]:
+        match: Optional[Match[str]] = self.resolve(entry)
         if match:
             res = match.groupdict()
             return Log(
@@ -195,8 +195,6 @@ class Log4jTransformer(BaseTransformer, Resolver):
                 timestamp=(dateparser.parse(res["time"])),
                 message=res.get("msg"),
             )
-        else:
-            return None
 
     def _validate(self, path: PathLike) -> bool:
         with open(path, "r") as file:

@@ -40,8 +40,8 @@ class SyslogTransformer(BaseTransformer, Resolver):
             cache,
         )
 
-    def _transform(self, line: str) -> Optional[Log]:
-        match: Optional[Match[str]] = self.resolve(line)
+    def _transform(self, entry: str) -> Optional[Log]:
+        match: Optional[Match[str]] = self.resolve(entry)
         if match:
             res = match.groupdict()
             return Log(
@@ -51,8 +51,6 @@ class SyslogTransformer(BaseTransformer, Resolver):
                 timestamp=dateparser.parse(res.get("time")),
                 message=res.get("msg"),
             )
-        else:
-            return None
 
     def _priority_to_lvl(self, lvl: str) -> str:
         """Converts syslog priority levels to respective log severity levels"""
