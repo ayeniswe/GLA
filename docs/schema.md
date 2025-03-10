@@ -276,7 +276,7 @@ Example
 See http://schemas.microsoft.com/win/2004/08/events/event for schema details
 or Microsoft Learn
 
-# Common Log Format (CLF)
+# SIP Common Log Format (SIP-CLF)
 
 - **Timestamp** — Date and time of the request or re-
 sponse represented as the number of seconds and
