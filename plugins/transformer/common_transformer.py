@@ -24,12 +24,6 @@ class CommonTransformer(BaseTransformer, Resolver):
         """
         super().__init__(
             [
-                # SIP CLF
-                RegexStrategy(
-                    compile(
-                        r"^(?P<size>\d+) (?P<time>\d+(?:\.\d*)) (?P<type>[rR]) (?P<dir>[rs]) (?P<seq>[\w-]+) (?:(?P<uri>[\w\/.]+)|-) (?P<dest>[\w.:\]\[]+:\d+:(?:udp|sctp|tls|tcp)) (?P<src>[\w.:\]\[]+:\d+:(?:udp|sctp|tls|tcp)) (?P<to>[^\s]+) (?P<from>[^\s]+) (?P<call>[^\s]+) (?:(?P<status>\d+)|-) (?P<stx>[^\s]+) (?P<ctx>[^\s]+)"
-                    )
-                ),
                 # NCSA CLF
                 RegexStrategy(
                     compile(

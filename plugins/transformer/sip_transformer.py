@@ -27,7 +27,7 @@ class SipTransformer(BaseTransformer, Resolver):
                 # SIP CLF
                 RegexStrategy(
                     compile(
-                        r"^(?P<size>\d+) (?P<time>\d+(?:\.\d*)) (?P<type>[rR]) (?P<dir>[rs]) (?P<seq>[\w-]+) (?:(?P<uri>[^\s]+)|-) (?P<dest>[\w.:\]\[]+:\d+:(?:udp|sctp|tls|tcp)) (?P<src>[\w.:\]\[]+:\d+:(?:udp|sctp|tls|tcp)) (?P<to>[^\s]+) (?P<from>[^\s]+) (?P<call>[^\s]+) (?:(?P<status>\d+)|-) (?P<stx>[^\s]+) (?P<ctx>[^\s]+)"
+                        r"^(?P<size>\d+) (?P<time>\d+(?:\.\d*)) (?P<type>[rR]) (?P<dir>[rs]) (?P<seq>[\w-]+) (?:-|(?P<uri>[^\s]+)) (?P<dest>[\w.:\]\[]+:\d+:(?:udp|sctp|tls|tcp)) (?P<src>[\w.:\]\[]+:\d+:(?:udp|sctp|tls|tcp)) (?P<to>[^\s]+) (?P<from>[^\s]+) (?P<call>[^\s]+) (?:(?P<status>\d+)|-) (?:-|(?P<stx>[^\s]+)) (?:-|(?P<ctx>[^\s]+))"
                     )
                 )
             ],
@@ -41,31 +41,32 @@ class SipTransformer(BaseTransformer, Resolver):
 
             # Building a custom message to better promote readability
             msg = f"Session: {res.get('call')} -"
-
-            if res.get("dir") == "r":
+            if res.get("dir") == "s":
                 msg += " Sent a "
             else:
                 msg += " Received a "
-
             msg += res.get("seq")
+            status = res.get("status")
+            if status is not None:
+                msg += f" {status}"
             if res.get("type") == "R":
                 msg += " request"
             else:
                 msg += " response"
-
+            src = res.get("src")
+            msg += f" from {res.get('from')} ({src})"
             dest = res.get("dest")
             req_uri = res.get("uri")
-            if req_uri != dest and req_uri != None:
+            if req_uri != dest and req_uri is not None:
                 msg += f" to {req_uri} ({res.get('dest')})"
             else:
                 msg += f" to {res.get('to')} ({res.get('dest')})"
 
-            src = res.get("src")
-            msg += f" from {res.get('from')} ({src})"
-
             return Log(
                 source=src,
-                timestamp=dateparser.parse(res.get("time"), settings={'TIMEZONE':'UTC'}),
+                timestamp=dateparser.parse(
+                    res.get("time"), settings={"TIMEZONE": "UTC"}
+                ),
                 message=msg,
             )
 
@@ -73,13 +74,8 @@ class SipTransformer(BaseTransformer, Resolver):
         with open(path, "r") as file:
             return self.resolve(file.readline().strip()) is not None
 
-# 1: 172 1275930743.699 R s REGISTER-1 sip:example.com 198.51.100.10:5060:udp 198.51.100.1:5060:udp
-# sip:example.com sip:alice@example.com;tag=76yhh f81-d4-f6@example.com - - c-tr-1
-# 2: 173 1275930744.100 r r REGISTER-1 - 198.51.100.1:5060:udp 198.51.100.10:5060:udp
-# sip:example.com;tag=reg-1xtr sip:alice@example.com;tag=76yhh f81-d4-f6@example.com 200 - c-tr-1
-# 3: 175 1275930743.699 R r INVITE-43 sip:bob@example.net 203.0.113.200:5060:udp
-# 198.51.100.1:5060:udp sip:bob@example.net sip:alice@example.com;tag=a1-1 tr-88h@example.com - s-1-tr -
-# Subject,13,"Call me ASAP!"
+
+
 # 4: 159 1275930744.001 r s INVITE-43 - 198.51.100.1:5060:udp 203.0.113.200:5060:udp sip:bob@example.net
 # sip:alice@example.com;tag=a1-1 tr-88h@example.com 100 s-1-tr -
 # 5: 184 1275930744.998 R s INVITE-43 sip:bob@bob1.example.net 203.0.113.1:5060:udp 203.0.113.200:5060:udp
