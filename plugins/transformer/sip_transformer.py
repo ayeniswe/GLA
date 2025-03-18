@@ -74,21 +74,3 @@ class SipTransformer(BaseTransformer, Resolver):
         with open(path, "r") as file:
             return self.resolve(file.readline().strip()) is not None
 
-
-
-# 4: 159 1275930744.001 r s INVITE-43 - 198.51.100.1:5060:udp 203.0.113.200:5060:udp sip:bob@example.net
-# sip:alice@example.com;tag=a1-1 tr-88h@example.com 100 s-1-tr -
-# 5: 184 1275930744.998 R s INVITE-43 sip:bob@bob1.example.net 203.0.113.1:5060:udp 203.0.113.200:5060:udp
-# sip:bob@example.net sip:alice@example.com;tag=a1-1 tr-88h@example.com - s-1-tr c-1-tr
-# 6: 186 1275930745.500 R s INVITE-43 sip:bob@bob2.example.net [2001:db8::9]:5060:udp 203.0.113.200:5060:udp
-# sip:bob@example.net sip:alice@example.com;tag=a1-1 tr-88h@example.com - s-1-tr c-2-tr
-# 7: 172 1275930745.800 r r INVITE-43 - 203.0.113.200:5060:udp 203.0.113.1:5060:udp sip:bob@example.net;tag=b1-1
-# sip:alice@example.com;tag=a1-1 tr-88h@example.com 100 s-1-tr c-1-tr
-# 8: 174 1275930746.100 r r INVITE-43 - 203.0.113.200:5060:udp [2001:db8::9]:5060:udp sip:bob@example.net;tag=b2-2
-# sip:alice@example.com;tag=a1-1 tr-88h@example.com 100 s-1-tr c-2-tr
-# 9: 174 1275930746.700 r r INVITE-43 - 203.0.113.200:5060:udp [2001:db8::9]:5060:udp sip:bob@example.net;tag=b2-2
-# sip:alice@example.com;tag=a1-1 tr-88h@example.com 180 s-1-tr c-2-tr
-# 10: 170 1275930746.990 r s INVITE-43 - 198.51.100.1:5060:udp 203.0.113.200:5060:udp sip:bob@example.net;b2-2
-# sip:alice@example.com;tag=a1-1 tr-88h@example.com 180 s-1-tr c-2-tr
-# 11: 170 1275930747.100 r r INVITE-43 203.0.113.200:5060:udp 203.0.113.1:5060:udp sip:bob@example.net;tag=b1-1
-# sip:alice@example.com;tag=a1-1 tr-88h@example.com 180 s-1-tr c-1-tr
