@@ -25,16 +25,16 @@ class NcsaTransformer(BaseTransformer, Resolver):
         """
         super().__init__(
             [
-                # NCSA CLF
-                RegexStrategy(
-                    compile(
-                        r"""(?P<host>[\w.:\]\[]+) (?:-|(?P<ident>[^\s-]+)) (?:-|(?P<user>[^\s-]+)) \[(?P<time>.+)\] "(?P<req>.+)" (?P<status>\d+) (?P<size>\d+)"""
-                    )
-                ),
                 # NCSA COMBINED CLF
                 RegexStrategy(
                     compile(
                         r"""(?P<host>[\w.:\]\[]+) (?:-|(?P<ident>[^\s-]+)) (?:-|(?P<user>[^\s-]+)) \[(?P<time>.+)\] "(?P<req>.+)" (?P<status>\d+) (?P<size>\d+) "(?:-|(?P<ref>.+))" "(?:-|(?P<agent>.+))" "(?:-|(?P<cook>.+))\""""
+                    )
+                ),
+                # NCSA CLF
+                RegexStrategy(
+                    compile(
+                        r"""(?P<host>[\w.:\]\[]+) (?:-|(?P<ident>[^\s-]+)) (?:-|(?P<user>[^\s-]+)) \[(?P<time>.+)\] "(?P<req>.+)" (?P<status>\d+) (?P<size>\d+)"""
                     )
                 ),
                 # CEF
@@ -53,7 +53,6 @@ class NcsaTransformer(BaseTransformer, Resolver):
             res = match.groupdict()
 
             # Building a custom message to better promote readability
-            # Request: POST /login HTTP/1.1 - Status: 403 - Size: 567
             msg = f"Request: {res.get('req')} - Status: {res.get('status')} - Size: {res.get('size')}"
             ref = res.get("ref")
             if ref is not None:
