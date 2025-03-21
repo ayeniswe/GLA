@@ -1,0 +1,3 @@
+172 1275930743.699 R s REGISTER-1 sip:example.com 198.51.100.10:5060:udp 198.51.100.1:5060:udp sip:example.com sip:alice@example.com;tag=76yhh f81-d4-f6@example.com - - c-tr-1
+173 1275930744.100 r r REGISTER-1 - 198.51.100.1:5060:udp 198.51.100.10:5060:udp sip:example.com;tag=reg-1xtr sip:alice@example.com;tag=76yhh f81-d4-f6@example.com 200 - c-tr-1
+175 1275930743.699 R r INVITE-43 sip:bob@example.net 203.0.113.200:5060:udp 198.51.100.1:5060:udp sip:bob@example.net sip:alice@example.com;tag=a1-1 tr-88h@example.com - s-1-tr - Subject,13,"Call me ASAP!"
