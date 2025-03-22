@@ -17,12 +17,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.6.8
 
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pytest-cov codecov
+          pip install -r requirements.txt codecov
 
       - name: Run Tests and Collect Coverage
         run: pytest --cov=. --cov-report=xml
