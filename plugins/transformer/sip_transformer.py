@@ -1,8 +1,10 @@
 from os import PathLike
 from re import compile
-from typing import Optional, Match
+from typing import Match, Optional
+
 import dateparser
 from typeguard import typechecked
+
 from models.log import Log
 from plugins.resolver.resolver import Resolver
 from plugins.transformer.transformer import BaseTransformer
@@ -27,7 +29,20 @@ class SipTransformer(BaseTransformer, Resolver):
                 # SIP CLF
                 RegexStrategy(
                     compile(
-                        r"^(?P<size>\d+) (?P<time>\d+(?:\.\d*)) (?P<type>[rR]) (?P<dir>[rs]) (?P<seq>[\w-]+) (?:-|(?P<uri>[^\s]+)) (?P<dest>[\w.:\]\[]+:\d+:(?:udp|sctp|tls|tcp)) (?P<src>[\w.:\]\[]+:\d+:(?:udp|sctp|tls|tcp)) (?P<to>[^\s]+) (?P<from>[^\s]+) (?P<call>[^\s]+) (?:(?P<status>\d+)|-) (?:-|(?P<stx>[^\s]+)) (?:-|(?P<ctx>[^\s]+))"
+                        r"^(?P<size>\d+) "
+                        r"(?P<time>\d+(?:\.\d*)) "
+                        r"(?P<type>[rR]) "
+                        r"(?P<dir>[rs]) "
+                        r"(?P<seq>[\w-]+) "
+                        r"(?:-|(?P<uri>[^\s]+)) "
+                        r"(?P<dest>[\w.:\]\[]+:\d+:(?:udp|sctp|tls|tcp)) "
+                        r"(?P<src>[\w.:\]\[]+:\d+:(?:udp|sctp|tls|tcp)) "
+                        r"(?P<to>[^\s]+) "
+                        r"(?P<from>[^\s]+) "
+                        r"(?P<call>[^\s]+) "
+                        r"(?:(?P<status>\d+)|-) "
+                        r"(?:-|(?P<stx>[^\s]+)) "
+                        r"(?:-|(?P<ctx>[^\s]+))"
                     )
                 )
             ],
@@ -45,7 +60,7 @@ class SipTransformer(BaseTransformer, Resolver):
                 msg += " Sent a "
             else:
                 msg += " Received a "
-            msg += res.get("seq")
+            msg += res.get("seq", "")
             status = res.get("status")
             if status is not None:
                 msg += f" {status}"
@@ -62,15 +77,17 @@ class SipTransformer(BaseTransformer, Resolver):
             else:
                 msg += f" to {res.get('to')} ({res.get('dest')})"
 
+            time = res.get("time")
+            timedate = None
+            if time is not None:
+                timedate = dateparser.parse(time, settings={"TIMEZONE": "UTC"})
             return Log(
                 source=src,
-                timestamp=dateparser.parse(
-                    res.get("time"), settings={"TIMEZONE": "UTC"}
-                ),
+                timestamp=timedate,
                 message=msg,
             )
+        return None
 
     def _validate(self, path: PathLike) -> bool:
         with open(path, "r") as file:
             return self.resolve(file.readline().strip()) is not None
-

@@ -1,14 +1,16 @@
 import ctypes
 from os import PathLike
-from typing import Dict, Optional
-import dateparser
+from typing import Optional, Union
 from xml.etree.ElementTree import Element
+
+import dateparser
+from magic.magic import from_file
 from typeguard import typechecked
+
 from models.log import Log
 from plugins.resolver.resolver import Resolver
 from plugins.transformer.transformer import BaseTransformer
 from utilities.strategy import Strategy
-from magic.magic import from_file
 
 
 @typechecked
@@ -33,6 +35,7 @@ class JLU(Strategy):
                 if child.tag == "date":
                     res["timestamp"] = child.text
             return res
+        return None
 
 
 @typechecked
@@ -49,12 +52,8 @@ class WinEvent(Strategy):
             return None
 
         res = {
-            "module": self._get_attribute(
-                entry, f"{self.NS}System/{self.NS}Provider", "Name"
-            ),
-            "level": self._to_lvl(
-                self._get_text(entry, f"{self.NS}System/{self.NS}Level")
-            ),
+            "module": self._get_attribute(entry, f"{self.NS}System/{self.NS}Provider", "Name"),
+            "level": self._to_lvl(self._get_text(entry, f"{self.NS}System/{self.NS}Level")),
             "source": self._get_text(entry, f"{self.NS}System/{self.NS}Computer"),
             "timestamp": self._get_attribute(
                 entry, f"{self.NS}System/{self.NS}TimeCreated", "SystemTime"
@@ -64,12 +63,8 @@ class WinEvent(Strategy):
         event_id = self._get_text(entry, f"{self.NS}System/{self.NS}EventID")
         data_entries = entry.findall(f".//{self.NS}EventData/{self.NS}Data")
 
-        extra_data = {
-            data.get("Name"): data.text for data in data_entries if data.get("Name")
-        }
-        data_pieces = [
-            data.text for data in data_entries if not data.get("Name") and data.text
-        ]
+        extra_data = {data.get("Name"): data.text for data in data_entries if data.get("Name")}
+        data_pieces = [data.text for data in data_entries if not data.get("Name") and data.text]
 
         message_parts = [f"EventID: {event_id}"]
         if extra_data:
@@ -80,7 +75,7 @@ class WinEvent(Strategy):
         res["message"] = " - ".join(message_parts)
         return res
 
-    def _to_lvl(self, level: str):
+    def _to_lvl(self, level: Union[str, None]):
         """Converts window events integer levels to respective log severity levels"""
         if level == "1":
             return "CRITICAL"
@@ -125,13 +120,18 @@ class XMLTransformer(BaseTransformer, Resolver):
     def _transform(self, entry: Element) -> Optional[Log]:
         mapping: Optional[dict] = self.resolve(entry)
         if mapping:
+            time = mapping.get("timestamp")
+            timedate = None
+            if time is not None:
+                timedate = dateparser.parse(time)
             return Log(
                 level=mapping.get("level"),
                 module=mapping.get("module"),
                 source=mapping.get("source"),
-                timestamp=dateparser.parse(mapping.get("timestamp")),
+                timestamp=timedate,
                 message=mapping.get("message"),
             )
+        return None
 
     def _validate(self, path: PathLike) -> bool:
         try:

@@ -1,5 +1,6 @@
 from abc import ABC
-from typing import Any, Pattern, Optional, Match, Tuple
+from typing import Any, Match, Optional, Pattern, Tuple
+
 from typeguard import typechecked
 
 
@@ -30,7 +31,8 @@ class ScoringStrategy(ABC):
 @typechecked
 class RegexStrategy(Strategy):
     """
-    The `RegexStrategy` class is responsible for handling strategies based on pre-compiled regular expressions
+    The `RegexStrategy` class is responsible for handling strategies
+    based on pre-compiled regular expressions
     """
 
     def __init__(self, pattern: Pattern):

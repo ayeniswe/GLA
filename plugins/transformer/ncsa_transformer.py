@@ -1,9 +1,10 @@
 from datetime import datetime
 from os import PathLike
 from re import compile
-from typing import Optional, Match
-import dateparser
+from typing import Match, Optional
+
 from typeguard import typechecked
+
 from models.log import Log
 from plugins.resolver.resolver import Resolver
 from plugins.transformer.transformer import BaseTransformer
@@ -28,21 +29,30 @@ class NcsaTransformer(BaseTransformer, Resolver):
                 # NCSA COMBINED CLF
                 RegexStrategy(
                     compile(
-                        r"""(?P<host>[\w.:\]\[]+) (?:-|(?P<ident>[^\s-]+)) (?:-|(?P<user>[^\s-]+)) \[(?P<time>.+)\] "(?P<req>.+)" (?P<status>\d+) (?P<size>\d+) "(?:-|(?P<ref>.+))" "(?:-|(?P<agent>.+))" "(?:-|(?P<cook>.+))\""""
+                        r"(?P<host>[\w.:\]\[]+) "
+                        r"(?:-|(?P<ident>[^\s-]+)) "
+                        r"(?:-|(?P<user>[^\s-]+)) "
+                        r"\[(?P<time>.+)\] "
+                        r'"(?P<req>.+)" '
+                        r"(?P<status>\d+) "
+                        r"(?P<size>\d+) "
+                        r'"(?:-|(?P<ref>.+))" '
+                        r'"(?:-|(?P<agent>.+))" '
+                        r'"(?:-|(?P<cook>.+))"'
                     )
                 ),
                 # NCSA CLF
                 RegexStrategy(
                     compile(
-                        r"""(?P<host>[\w.:\]\[]+) (?:-|(?P<ident>[^\s-]+)) (?:-|(?P<user>[^\s-]+)) \[(?P<time>.+)\] "(?P<req>.+)" (?P<status>\d+) (?P<size>\d+)"""
+                        r"(?P<host>[\w.:\]\[]+) "
+                        r"(?:-|(?P<ident>[^\s-]+)) "
+                        r"(?:-|(?P<user>[^\s-]+)) "
+                        r"\[(?P<time>.+)\] "
+                        r'"(?P<req>.+)" '
+                        r"(?P<status>\d+) "
+                        r"(?P<size>\d+)"
                     )
                 ),
-                # CEF
-                # RegexStrategy(
-                #     compile(
-                #         r"^CEF:(?P<cef>\d+)\|(?P<ven>.+?)\|(?P<prod>.+?)\|(?P<ver>.+?)\|(?P<sig>.+?)\|(?P<msg>.+?)\|(?P<lvl>.+?)\|(?<ext>.+)"
-                #     )
-                # ),
             ],
             cache,
         )
@@ -53,7 +63,9 @@ class NcsaTransformer(BaseTransformer, Resolver):
             res = match.groupdict()
 
             # Building a custom message to better promote readability
-            msg = f"Request: {res.get('req')} - Status: {res.get('status')} - Size: {res.get('size')}"
+            msg = (
+                f"Request: {res.get('req')} - Status: {res.get('status')} - Size: {res.get('size')}"
+            )
             ref = res.get("ref")
             if ref is not None:
                 msg += f" - Referrer: {ref}"
@@ -64,11 +76,16 @@ class NcsaTransformer(BaseTransformer, Resolver):
             if cookie is not None:
                 msg += f" - Cookie: {cookie}"
 
+            time = res.get("time")
+            timedate = None
+            if time is not None:
+                timedate = datetime.strptime(time, "%d/%b/%Y:%H:%M:%S %z")
             return Log(
                 source=res.get("host"),
-                timestamp=datetime.strptime(res.get('time'), "%d/%b/%Y:%H:%M:%S %z"),
+                timestamp=timedate,
                 message=msg,
             )
+        return None
 
     def _validate(self, path: PathLike) -> bool:
         with open(path, "r") as file:

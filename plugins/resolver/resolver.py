@@ -1,6 +1,8 @@
 import sys
 from typing import Any, List, Optional
+
 from typeguard import typechecked
+
 from utilities.strategy import ScoringStrategy, Strategy
 
 

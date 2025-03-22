@@ -1,11 +1,13 @@
 from json import JSONDecodeError, loads
 from os import PathLike
-import dateparser
 from typing import Optional, Tuple
+
+import dateparser
+from typeguard import typechecked
+
 from models.log import Log
 from plugins.resolver.resolver import BestResolver
 from plugins.transformer.transformer import BaseTransformer
-from typeguard import typechecked
 from utilities.strategy import ScoringStrategy
 
 
@@ -78,15 +80,20 @@ class JsonTransformer(BaseTransformer, BestResolver):
         try:
             res: dict = loads(entry.strip())
             mapping: Optional[dict] = self.resolve(res)
-            return Log(
-                level=res.get(mapping.get("level")),
-                module=res.get(mapping.get("module")),
-                source=res.get(mapping.get("source")),
-                timestamp=dateparser.parse(res.get(mapping.get("timestamp"))),
-                message=res.get(
-                    mapping.get("message"),
-                ),
-            )
+            if mapping:
+                time = res.get(mapping.get("timestamp"))
+                if time is not None:
+                    time = dateparser.parse(time)
+                return Log(
+                    level=res.get(mapping.get("level")),
+                    module=res.get(mapping.get("module")),
+                    source=res.get(mapping.get("source")),
+                    timestamp=time,
+                    message=res.get(
+                        mapping.get("message"),
+                    ),
+                )
+            return None
         except JSONDecodeError:
             return None
 

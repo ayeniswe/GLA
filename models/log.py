@@ -1,14 +1,13 @@
 from datetime import datetime
 from typing import Optional
+
 from pydantic import BaseModel, Field
 
 
 class Log(BaseModel):
     """Represents a log entry"""
 
-    ######
-    ### Instance Attributes
-    ##
+    # Instance Attributes
     level: Optional[str] = Field(
         default=None,
         description="The severity of the log message",
@@ -23,7 +22,8 @@ class Log(BaseModel):
     message: str = Field(default=..., description="The log message")
     """The log message"""
     timestamp: Optional[datetime] = Field(
-        default=None, description="The date and time when the log record was created"
+        default=None,
+        description="The date and time when the log record was created",
     )
     """The date and time when the log record was created"""
     source: Optional[str] = Field(

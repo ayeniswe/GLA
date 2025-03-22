@@ -1,6 +1,7 @@
+from re import compile
+
 from plugins.resolver.resolver import BestResolver, Resolver
 from utilities.strategy import RegexStrategy, ScoringStrategy
-from re import compile
 
 
 def test_resolver():

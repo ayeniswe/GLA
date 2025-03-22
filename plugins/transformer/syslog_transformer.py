@@ -1,8 +1,10 @@
 from os import PathLike
 from re import compile
-from typing import Optional, Match
+from typing import Match, Optional, Union
+
 import dateparser
 from typeguard import typechecked
+
 from models.log import Log
 from plugins.resolver.resolver import Resolver
 from plugins.transformer.transformer import BaseTransformer
@@ -27,13 +29,23 @@ class SyslogTransformer(BaseTransformer, Resolver):
                 # BFG RFC 3164 (older)
                 RegexStrategy(
                     compile(
-                        r"^<(?P<pri>\d{1,3})>(?P<time>[A-Z][a-z]{2}\s+\d{1,2} \d{2}:\d{2}:\d{2}) (?P<host>[^\s]+) (?P<proc>\w+)(?:\[(?P<pid>\d+)\])*:* (?P<msg>.+)"
+                        r"^<(?P<pri>\d{1,3})>"
+                        r"(?P<time>[A-Z][a-z]{2}\s+\d{1,2} \d{2}:\d{2}:\d{2}) "
+                        r"(?P<host>[^\s]+) "
+                        r"(?P<proc>\w+)"
+                        r"(?:\[(?P<pid>\d+)\])*:* "
+                        r"(?P<msg>.+)"
                     )
                 ),
                 # IETF RFC 5424
                 RegexStrategy(
                     compile(
-                        r"^<(?P<pri>\d{1,3})>(?P<ver>\d{1,2}) (?P<time>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.*\d{0,6}(?:Z|[-+]\d{2}:\d{2}))*) (?:(?P<host>[\w+.]+)|-) (?:(?P<proc>\w+)|-) (?:(?P<pid>\d+)|-) (?:(?P<msgid>\w+)|-) (?:\[(?P<struct>.+)\]|-)+ (?:BOM)*(?P<msg>.+)"
+                        r"^<(?P<pri>\d{1,3})>(?P<ver>\d{1,2}) "
+                        r"(?P<time>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}"
+                        r"(?:\.*\d{0,6}(?:Z|[-+]\d{2}:\d{2}))*) "
+                        r"(?:(?P<host>[\w+.]+)|-) (?:(?P<proc>\w+)|-) "
+                        r"(?:(?P<pid>\d+)|-) (?:(?P<msgid>\w+)|-) "
+                        r"(?:\[(?P<struct>.+)\]|-)+ (?:BOM)*(?P<msg>.+)"
                     )
                 ),
             ],
@@ -44,15 +56,26 @@ class SyslogTransformer(BaseTransformer, Resolver):
         match: Optional[Match[str]] = self.resolve(entry)
         if match:
             res = match.groupdict()
+
+            pri = res.get("pri")
+            level = None
+            if pri is not None:
+                level = self._priority_to_lvl(pri)
+            time = res.get("time")
+            timedate = None
+            if time is not None:
+                timedate = dateparser.parse(time)
+
             return Log(
-                level=self._priority_to_lvl(res.get("pri")),
+                level=level,
                 module=res.get("proc"),
                 source=res.get("host"),
-                timestamp=dateparser.parse(res.get("time")),
+                timestamp=timedate,
                 message=res.get("msg"),
             )
+        return None
 
-    def _priority_to_lvl(self, lvl: str) -> str:
+    def _priority_to_lvl(self, lvl: str) -> Union[str, None]:
         """Converts syslog priority levels to respective log severity levels"""
         res = int(lvl) % 8
         if res == 0:
@@ -71,6 +94,7 @@ class SyslogTransformer(BaseTransformer, Resolver):
             return "INFO"
         elif res == 7:
             return "DEBUG"
+        return None
 
     def _validate(self, path: PathLike) -> bool:
         with open(path, "r") as file:
