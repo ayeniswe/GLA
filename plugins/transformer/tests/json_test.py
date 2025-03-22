@@ -7,7 +7,8 @@ def test_json_transformer():
     test_cases = [
         # ECS-compliant log (Elastic Common Schema)
         {
-            "input": """{"@timestamp":"2019-08-06T14:08:40.199Z", "log.level":"DEBUG", "message":"init find form",
+            "input": """{"@timestamp":"2019-08-06T14:08:40.199Z", "log.level":"DEBUG",
+            "message":"init find form",
             "service.name":"spring-petclinic","process.thread.name":"http-nio-8080-exec-8",
             "log.logger":"org.springframework.samples.petclinic.owner.OwnerController",
             "transaction.id":"28b7fb8d5aba51f1","trace.id":"2869b25b5469590610fea49ac04af7da"}""",

@@ -1,7 +1,11 @@
-from datetime import datetime
+"""
+The 'cef_transformer' module defines the `CefTransformer` class,
+which is responsible for transforming common event log (CEF) messages into structured
+`Log` objects.
+"""
+import re
 from os import PathLike
-from re import compile
-from typing import Match, Optional
+from typing import Match, Optional, Union
 
 from typeguard import typechecked
 
@@ -18,6 +22,18 @@ class CefTransformer(BaseTransformer, Resolver):
     of common event  log messages
     """
 
+    def _to_lvl(self, lvl: int) -> Union[str, None]:
+        """Converts event integer severity levels to respective severity levels"""
+        if lvl > 0 and lvl <= 3:
+            return "LOW"
+        elif lvl > 3 and lvl <= 6:
+            return "MEDIUM"
+        elif lvl > 7 and lvl <= 8:
+            return "HIGH"
+        elif lvl > 8:
+            return "VERY HIGH"
+        return None
+
     def __init__(self, cache: bool = False):
         """Create a new `CefTransformer`
 
@@ -28,7 +44,7 @@ class CefTransformer(BaseTransformer, Resolver):
             [
                 # CEF
                 RegexStrategy(
-                    compile(
+                    re.compile(
                         r"^CEF:(?P<cef>\d+)\|"
                         r"(?P<ven>.+?)\|"
                         r"(?P<prod>.+?)\|"
@@ -50,26 +66,24 @@ class CefTransformer(BaseTransformer, Resolver):
         if match:
             res = match.groupdict()
 
-            # Structuring message from CEF fields
-            msg = (
-                f"CEF Version: {res.get('cef')} - Vendor: {res.get('ven')} - "
-                f"Product: {res.get('prod')} - Version: {res.get('ver')} - "
-                f"Signature: {res.get('sig')} - Severity: {res.get('lvl')}"
-            )
+            # Some messages may have more metadata than others
+            msg = res.get("msg", "")
             ext = res.get("ext")
             if ext:
                 msg += f" - Extensions: {ext}"
 
-            time = res.get("time")
-            timedate = None
-            if time is not None:
-                timedate = datetime.strptime(time, "%d/%b/%Y:%H:%M:%S %z")
+            lvl = res.get("lvl")
+            lvl_str = None
+            if lvl is not None:
+                lvl_str = self._to_lvl(int(lvl))
+
         return Log(
-            source=res.get("host"),
-            timestamp=timedate,
+            source=f"{res.get('ven')} {res.get('prod')} {res.get('ver')}",
+            module=f"Signature ID: {res.get('sig')}",
+            level=lvl_str,
             message=msg,
         )
 
-    def _validate(self, path: PathLike) -> bool:
-        with open(path, "r") as file:
+    def validate(self, path: PathLike) -> bool:
+        with open(path, "r", encoding="utf-8") as file:
             return self.resolve(file.readline().strip()) is not None

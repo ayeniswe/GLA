@@ -1,3 +1,7 @@
+"""
+The `resolver` module provides classes for resolving log entries based on a list of strategies.
+"""
+
 import sys
 from typing import Any, List, Optional
 

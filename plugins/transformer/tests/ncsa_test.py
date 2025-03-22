@@ -5,7 +5,6 @@ def test_ncsa_transformation():
     ncsa = NcsaTransformer()
 
     test_cases = [
-        # NCSA Common Log Format (CLF) test cases
         {
             "input": "192.168.1.1 - - [10/Mar/2024:12:34:56 +0000] "
             '"GET /index.html HTTP/1.1" 200 1234',

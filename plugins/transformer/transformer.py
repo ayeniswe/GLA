@@ -1,3 +1,8 @@
+"""
+The `transformer` module is an abstract class designed to allow extensibility for
+log transformation. It serves as the base class for creating log transformers
+that convert log entries into structured `Log` objects and validate log files.
+"""
 from abc import ABC, abstractmethod
 from os import PathLike
 from pathlib import Path
@@ -24,7 +29,7 @@ class BaseTransformer(ABC):
         """
 
     @abstractmethod
-    def _validate(self, path: PathLike) -> bool:
+    def validate(self, path: PathLike) -> bool:
         """Validate if a log file is parseable
 
         Args:
@@ -49,6 +54,6 @@ class Transformer:
             ValueError: if a transformer cannot be determined
         """
         for transformer in self._transformers:
-            if transformer._validate(Path(path)):
+            if transformer.validate(Path(path)):
                 return transformer
         raise ValueError("transformer could not be determined")

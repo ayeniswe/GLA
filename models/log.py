@@ -1,3 +1,7 @@
+"""
+The `log` module is for represents a log entry from different logging tools
+"""
+
 from datetime import datetime
 from typing import Optional
 

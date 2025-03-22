@@ -1,4 +1,8 @@
-from abc import ABC
+"""
+The `strategy` module defines abstract and concrete strategy classes that implement
+various strategies, including matching and scoring.
+"""
+from abc import ABC, abstractmethod
 from typing import Any, Match, Optional, Pattern, Tuple
 
 from typeguard import typechecked
@@ -11,6 +15,7 @@ class Strategy(ABC):
     strategies
     """
 
+    @abstractmethod
     def match(self, entry: Any) -> Optional[Any]:
         """Match the entry against the strategy"""
         ...
@@ -23,6 +28,7 @@ class ScoringStrategy(ABC):
     scoring strategies
     """
 
+    @abstractmethod
     def score(self, entry: Any) -> Tuple[int, Any]:
         """Score the entry against the strategy"""
         ...

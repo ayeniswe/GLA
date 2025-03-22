@@ -7,7 +7,7 @@ and which fields are required.
 **Timestamp Field**:
    - Format: String or Datetime object
    - Purpose: Indicates the exact timestamp of the log event.
-   - Examples: 
+   - Examples:
    - "2020-02-01T12:34:56Z"
    - "2020-02-01 12:34:56"
    - Common Field Name(s): "@timestamp", "timestamp"

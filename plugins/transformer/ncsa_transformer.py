@@ -1,6 +1,11 @@
+"""
+The `ncsa_transformer` module is responsible for transforming common web server
+NCSA log entries into structured `Log` objects. It supports both the NCSA Combined
+Log Format (CLF) and the standard NCSA CLF
+"""
+import re
 from datetime import datetime
 from os import PathLike
-from re import compile
 from typing import Match, Optional
 
 from typeguard import typechecked
@@ -28,7 +33,7 @@ class NcsaTransformer(BaseTransformer, Resolver):
             [
                 # NCSA COMBINED CLF
                 RegexStrategy(
-                    compile(
+                    re.compile(
                         r"(?P<host>[\w.:\]\[]+) "
                         r"(?:-|(?P<ident>[^\s-]+)) "
                         r"(?:-|(?P<user>[^\s-]+)) "
@@ -43,7 +48,7 @@ class NcsaTransformer(BaseTransformer, Resolver):
                 ),
                 # NCSA CLF
                 RegexStrategy(
-                    compile(
+                    re.compile(
                         r"(?P<host>[\w.:\]\[]+) "
                         r"(?:-|(?P<ident>[^\s-]+)) "
                         r"(?:-|(?P<user>[^\s-]+)) "
@@ -87,6 +92,6 @@ class NcsaTransformer(BaseTransformer, Resolver):
             )
         return None
 
-    def _validate(self, path: PathLike) -> bool:
-        with open(path, "r") as file:
+    def validate(self, path: PathLike) -> bool:
+        with open(path, "r", encoding="utf-8") as file:
             return self.resolve(file.readline().strip()) is not None

@@ -1,5 +1,11 @@
+"""
+The `syslog_transformer` module is responsible for transforming `syslog` log
+messages into structured `Log` objects based on the Syslog format standards.
+It supports parsing both the older BFG RFC 3164 format and the more modern
+IETF RFC 5424 format.
+"""
+import re
 from os import PathLike
-from re import compile
 from typing import Match, Optional, Union
 
 import dateparser
@@ -28,7 +34,7 @@ class SyslogTransformer(BaseTransformer, Resolver):
             [
                 # BFG RFC 3164 (older)
                 RegexStrategy(
-                    compile(
+                    re.compile(
                         r"^<(?P<pri>\d{1,3})>"
                         r"(?P<time>[A-Z][a-z]{2}\s+\d{1,2} \d{2}:\d{2}:\d{2}) "
                         r"(?P<host>[^\s]+) "
@@ -39,7 +45,7 @@ class SyslogTransformer(BaseTransformer, Resolver):
                 ),
                 # IETF RFC 5424
                 RegexStrategy(
-                    compile(
+                    re.compile(
                         r"^<(?P<pri>\d{1,3})>(?P<ver>\d{1,2}) "
                         r"(?P<time>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}"
                         r"(?:\.*\d{0,6}(?:Z|[-+]\d{2}:\d{2}))*) "
@@ -96,6 +102,6 @@ class SyslogTransformer(BaseTransformer, Resolver):
             return "DEBUG"
         return None
 
-    def _validate(self, path: PathLike) -> bool:
-        with open(path, "r") as file:
+    def validate(self, path: PathLike) -> bool:
+        with open(path, "r", encoding="utf-8") as file:
             return self.resolve(file.readline().strip()) is not None

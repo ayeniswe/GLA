@@ -1,3 +1,8 @@
+"""
+The `xml_transformer` module is responsible for transforming XML-based log
+messages into structured `Log` objects. It supports various XML formats,
+including `Java Logging Util` (JLU) and `Windows Event Logs`
+"""
 import ctypes
 from os import PathLike
 from typing import Optional, Union
@@ -133,7 +138,7 @@ class XMLTransformer(BaseTransformer, Resolver):
             )
         return None
 
-    def _validate(self, path: PathLike) -> bool:
+    def validate(self, path: PathLike) -> bool:
         try:
             return from_file(path, True) == "text/xml"
         except ctypes.ArgumentError:

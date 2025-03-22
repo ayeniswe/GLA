@@ -1,5 +1,9 @@
+"""
+The `sip_transformer` module is responsible for transforming SIP (Session
+Initiation Protocol) log entries into structured `Log` objects.
+"""
+import re
 from os import PathLike
-from re import compile
 from typing import Match, Optional
 
 import dateparser
@@ -28,7 +32,7 @@ class SipTransformer(BaseTransformer, Resolver):
             [
                 # SIP CLF
                 RegexStrategy(
-                    compile(
+                    re.compile(
                         r"^(?P<size>\d+) "
                         r"(?P<time>\d+(?:\.\d*)) "
                         r"(?P<type>[rR]) "
@@ -88,6 +92,6 @@ class SipTransformer(BaseTransformer, Resolver):
             )
         return None
 
-    def _validate(self, path: PathLike) -> bool:
-        with open(path, "r") as file:
+    def validate(self, path: PathLike) -> bool:
+        with open(path, "r", encoding="utf-8") as file:
             return self.resolve(file.readline().strip()) is not None

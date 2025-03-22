@@ -1,3 +1,9 @@
+"""
+The 'json_transformer' module defines the `JsonTransformer` class, which is responsible
+for transforming JSON log messages into structured `Log` objects based on predefined
+schema mappings.
+"""
+
 from json import JSONDecodeError, loads
 from os import PathLike
 from typing import Optional, Tuple
@@ -97,8 +103,8 @@ class JsonTransformer(BaseTransformer, BestResolver):
         except JSONDecodeError:
             return None
 
-    def _validate(self, path: PathLike) -> bool:
-        with open(path, "r") as file:
+    def validate(self, path: PathLike) -> bool:
+        with open(path, "r", encoding="utf-8") as file:
             try:
                 return loads(file.readline().strip()) is not None
             except JSONDecodeError:
