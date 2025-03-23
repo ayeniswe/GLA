@@ -3,13 +3,11 @@ The `xml_transformer` module is responsible for transforming XML-based log
 messages into structured `Log` objects. It supports various XML formats,
 including `Java Logging Util` (JLU) and `Windows Event Logs`
 """
-import ctypes
 from os import PathLike
 from typing import Optional, Union
 from xml.etree.ElementTree import Element
 
 import dateparser
-from magic.magic import from_file
 from typeguard import typechecked
 
 from models.log import Log
@@ -139,7 +137,14 @@ class XMLTransformer(BaseTransformer, Resolver):
         return None
 
     def validate(self, path: PathLike) -> bool:
-        try:
-            return from_file(path, True) == "text/xml"
-        except ctypes.ArgumentError:
-            return False
+        # encodings = ["utf-16-le"]
+        # for encoding in encodings:
+        #     try:
+        #         with open(path, "r", encoding=encoding) as f:
+        #             ET.parse(f)
+        #         return True
+        #     except (UnicodeDecodeError, OSError, ET.ParseError):
+        #         continue
+        # return False
+        # TODO
+        ...

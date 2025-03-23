@@ -1,0 +1,11 @@
+CEF:0|ExampleCorp|WebServer|1.0|100|Request processed|5|src=192.168.1.1 dst=10.1.1.1 dhost=webserver.example.com suser=john doe msg="GET /index.html HTTP/1.1" cs1Label="HTTP Method" cs1="GET"
+CEF:0|ExampleCorp|Firewall|2.0|101|Connection established|5|src=192.168.1.2 dst=10.1.1.2 dhost=firewall.example.com suser=admin msg="Connection opened" cs1Label="Protocol" cs1="TCP"
+CEF:0|ExampleCorp|VPN|3.0|102|User login|5|src=192.168.1.3 dst=10.1.1.3 dhost=vpn.example.com suser=alice msg="User logged in successfully" cs1Label="VPN Client" cs1="OpenVPN"
+CEF:0|ExampleCorp|WebServer|1.0|103|Request failed|5|src=192.168.1.4 dst=10.1.1.4 dhost=webserver.example.com suser=guest msg="POST /login HTTP/1.1" cs1Label="HTTP Status" cs1="400"
+CEF:0|ExampleCorp|Database|1.0|104|Query executed|5|src=192.168.1.5 dst=10.1.1.5 dhost=db.example.com suser=admin msg="SELECT * FROM users" cs1Label="Query Type" cs1="SELECT"
+CEF:0|ExampleCorp|WebServer|1.0|105|Request processed|5|src=192.168.1.6 dst=10.1.1.6 dhost=webserver.example.com suser=john doe msg="GET /about HTTP/1.1" cs1Label="HTTP Method" cs1="GET"
+CEF:0|ExampleCorp|Firewall|2.0|106|Connection closed|5|src=192.168.1.7 dst=10.1.1.7 dhost=firewall.example.com suser=admin msg="Connection closed" cs1Label="Protocol" cs1="UDP"
+CEF:0|ExampleCorp|VPN|3.0|107|User logout|5|src=192.168.1.8 dst=10.1.1.8 dhost=vpn.example.com suser=alice msg="User logged out" cs1Label="VPN Client" cs1="OpenVPN"
+CEF:0|ExampleCorp|WebServer|1.0|108|Request processed|5|src=192.168.1.9 dst=10.1.1.9 dhost=webserver.example.com suser=bob msg="GET /privacy-policy HTTP/1.1" cs1Label="HTTP Status" cs1="301"
+CEF:0|ExampleCorp|Firewall|2.0|109|Connection established|5|src=192.168.1.10 dst=10.1.1.10 dhost=firewall.example.com suser=admin msg="Connection established" cs1Label="Protocol" cs1="TCP"
+CEF:0|ExampleCorp|VPN|3.0|110|User authentication failed|5|src=192.168.1.11 dst=10.1.1.11 dhost=vpn.example
