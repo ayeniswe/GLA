@@ -43,7 +43,7 @@ def test_json_transformer():
     ]
 
     for case in test_cases:
-        result = json._transform(case["input"])
+        result = json.transform(case["input"])
         assert (
             str(result) == case["expected"] if case["expected"] is not None else result is None
         ), f"Test failed for input: {case['input']}"

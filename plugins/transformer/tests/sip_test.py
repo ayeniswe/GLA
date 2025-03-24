@@ -171,7 +171,7 @@ def test_sip_transformation():
     for case in test_cases:
         input_log = case["input"]
         expected_result = case["expected"]
-        result = sip._transform(input_log)
+        result = sip.transform(input_log)
 
         if expected_result:
             assert (

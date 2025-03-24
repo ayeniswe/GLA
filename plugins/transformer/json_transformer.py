@@ -5,7 +5,6 @@ schema mappings.
 """
 
 from json import JSONDecodeError, loads
-from os import PathLike
 from typing import Optional, Tuple
 
 import dateparser
@@ -82,7 +81,7 @@ class JsonTransformer(BaseTransformer, BestResolver):
             cache,
         )
 
-    def _transform(self, entry: str) -> Optional[Log]:
+    def transform(self, entry: str) -> Optional[Log]:
         try:
             res: dict = loads(entry.strip())
             mapping: Optional[dict] = self.resolve(res)
@@ -103,9 +102,14 @@ class JsonTransformer(BaseTransformer, BestResolver):
         except JSONDecodeError:
             return None
 
-    def validate(self, path: PathLike) -> bool:
-        with open(path, "r", encoding="utf-8") as file:
-            try:
-                return loads(file.readline().strip()) is not None
-            except JSONDecodeError:
-                return False
+    def validate(self, data: str) -> bool:
+        if data == "json":
+            return True
+        try:
+            with open(data, "r", encoding="utf-8") as file:
+                try:
+                    return loads(file.readline().strip()) is not None
+                except JSONDecodeError:
+                    return False
+        except (FileNotFoundError, UnicodeDecodeError):
+            return False

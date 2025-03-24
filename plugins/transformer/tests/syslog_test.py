@@ -99,7 +99,7 @@ def test_syslog_transformation():
     for case in test_cases:
         input_log = case["input"]
         expected_result = case["expected"]
-        result = syslog._transform(input_log)
+        result = syslog.transform(input_log)
 
         if expected_result:
             assert (

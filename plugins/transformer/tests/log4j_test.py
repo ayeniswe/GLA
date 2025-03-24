@@ -106,7 +106,7 @@ def test_log4j_transformation():
     for case in test_cases:
         input_log = case["input"]
         expected_result = case["expected"]
-        result = log4j._transform(input_log)
+        result = log4j.transform(input_log)
         if expected_result:
             assert (
                 str(result) == expected_result

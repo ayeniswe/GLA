@@ -37,7 +37,7 @@ def test_cef_transformer():
     for case in test_cases:
         input_log = case["input"]
         expected_result = case["expected"]
-        result = cef._transform(input_log)
+        result = cef.transform(input_log)
 
         if expected_result:
             assert (

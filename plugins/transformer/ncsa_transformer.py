@@ -5,7 +5,6 @@ Log Format (CLF) and the standard NCSA CLF
 """
 import re
 from datetime import datetime
-from os import PathLike
 from typing import Match, Optional
 
 from typeguard import typechecked
@@ -62,7 +61,7 @@ class NcsaTransformer(BaseTransformer, Resolver):
             cache,
         )
 
-    def _transform(self, entry: str) -> Optional[Log]:
+    def transform(self, entry: str) -> Optional[Log]:
         match: Optional[Match[str]] = self.resolve(entry)
         if match:
             res = match.groupdict()
@@ -92,6 +91,11 @@ class NcsaTransformer(BaseTransformer, Resolver):
             )
         return None
 
-    def validate(self, path: PathLike) -> bool:
-        with open(path, "r", encoding="utf-8") as file:
-            return self.resolve(file.readline().strip()) is not None
+    def validate(self, data: str) -> bool:
+        if data == "ncsa":
+            return True
+        try:
+            with open(data, "r", encoding="utf-8") as file:
+                return self.resolve(file.readline().strip()) is not None
+        except (FileNotFoundError, UnicodeDecodeError):
+            return False

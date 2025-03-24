@@ -4,7 +4,6 @@ which is responsible for transforming common event log (CEF) messages into struc
 `Log` objects.
 """
 import re
-from os import PathLike
 from typing import Match, Optional, Union
 
 from typeguard import typechecked
@@ -59,7 +58,7 @@ class CefTransformer(BaseTransformer, Resolver):
             cache,
         )
 
-    def _transform(self, entry: str) -> Optional[Log]:
+    def transform(self, entry: str) -> Optional[Log]:
 
         match: Optional[Match[str]] = self.resolve(entry)
 
@@ -84,6 +83,11 @@ class CefTransformer(BaseTransformer, Resolver):
             message=msg,
         )
 
-    def validate(self, path: PathLike) -> bool:
-        with open(path, "r", encoding="utf-8") as file:
-            return self.resolve(file.readline().strip()) is not None
+    def validate(self, data: str) -> bool:
+        if data == "cef":
+            return True
+        try:
+            with open(data, "r", encoding="utf-8") as file:
+                return self.resolve(file.readline().strip()) is not None
+        except (FileNotFoundError, UnicodeDecodeError):
+            return False

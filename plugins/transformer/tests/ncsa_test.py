@@ -51,7 +51,7 @@ def test_ncsa_transformation():
     for case in test_cases:
         input_log = case["input"]
         expected_result = case["expected"]
-        result = ncsa._transform(input_log)
+        result = ncsa.transform(input_log)
 
         if expected_result:
             assert (
