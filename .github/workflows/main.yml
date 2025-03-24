@@ -1,4 +1,4 @@
-name: Code Coverage
+name: Default
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  test:
+  test-coverage:
     runs-on: ubuntu-20.04
 
     steps:
