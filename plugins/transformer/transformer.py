@@ -1,21 +1,53 @@
-from abc import ABC, abstractmethod
-from typing import Union
-from log import Log
+"""
+The `transformer` module is an abstract class designed to allow extensibility for
+log transformation. It serves as the base class for creating log transformers
+that convert log entries into structured `Log` objects and validate log files.
+"""
+from abc import abstractmethod
+from typing import Any, List, Optional
+
+from typeguard import typechecked
+
+from models.log import Log
+from plugins.validator.validator import Validator
 
 
-class Transformer(ABC):
+@typechecked
+class BaseTransformer(Validator):
     """
-    The `Transformer` is an abstract class for handling transformation logic of log
-    messages
+    The `BaseTransformer` is an abstract class to promote
+    transformers extensibility and factory use
     """
 
     @abstractmethod
-    def transform(self, line: str) -> Union[Log, None]:
-        """Transforms a log into a `Log` object
+    def transform(self, entry: Any) -> Optional[Log]:
+        """Transforms a log entry into a `Log` object
 
         Args:
-            line (str): a line of text to transform
-
-        Returns:
-            Log: A `Log` object or `None` if the format can not be determined
+            entry (Any): a log entry to transform
         """
+
+
+@typechecked
+class Transformer:
+    """
+    The `Transformer` class is responsible for handling transformation logic of log
+    messages
+    """
+
+    def __init__(self, transformers: List[BaseTransformer]):
+        self._transformers = transformers
+
+    def get_transformer(self, data: str) -> BaseTransformer:
+        """Get a transformer to process log messages
+
+        Args:
+            data (str): input data to validate against
+
+        Raises:
+            ValueError: if a transformer cannot be determined
+        """
+        for transformer in self._transformers:
+            if transformer.validate(data):
+                return transformer
+        raise ValueError("transformer could not be determined")

@@ -1,0 +1,64 @@
+minimum_pre_commit_version: '2.17.0'
+fail_fast: true
+default_language_version:
+  python: python3.6.8
+repos:
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+        name: Sorting import statements alphabetically
+  - repo: https://github.com/psf/black
+    rev: 22.8.0
+    hooks:
+      - id: black
+        args: ['--line-length=100']
+        name: Formating code to meet PEP-8 coding standard
+  - repo: meta
+    hooks:
+      - id: check-hooks-apply
+        name: Checking for unnecessary hooks in pre-commit config
+      - id: check-useless-excludes
+        name: Checking for unnecessary exclude statements in pre-commit config
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+      - id: trailing-whitespace
+        name: Removing trailing whitespace
+      - id: end-of-file-fixer
+        exclude: '.xml$'
+        name: Adding newline to the end of all files
+      - id: check-docstring-first
+        name: Checking docstrings are added for every class and module (no including tests)
+      - id: check-added-large-files
+        name: Checking this commit is under 500KB
+      - id: check-builtin-literals
+        name: Checking builtin literals are used instead of constructers
+      - id: name-tests-test
+        name: Checking tests naming convention is standard
+      - id: check-merge-conflict
+        name: Checking for merge conflicts
+      - id: debug-statements
+        name: Checking for no accidental print() or debugger statements left
+      - id: no-commit-to-branch
+        name: Checking this commit is not on the main branch
+        args: [--branch, main]
+      - id: requirements-txt-fixer
+        name: Sorting requirements.txt
+      - id: mixed-line-ending
+        name: Checking for mixed line endings (should be LF)
+        args: [--fix=lf]
+      - id: check-ast
+        name: Checking for syntax errors
+  - repo: https://github.com/PyCQA/pylint
+    rev: v2.12.2
+    hooks:
+      - id: pylint
+        args: ['--rcfile=.pylintrc']
+        name: Linting python code
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.910
+    hooks:
+      - id: mypy
+        name: Type checking python code
