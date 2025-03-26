@@ -9,6 +9,7 @@ from typing import Match, Optional, Union
 
 import dateparser
 
+from gla.constants import LANGUAGES_SUPPORTED
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
 from gla.plugins.transformer.transformer import BaseTransformer
@@ -67,7 +68,7 @@ class SyslogTransformer(BaseTransformer, Resolver):
             time = res.get("time")
             timedate = None
             if time is not None:
-                timedate = dateparser.parse(time)
+                timedate = dateparser.parse(time, languages=LANGUAGES_SUPPORTED)
 
             return Log(
                 level=level,

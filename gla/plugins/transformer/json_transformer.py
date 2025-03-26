@@ -9,6 +9,7 @@ from typing import Optional, Tuple
 
 import dateparser
 
+from gla.constants import LANGUAGES_SUPPORTED
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import BestResolver
 from gla.plugins.transformer.transformer import BaseTransformer
@@ -85,7 +86,7 @@ class JsonTransformer(BaseTransformer, BestResolver):
             if mapping:
                 time = res.get(mapping.get("timestamp"))
                 if time is not None:
-                    time = dateparser.parse(time)
+                    time = dateparser.parse(time, languages=LANGUAGES_SUPPORTED)
                 return Log(
                     level=res.get(mapping.get("level")),
                     module=res.get(mapping.get("module")),
