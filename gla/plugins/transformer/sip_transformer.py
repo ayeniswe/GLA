@@ -8,11 +8,11 @@ from typing import Match, Optional
 
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
-from gla.plugins.transformer.transformer import BaseTransformer
+from gla.plugins.transformer.transformer import BaseTransformerValidator
 from gla.utilities.strategy import RegexStrategy
 
 
-class SipTransformer(BaseTransformer, Resolver):
+class SipTransformer(BaseTransformerValidator, Resolver):
     """
     The `SipTransformer` class is responsible for handling transformation
     of `sip` common log messages

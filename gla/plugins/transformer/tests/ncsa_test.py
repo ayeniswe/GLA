@@ -46,6 +46,11 @@ def test_ncsa_transformation():
             "expected": "2024-03-10T12:34:56+00:00 [[2001:db8::2]] - "
             "Request: DELETE /account HTTP/1.1 - Status: 204 - Size: 0 - User-Agent: curl/7.68.0",
         },
+        {
+            "input": "[2001:db8::2] - - [10/Mar/2024:12:34:56 +0000] "
+            '"DELETE /accounHTTP/1.1" 0 "curl/7.68.0" "-"',
+            "expected": None
+        },
     ]
 
     for case in test_cases:
