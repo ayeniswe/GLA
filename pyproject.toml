@@ -2,7 +2,7 @@
 name = "gla"
 version = "0.1.0"
 description = ""
-authors = ["Samson Ayeni nazaritee@pm.me"]
+authors = ["Samson Ayeni <nazaritee@pm.me>"]
 
 [tool.poetry.dependencies]
 python = "3.6.8"

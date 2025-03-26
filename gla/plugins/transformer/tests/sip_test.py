@@ -1,4 +1,4 @@
-from plugins.transformer.sip_transformer import SipTransformer
+from gla.plugins.transformer.sip_transformer import SipTransformer
 
 
 def test_sip_transformation():

@@ -1,14 +1,15 @@
 import os
 
-from plugins.transformer import Transformer
-from plugins.transformer.cef_transformer import CefTransformer
-from plugins.transformer.json_transformer import JsonTransformer
-from plugins.transformer.log4j_transformer import Log4jTransformer
-from plugins.transformer.ncsa_transformer import NcsaTransformer
-from plugins.transformer.sip_transformer import SipTransformer
-from plugins.transformer.syslog_transformer import SyslogTransformer
-from plugins.transformer.xml_transformer import XMLTransformer
 from pytest import raises
+
+from gla.plugins.transformer import Transformer
+from gla.plugins.transformer.cef_transformer import CefTransformer
+from gla.plugins.transformer.json_transformer import JsonTransformer
+from gla.plugins.transformer.log4j_transformer import Log4jTransformer
+from gla.plugins.transformer.ncsa_transformer import NcsaTransformer
+from gla.plugins.transformer.sip_transformer import SipTransformer
+from gla.plugins.transformer.syslog_transformer import SyslogTransformer
+from gla.plugins.transformer.xml_transformer import XMLTransformer
 
 
 def test_transformer_factory_by_path():

@@ -8,10 +8,11 @@ from json import JSONDecodeError, loads
 from typing import Optional, Tuple
 
 import dateparser
-from models.log import Log
-from plugins.resolver.resolver import BestResolver
-from plugins.transformer.transformer import BaseTransformer
-from utilities.strategy import ScoringStrategy
+
+from gla.models.log import Log
+from gla.plugins.resolver.resolver import BestResolver
+from gla.plugins.transformer.transformer import BaseTransformer
+from gla.utilities.strategy import ScoringStrategy
 
 
 class JsonStrategy(ScoringStrategy):

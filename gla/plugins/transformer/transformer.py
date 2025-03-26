@@ -6,8 +6,8 @@ that convert log entries into structured `Log` objects and validate log files.
 from abc import abstractmethod
 from typing import Any, List, Optional
 
-from models.log import Log
-from plugins.validator.validator import Validator
+from gla.models.log import Log
+from gla.plugins.validator.validator import Validator
 
 
 class BaseTransformer(Validator):

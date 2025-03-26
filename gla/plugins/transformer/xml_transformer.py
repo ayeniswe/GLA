@@ -7,10 +7,11 @@ from typing import Optional, Union
 from xml.etree.ElementTree import Element
 
 import dateparser
-from models.log import Log
-from plugins.resolver.resolver import Resolver
-from plugins.transformer.transformer import BaseTransformer
-from utilities.strategy import Strategy
+
+from gla.models.log import Log
+from gla.plugins.resolver.resolver import Resolver
+from gla.plugins.transformer.transformer import BaseTransformer
+from gla.utilities.strategy import Strategy
 
 
 class JLU(Strategy):

@@ -1,4 +1,4 @@
-from plugins.transformer.ncsa_transformer import NcsaTransformer
+from gla.plugins.transformer.ncsa_transformer import NcsaTransformer
 
 
 def test_ncsa_transformation():

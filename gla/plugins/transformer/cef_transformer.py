@@ -6,10 +6,10 @@ which is responsible for transforming common event log (CEF) messages into struc
 import re
 from typing import Match, Optional, Union
 
-from models.log import Log
-from plugins.resolver.resolver import Resolver
-from plugins.transformer.transformer import BaseTransformer
-from utilities.strategy import RegexStrategy
+from gla.models.log import Log
+from gla.plugins.resolver.resolver import Resolver
+from gla.plugins.transformer.transformer import BaseTransformer
+from gla.utilities.strategy import RegexStrategy
 
 
 class CefTransformer(BaseTransformer, Resolver):

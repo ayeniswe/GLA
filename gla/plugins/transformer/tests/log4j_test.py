@@ -1,4 +1,4 @@
-from plugins.transformer.log4j_transformer import Log4jTransformer
+from gla.plugins.transformer.log4j_transformer import Log4jTransformer
 
 
 def test_log4j_transformation():
