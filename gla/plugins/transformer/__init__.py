@@ -3,7 +3,7 @@ The `transformer` module is an abstraction layer for converting a single log ite
 `.log` file to a `Log` object for further processing.
 """
 
-from plugins.transformer.transformer import Transformer
+from gla.plugins.transformer.transformer import Transformer
 
 __all__ = [
     "Transformer",

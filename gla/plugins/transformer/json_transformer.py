@@ -8,15 +8,13 @@ from json import JSONDecodeError, loads
 from typing import Optional, Tuple
 
 import dateparser
-from typeguard import typechecked
 
-from models.log import Log
-from plugins.resolver.resolver import BestResolver
-from plugins.transformer.transformer import BaseTransformer
-from utilities.strategy import ScoringStrategy
+from gla.models.log import Log
+from gla.plugins.resolver.resolver import BestResolver
+from gla.plugins.transformer.transformer import BaseTransformer
+from gla.utilities.strategy import ScoringStrategy
 
 
-@typechecked
 class JsonStrategy(ScoringStrategy):
     """
     The `JsonStrategy` class is responsible for handling strategies based on json key mappings
@@ -32,7 +30,6 @@ class JsonStrategy(ScoringStrategy):
         )
 
 
-@typechecked
 class JsonTransformer(BaseTransformer, BestResolver):
     """
     The `JsonTransformer` class is responsible for handling transformation

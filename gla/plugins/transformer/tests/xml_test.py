@@ -2,7 +2,7 @@ import os
 import xml.etree.ElementTree as ET
 from xml.etree.ElementTree import iterparse
 
-from plugins.transformer.xml_transformer import XMLTransformer
+from gla.plugins.transformer.xml_transformer import XMLTransformer
 
 
 def test_xml():

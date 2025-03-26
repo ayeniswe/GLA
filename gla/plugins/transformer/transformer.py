@@ -6,13 +6,10 @@ that convert log entries into structured `Log` objects and validate log files.
 from abc import abstractmethod
 from typing import Any, List, Optional
 
-from typeguard import typechecked
-
-from models.log import Log
-from plugins.validator.validator import Validator
+from gla.models.log import Log
+from gla.plugins.validator.validator import Validator
 
 
-@typechecked
 class BaseTransformer(Validator):
     """
     The `BaseTransformer` is an abstract class to promote
@@ -28,7 +25,6 @@ class BaseTransformer(Validator):
         """
 
 
-@typechecked
 class Transformer:
     """
     The `Transformer` class is responsible for handling transformation logic of log

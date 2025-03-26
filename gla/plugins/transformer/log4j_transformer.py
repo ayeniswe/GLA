@@ -7,15 +7,13 @@ import re
 from typing import Match, Optional
 
 import dateparser
-from typeguard import typechecked
 
-from models.log import Log
-from plugins.resolver.resolver import Resolver
-from plugins.transformer.transformer import BaseTransformer
-from utilities.strategy import RegexStrategy
+from gla.models.log import Log
+from gla.plugins.resolver.resolver import Resolver
+from gla.plugins.transformer.transformer import BaseTransformer
+from gla.utilities.strategy import RegexStrategy
 
 
-@typechecked
 class Log4jTransformer(BaseTransformer, Resolver):
     """
     The `Log4jTransformer` class is responsible for handling transformation

@@ -1,4 +1,4 @@
-from plugins.transformer.syslog_transformer import SyslogTransformer
+from gla.plugins.transformer.syslog_transformer import SyslogTransformer
 
 
 def test_syslog_transformation():

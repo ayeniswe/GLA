@@ -3,18 +3,15 @@ The `sip_transformer` module is responsible for transforming SIP (Session
 Initiation Protocol) log entries into structured `Log` objects.
 """
 import re
+from datetime import datetime, timezone
 from typing import Match, Optional
 
-import dateparser
-from typeguard import typechecked
-
-from models.log import Log
-from plugins.resolver.resolver import Resolver
-from plugins.transformer.transformer import BaseTransformer
-from utilities.strategy import RegexStrategy
+from gla.models.log import Log
+from gla.plugins.resolver.resolver import Resolver
+from gla.plugins.transformer.transformer import BaseTransformer
+from gla.utilities.strategy import RegexStrategy
 
 
-@typechecked
 class SipTransformer(BaseTransformer, Resolver):
     """
     The `SipTransformer` class is responsible for handling transformation
@@ -83,7 +80,9 @@ class SipTransformer(BaseTransformer, Resolver):
             time = res.get("time")
             timedate = None
             if time is not None:
-                timedate = dateparser.parse(time, settings={"TIMEZONE": "UTC"})
+                dt = datetime.fromtimestamp(float(time), timezone.utc)  # Convert to UTC datetime
+                timedate = dt.strftime("%Y-%m-%dT%H:%M:%S")
+
             return Log(
                 source=src,
                 timestamp=timedate,

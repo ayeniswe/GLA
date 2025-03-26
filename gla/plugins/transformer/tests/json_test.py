@@ -1,4 +1,4 @@
-from plugins.transformer.json_transformer import JsonTransformer
+from gla.plugins.transformer.json_transformer import JsonTransformer
 
 
 def test_json_transformer():

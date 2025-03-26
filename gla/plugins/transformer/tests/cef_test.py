@@ -1,4 +1,4 @@
-from plugins.transformer.cef_transformer import CefTransformer
+from gla.plugins.transformer.cef_transformer import CefTransformer
 
 
 def test_cef_transformer():

@@ -1,7 +1,7 @@
 from re import compile
 
-from plugins.resolver.resolver import BestResolver, Resolver
-from utilities.strategy import RegexStrategy, ScoringStrategy
+from gla.plugins.resolver.resolver import BestResolver, Resolver
+from gla.utilities.strategy import RegexStrategy, ScoringStrategy
 
 
 def test_resolver():
