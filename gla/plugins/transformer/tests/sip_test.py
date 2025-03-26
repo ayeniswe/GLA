@@ -166,6 +166,12 @@ def test_sip_transformation():
             "from sip:alice@example.com;tag=a1-1 ([2001:db8::9]:5060:udp) "
             "to sip:bob@example.net;b2-2 (203.0.113.200:5060:udp)",
         },
+        {
+            "input": "170 1275930750.001 r r CANCEL-43 - 203.0.113.200:5060:udp "
+            "[2001:db8::9]:5060:udp sip:bob@example.net;b2-2 sip:alice@example.com;tag=a1-1 "
+            "tr-88h@example",
+            "expected": None
+        },
     ]
 
     for case in test_cases:

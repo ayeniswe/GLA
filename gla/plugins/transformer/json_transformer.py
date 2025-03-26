@@ -12,7 +12,7 @@ import dateparser
 from gla.constants import LANGUAGES_SUPPORTED
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import BestResolver
-from gla.plugins.transformer.transformer import BaseTransformer
+from gla.plugins.transformer.transformer import BaseTransformerValidator
 from gla.utilities.strategy import ScoringStrategy
 
 
@@ -31,7 +31,7 @@ class JsonStrategy(ScoringStrategy):
         )
 
 
-class JsonTransformer(BaseTransformer, BestResolver):
+class JsonTransformer(BaseTransformerValidator, BestResolver):
     """
     The `JsonTransformer` class is responsible for handling transformation
     of `json` log messages

@@ -23,7 +23,7 @@ class Log(BaseModel):
         description="The logger's name or process name that created the log entry",
     )
     """The logger's name or process name that created the log entry"""
-    message: str = Field(default=..., description="The log message")
+    message: str = Field(default=None, description="The log message")
     """The log message"""
     timestamp: Optional[datetime] = Field(
         default=None,

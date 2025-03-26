@@ -10,7 +10,7 @@ from gla.models.log import Log
 from gla.plugins.validator.validator import Validator
 
 
-class BaseTransformer(Validator):
+class BaseTransformer:
     """
     The `BaseTransformer` is an abstract class to promote
     transformers extensibility and factory use
@@ -24,6 +24,8 @@ class BaseTransformer(Validator):
             entry (Any): a log entry to transform
         """
 
+class BaseTransformerValidator(BaseTransformer, Validator):
+    ...
 
 class Transformer:
     """
@@ -31,7 +33,7 @@ class Transformer:
     messages
     """
 
-    def __init__(self, transformers: List[BaseTransformer]):
+    def __init__(self, transformers: List[BaseTransformerValidator]):
         self._transformers = transformers
 
     def get_transformer(self, data: str) -> BaseTransformer:

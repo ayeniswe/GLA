@@ -8,11 +8,11 @@ from typing import Match, Optional, Union
 
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
-from gla.plugins.transformer.transformer import BaseTransformer
+from gla.plugins.transformer.transformer import BaseTransformerValidator
 from gla.utilities.strategy import RegexStrategy
 
 
-class CefTransformer(BaseTransformer, Resolver):
+class CefTransformer(BaseTransformerValidator, Resolver):
     """
     The `CefTransformer` class is responsible for handling transformation
     of common event  log messages
@@ -73,12 +73,13 @@ class CefTransformer(BaseTransformer, Resolver):
             if lvl is not None:
                 lvl_str = self._to_lvl(int(lvl))
 
-        return Log(
-            source=f"{res.get('ven')} {res.get('prod')} {res.get('ver')}",
-            module=f"Signature ID: {res.get('sig')}",
-            level=lvl_str,
-            message=msg,
-        )
+            return Log(
+                source=f"{res.get('ven')} {res.get('prod')} {res.get('ver')}",
+                module=f"Signature ID: {res.get('sig')}",
+                level=lvl_str,
+                message=msg,
+            )
+        return None
 
     def validate(self, data: str) -> bool:
         if data == "cef":

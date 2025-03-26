@@ -11,11 +11,11 @@ import dateparser
 from gla.constants import LANGUAGES_SUPPORTED
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
-from gla.plugins.transformer.transformer import BaseTransformer
+from gla.plugins.transformer.transformer import BaseTransformerValidator
 from gla.utilities.strategy import RegexStrategy
 
 
-class Log4jTransformer(BaseTransformer, Resolver):
+class Log4jTransformer(BaseTransformerValidator, Resolver):
     """
     The `Log4jTransformer` class is responsible for handling transformation
     of `log4j` log messages
