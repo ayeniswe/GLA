@@ -8,11 +8,10 @@ from json import JSONDecodeError, loads
 from typing import Optional, Tuple
 
 import dateparser
-from typeguard import typechecked
-
 from models.log import Log
 from plugins.resolver.resolver import BestResolver
 from plugins.transformer.transformer import BaseTransformer
+from typeguard import typechecked
 from utilities.strategy import ScoringStrategy
 
 

@@ -7,11 +7,10 @@ import re
 from datetime import datetime
 from typing import Match, Optional
 
-from typeguard import typechecked
-
 from models.log import Log
 from plugins.resolver.resolver import Resolver
 from plugins.transformer.transformer import BaseTransformer
+from typeguard import typechecked
 from utilities.strategy import RegexStrategy
 
 

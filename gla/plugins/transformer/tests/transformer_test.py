@@ -1,7 +1,5 @@
 import os
 
-from pytest import raises
-
 from plugins.transformer import Transformer
 from plugins.transformer.cef_transformer import CefTransformer
 from plugins.transformer.json_transformer import JsonTransformer
@@ -10,6 +8,7 @@ from plugins.transformer.ncsa_transformer import NcsaTransformer
 from plugins.transformer.sip_transformer import SipTransformer
 from plugins.transformer.syslog_transformer import SyslogTransformer
 from plugins.transformer.xml_transformer import XMLTransformer
+from pytest import raises
 
 
 def test_transformer_factory_by_path():

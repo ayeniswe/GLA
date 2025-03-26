@@ -7,11 +7,10 @@ from typing import Optional, Union
 from xml.etree.ElementTree import Element
 
 import dateparser
-from typeguard import typechecked
-
 from models.log import Log
 from plugins.resolver.resolver import Resolver
 from plugins.transformer.transformer import BaseTransformer
+from typeguard import typechecked
 from utilities.strategy import Strategy
 
 
