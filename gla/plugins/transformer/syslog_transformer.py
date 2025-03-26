@@ -11,11 +11,9 @@ import dateparser
 from models.log import Log
 from plugins.resolver.resolver import Resolver
 from plugins.transformer.transformer import BaseTransformer
-from typeguard import typechecked
 from utilities.strategy import RegexStrategy
 
 
-@typechecked
 class SyslogTransformer(BaseTransformer, Resolver):
     """
     The `SyslogTransformer` class is responsible for handling transformation

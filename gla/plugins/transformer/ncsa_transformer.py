@@ -10,11 +10,9 @@ from typing import Match, Optional
 from models.log import Log
 from plugins.resolver.resolver import Resolver
 from plugins.transformer.transformer import BaseTransformer
-from typeguard import typechecked
 from utilities.strategy import RegexStrategy
 
 
-@typechecked
 class NcsaTransformer(BaseTransformer, Resolver):
     """
     The `NcsaTransformer` class is responsible for handling transformation

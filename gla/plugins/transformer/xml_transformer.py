@@ -10,11 +10,9 @@ import dateparser
 from models.log import Log
 from plugins.resolver.resolver import Resolver
 from plugins.transformer.transformer import BaseTransformer
-from typeguard import typechecked
 from utilities.strategy import Strategy
 
 
-@typechecked
 class JLU(Strategy):
     """
     The `JLU` class is responsible for handling transformations
@@ -39,7 +37,6 @@ class JLU(Strategy):
         return None
 
 
-@typechecked
 class WinEvent(Strategy):
     """
     The `WinEvent` class is responsible for handling transformations
@@ -100,7 +97,6 @@ class WinEvent(Strategy):
         return element.get(attr) if element is not None else None
 
 
-@typechecked
 class XMLTransformer(BaseTransformer, Resolver):
     """
     The `XMLTransformer` class is responsible for handling transformation

@@ -11,11 +11,9 @@ import dateparser
 from models.log import Log
 from plugins.resolver.resolver import BestResolver
 from plugins.transformer.transformer import BaseTransformer
-from typeguard import typechecked
 from utilities.strategy import ScoringStrategy
 
 
-@typechecked
 class JsonStrategy(ScoringStrategy):
     """
     The `JsonStrategy` class is responsible for handling strategies based on json key mappings
@@ -31,7 +29,6 @@ class JsonStrategy(ScoringStrategy):
         )
 
 
-@typechecked
 class JsonTransformer(BaseTransformer, BestResolver):
     """
     The `JsonTransformer` class is responsible for handling transformation

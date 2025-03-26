@@ -9,11 +9,9 @@ from typing import Match, Optional, Union
 from models.log import Log
 from plugins.resolver.resolver import Resolver
 from plugins.transformer.transformer import BaseTransformer
-from typeguard import typechecked
 from utilities.strategy import RegexStrategy
 
 
-@typechecked
 class CefTransformer(BaseTransformer, Resolver):
     """
     The `CefTransformer` class is responsible for handling transformation

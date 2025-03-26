@@ -8,10 +8,8 @@ from typing import Any, List, Optional
 
 from models.log import Log
 from plugins.validator.validator import Validator
-from typeguard import typechecked
 
 
-@typechecked
 class BaseTransformer(Validator):
     """
     The `BaseTransformer` is an abstract class to promote
@@ -27,7 +25,6 @@ class BaseTransformer(Validator):
         """
 
 
-@typechecked
 class Transformer:
     """
     The `Transformer` class is responsible for handling transformation logic of log

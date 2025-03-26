@@ -5,10 +5,7 @@ various strategies, including matching and scoring.
 from abc import ABC, abstractmethod
 from typing import Any, Match, Optional, Pattern, Tuple
 
-from typeguard import typechecked
 
-
-@typechecked
 class Strategy(ABC):
     """
     The `Strategy` is an abstract class to promote
@@ -21,7 +18,6 @@ class Strategy(ABC):
         ...
 
 
-@typechecked
 class ScoringStrategy(ABC):
     """
     The `ScoringStrategy` is an abstract class to promote
@@ -34,7 +30,6 @@ class ScoringStrategy(ABC):
         ...
 
 
-@typechecked
 class RegexStrategy(Strategy):
     """
     The `RegexStrategy` class is responsible for handling strategies

@@ -5,11 +5,9 @@ The `resolver` module provides classes for resolving log entries based on a list
 import sys
 from typing import Any, List, Optional
 
-from typeguard import typechecked
 from utilities.strategy import ScoringStrategy, Strategy
 
 
-@typechecked
 class Resolver:
     """
     The `Resolver` is an extension class to extend
