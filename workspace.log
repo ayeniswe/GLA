@@ -1,0 +1,260 @@
+[Timestamp]: 2025-01-22 22:19:43 [Warn]: JSIL CA certificate missing....performing a fresh install
+
+[Timestamp]: 2025-01-22 22:19:44 [Info]: Adding trusted root certificate authority to thin clients...
+
+[Timestamp]: 2025-01-22 22:19:46 [Error]: failed to login
+
+[Timestamp]: 2025-01-22 22:19:46 [Error]: failed to scp
+
+[Timestamp]: 2025-01-22 22:19:46 [Error]: tc1 Failed
+
+[Timestamp]: 2025-01-22 22:20:23 [Info]: tc2 Done
+
+[Timestamp]: 2025-01-22 22:20:23 [Info]: Adding trusted root certificate authority to vms...
+
+[Timestamp]: 2025-01-22 22:21:27 [Info]: mission2 Done
+
+[Timestamp]: 2025-01-22 22:21:31 [Error]: failed to login
+
+[Timestamp]: 2025-01-22 22:21:31 [Error]: failed to scp
+
+[Timestamp]: 2025-01-22 22:21:31 [Error]: mission1 Failed
+
+[Timestamp]: 2025-01-22 22:21:36 [Error]: failed to login
+
+[Timestamp]: 2025-01-22 22:21:36 [Error]: failed to scp
+
+[Timestamp]: 2025-01-22 22:21:36 [Error]: database Failed
+
+[Timestamp]: 2025-01-22 22:22:16 [Info]: net-services Done
+
+[Timestamp]: 2025-01-22 22:23:00 [Info]: swdar Done
+
+[Timestamp]: 2025-01-22 22:23:03 [Error]: failed to login
+
+[Timestamp]: 2025-01-22 22:23:03 [Error]: failed to scp
+
+[Timestamp]: 2025-01-22 22:23:03 [Error]: vsm1 Failed
+
+[Timestamp]: 2025-01-22 22:23:42 [Info]: cs1 Done
+
+[Timestamp]: 2025-01-22 22:24:11 [Info]: spe Done
+
+[Timestamp]: 2025-01-22 22:24:46 [Info]: apm Done
+
+[Timestamp]: 2025-01-22 22:25:15 [Info]: amps Done
+
+[Timestamp]: 2025-01-22 22:25:18 [Error]: failed to login
+
+[Timestamp]: 2025-01-22 22:25:18 [Error]: failed to scp
+
+[Timestamp]: 2025-01-22 22:25:18 [Error]: vsm2 Failed
+
+[Timestamp]: 2025-01-22 22:26:02 [Info]: cs2 Done
+
+[Timestamp]: 2025-01-22 22:26:02 [Info]: Deploying SSL certificates to esxi(s)...
+
+[Timestamp]: 2025-01-22 22:26:24 [Info]: a10 Done
+
+[Timestamp]: 2025-01-22 22:26:42 [Info]: a9 Done
+
+[Timestamp]: 2025-01-22 22:26:57 [Info]: a12 Done
+
+[Timestamp]: 2025-01-22 22:27:17 [Info]: a11 Done
+
+[Timestamp]: 2025-01-22 22:27:33 [Info]: a6 Done
+
+[Timestamp]: 2025-01-22 22:27:49 [Info]: a3 Done
+
+[Timestamp]: 2025-01-22 22:28:06 [Info]: ms Done
+
+[Timestamp]: 2025-01-22 22:28:22 [Info]: a5 Done
+
+[Timestamp]: 2025-01-22 22:28:38 [Info]: a4 Done
+
+[Timestamp]: 2025-01-22 22:28:38 [Info]: Deploying SSL certificate to vcenter...
+
+[Timestamp]: 2025-01-22 22:29:05 [Error]: failed to mkdir
+
+[Timestamp]: 2025-01-22 22:29:23 [Error]: vcenter Failed
+
+[Timestamp]: 2025-01-22 22:29:23 [Info]: Reconnecting esxi(s)...
+
+[Timestamp]: 2025-01-22 22:29:39 [Error]: [91mSet-VMHost: [0m/opt/jsil/SSLCerts/scripts/reconnect_exsi.ps1:43
+[96mLine |
+[96m  43 | [0m     [96mSet-VMHost $esxi_ip -State Connected[0m
+[96m     | [91m     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[91m[96m     | [91m1/22/2025 10:29:38 PM Set-VMHost  The operation for the entity
+[96m     | [91m"10.20.0.43" failed with the following message: "Authenticity
+[96m     | [91mof the host's SSL certificate is not verified."
+[0m
+
+[Timestamp]: 2025-01-22 22:29:39 [Error]: a10 Failed
+
+[Timestamp]: 2025-01-22 22:29:55 [Error]: [91mSet-VMHost: [0m/opt/jsil/SSLCerts/scripts/reconnect_exsi.ps1:43
+[96mLine |
+[96m  43 | [0m     [96mSet-VMHost $esxi_ip -State Connected[0m
+[96m     | [91m     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[91m[96m     | [91m1/22/2025 10:29:54 PM Set-VMHost  The operation for the entity
+[96m     | [91m"10.20.0.42" failed with the following message: "Authenticity
+[96m     | [91mof the host's SSL certificate is not verified."
+[0m
+
+[Timestamp]: 2025-01-22 22:29:55 [Error]: a9 Failed
+
+[Timestamp]: 2025-01-22 22:30:13 [Error]: [91mSet-VMHost: [0m/opt/jsil/SSLCerts/scripts/reconnect_exsi.ps1:43
+[96mLine |
+[96m  43 | [0m     [96mSet-VMHost $esxi_ip -State Connected[0m
+[96m     | [91m     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[91m[96m     | [91m1/22/2025 10:30:12 PM Set-VMHost  The operation for the entity
+[96m     | [91m"10.20.0.45" failed with the following message: "Authenticity
+[96m     | [91mof the host's SSL certificate is not verified."
+[0m
+
+[Timestamp]: 2025-01-22 22:30:13 [Error]: a12 Failed
+
+[Timestamp]: 2025-01-22 22:30:29 [Error]: [91mSet-VMHost: [0m/opt/jsil/SSLCerts/scripts/reconnect_exsi.ps1:43
+[96mLine |
+[96m  43 | [0m     [96mSet-VMHost $esxi_ip -State Connected[0m
+[96m     | [91m     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[91m[96m     | [91m1/22/2025 10:30:28 PM Set-VMHost  The operation for the entity
+[96m     | [91m"10.20.0.44" failed with the following message: "Authenticity
+[96m     | [91mof the host's SSL certificate is not verified."
+[0m
+
+[Timestamp]: 2025-01-22 22:30:29 [Error]: a11 Failed
+
+[Timestamp]: 2025-01-22 22:30:47 [Error]: [91mSet-VMHost: [0m/opt/jsil/SSLCerts/scripts/reconnect_exsi.ps1:43
+[96mLine |
+[96m  43 | [0m     [96mSet-VMHost $esxi_ip -State Connected[0m
+[96m     | [91m     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[91m[96m     | [91m1/22/2025 10:30:45 PM Set-VMHost  The operation for the entity
+[96m     | [91m"10.20.0.41" failed with the following message: "Authenticity
+[96m     | [91mof the host's SSL certificate is not verified."
+[0m
+
+[Timestamp]: 2025-01-22 22:30:47 [Error]: a6 Failed
+
+[Timestamp]: 2025-01-22 22:31:04 [Error]: [91mSet-VMHost: [0m/opt/jsil/SSLCerts/scripts/reconnect_exsi.ps1:43
+[96mLine |
+[96m  43 | [0m     [96mSet-VMHost $esxi_ip -State Connected[0m
+[96m     | [91m     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[91m[96m     | [91m1/22/2025 10:31:03 PM Set-VMHost  The operation for the entity
+[96m     | [91m"10.20.0.38" failed with the following message: "Authenticity
+[96m     | [91mof the host's SSL certificate is not verified."
+[0m
+
+[Timestamp]: 2025-01-22 22:31:04 [Error]: a3 Failed
+
+[Timestamp]: 2025-01-22 22:31:20 [Error]: [91mSet-VMHost: [0m/opt/jsil/SSLCerts/scripts/reconnect_exsi.ps1:43
+[96mLine |
+[96m  43 | [0m     [96mSet-VMHost $esxi_ip -State Connected[0m
+[96m     | [91m     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[91m[96m     | [91m1/22/2025 10:31:19 PM Set-VMHost  The operation for the entity
+[96m     | [91m"10.20.0.48" failed with the following message: "Authenticity
+[96m     | [91mof the host's SSL certificate is not verified."
+[0m
+
+[Timestamp]: 2025-01-22 22:31:20 [Error]: ms Failed
+
+[Timestamp]: 2025-01-22 22:31:37 [Error]: [91mSet-VMHost: [0m/opt/jsil/SSLCerts/scripts/reconnect_exsi.ps1:43
+[96mLine |
+[96m  43 | [0m     [96mSet-VMHost $esxi_ip -State Connected[0m
+[96m     | [91m     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[91m[96m     | [91m1/22/2025 10:31:36 PM Set-VMHost  The operation for the entity
+[96m     | [91m"10.20.0.40" failed with the following message: "Authenticity
+[96m     | [91mof the host's SSL certificate is not verified."
+[0m
+
+[Timestamp]: 2025-01-22 22:31:37 [Error]: a5 Failed
+
+[Timestamp]: 2025-01-22 22:31:56 [Error]: [91mSet-VMHost: [0m/opt/jsil/SSLCerts/scripts/reconnect_exsi.ps1:43
+[96mLine |
+[96m  43 | [0m     [96mSet-VMHost $esxi_ip -State Connected[0m
+[96m     | [91m     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[91m[96m     | [91m1/22/2025 10:31:55 PM Set-VMHost  The operation for the entity
+[96m     | [91m"10.20.0.39" failed with the following message: "Authenticity
+[96m     | [91mof the host's SSL certificate is not verified."
+[0m
+
+[Timestamp]: 2025-01-22 22:31:56 [Error]: a4 Failed
+
+[Timestamp]: 2025-01-22 22:34:28 [Info]: Adding trusted root certificate authority to thin clients...
+
+[Timestamp]: 2025-01-22 22:35:06 [Info]: tc1 Done
+
+[Timestamp]: 2025-01-22 22:35:06 [Warn]: tc2 Skipped
+
+[Timestamp]: 2025-01-22 22:35:06 [Info]: Adding trusted root certificate authority to vms...
+
+[Timestamp]: 2025-01-22 22:35:06 [Warn]: mission2 Skipped
+
+[Timestamp]: 2025-01-22 22:35:50 [Info]: mission1 Done
+
+[Timestamp]: 2025-01-22 22:35:54 [Error]: failed to login
+
+[Timestamp]: 2025-01-22 22:35:54 [Error]: failed to scp
+
+[Timestamp]: 2025-01-22 22:35:54 [Error]: database Failed
+
+[Timestamp]: 2025-01-22 22:35:54 [Warn]: net-services Skipped
+
+[Timestamp]: 2025-01-22 22:35:54 [Warn]: swdar Skipped
+
+[Timestamp]: 2025-01-22 22:36:36 [Info]: vsm1 Done
+
+[Timestamp]: 2025-01-22 22:36:36 [Warn]: cs1 Skipped
+
+[Timestamp]: 2025-01-22 22:36:36 [Warn]: spe Skipped
+
+[Timestamp]: 2025-01-22 22:36:36 [Warn]: apm Skipped
+
+[Timestamp]: 2025-01-22 22:36:36 [Warn]: amps Skipped
+
+[Timestamp]: 2025-01-22 22:37:18 [Info]: vsm2 Done
+
+[Timestamp]: 2025-01-22 22:37:18 [Warn]: cs2 Skipped
+
+[Timestamp]: 2025-01-22 22:37:18 [Info]: Deploying SSL certificates to esxi(s)...
+
+[Timestamp]: 2025-01-22 22:37:18 [Warn]: a10 Skipped
+
+[Timestamp]: 2025-01-22 22:37:18 [Warn]: a9 Skipped
+
+[Timestamp]: 2025-01-22 22:37:18 [Warn]: a12 Skipped
+
+[Timestamp]: 2025-01-22 22:37:18 [Warn]: a11 Skipped
+
+[Timestamp]: 2025-01-22 22:37:18 [Warn]: a6 Skipped
+
+[Timestamp]: 2025-01-22 22:37:18 [Warn]: a3 Skipped
+
+[Timestamp]: 2025-01-22 22:37:18 [Warn]: ms Skipped
+
+[Timestamp]: 2025-01-22 22:37:18 [Warn]: a5 Skipped
+
+[Timestamp]: 2025-01-22 22:37:18 [Warn]: a4 Skipped
+
+[Timestamp]: 2025-01-22 22:37:18 [Info]: Deploying SSL certificate to vcenter...
+
+[Timestamp]: 2025-01-22 22:38:16 [Info]: vcenter Done
+
+[Timestamp]: 2025-01-22 22:50:16 [Info]: Reconnecting esxi(s)...
+
+[Timestamp]: 2025-01-22 22:50:55 [Info]: a10 Done
+
+[Timestamp]: 2025-01-22 22:51:36 [Info]: a9 Done
+
+[Timestamp]: 2025-01-22 22:52:06 [Info]: a12 Done
+
+[Timestamp]: 2025-01-22 22:52:39 [Info]: a11 Done
+
+[Timestamp]: 2025-01-22 22:53:08 [Info]: a6 Done
+
+[Timestamp]: 2025-01-22 22:53:38 [Info]: a3 Done
+
+[Timestamp]: 2025-01-22 22:54:05 [Info]: ms Done
+
+[Timestamp]: 2025-01-22 22:54:25 [Info]: a5 Done
+
+[Timestamp]: 2025-01-22 22:54:55 [Info]: a4 Done

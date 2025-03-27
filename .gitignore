@@ -1,6 +1,18 @@
+# Caches
 __pycache__
 .pytest_cache
+.mypy_cache
+# Testing
 .coverage
 cov.xml
+# Working Testing Rapid
+workspace.log
+# Environment
 .venv
-.mypy_cache
+# Build
+target
+dist
+# Dynamic library
+*.so
+# Packaging
+*.egg-info
