@@ -4,7 +4,9 @@ The `transformer` module is an abstraction layer for converting a single log ite
 """
 
 from gla.plugins.transformer.transformer import Transformer
+from gla.plugins.transformer.custom_transformer import CustomTransformer
 
 __all__ = [
     "Transformer",
+    "CustomTransformer",
 ]

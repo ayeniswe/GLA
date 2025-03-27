@@ -8,9 +8,10 @@ from xml.etree.ElementTree import Element
 
 import dateparser
 
+from gla.constants import LANGUAGES_SUPPORTED
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
-from gla.plugins.transformer.transformer import BaseTransformer
+from gla.plugins.transformer.transformer import BaseTransformerValidator
 from gla.utilities.strategy import Strategy
 
 
@@ -98,7 +99,7 @@ class WinEvent(Strategy):
         return element.get(attr) if element is not None else None
 
 
-class XMLTransformer(BaseTransformer, Resolver):
+class XMLTransformer(BaseTransformerValidator, Resolver):
     """
     The `XMLTransformer` class is responsible for handling transformation
     of `xml` log messages
@@ -121,7 +122,7 @@ class XMLTransformer(BaseTransformer, Resolver):
             time = mapping.get("timestamp")
             timedate = None
             if time is not None:
-                timedate = dateparser.parse(time)
+                timedate = dateparser.parse(time, languages=LANGUAGES_SUPPORTED)
             return Log(
                 level=mapping.get("level"),
                 module=mapping.get("module"),

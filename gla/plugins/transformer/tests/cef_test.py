@@ -32,6 +32,10 @@ def test_cef_transformer():
             "expected": "MEDIUM [Network Monitor 1.5] Signature ID: 500 - High CPU Usage - "
             "Extensions: device=router1 cpu=95%",
         },
+        {
+            "input": "CEF:1|Network|Monitor1 cpu=95%",
+            "expected": None
+        },
     ]
 
     for case in test_cases:
