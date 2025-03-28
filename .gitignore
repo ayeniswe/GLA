@@ -9,3 +9,5 @@ cov.xml
 workspace.log
 # Environment
 .venv
+# Build
+target
