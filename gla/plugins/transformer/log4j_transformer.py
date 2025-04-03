@@ -12,6 +12,7 @@ from gla.constants import LANGUAGES_SUPPORTED
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
 from gla.plugins.transformer.transformer import BaseTransformerValidator
+from gla.typings.alias import FileDescriptorOrPath
 from gla.utilities.strategy import RegexStrategy
 
 
@@ -316,7 +317,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
             )
         return None
 
-    def validate(self, data: str) -> bool:
+    def validate(self, data: FileDescriptorOrPath) -> bool:
         if data == "log4j":
             return True
         try:

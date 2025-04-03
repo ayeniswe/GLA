@@ -13,6 +13,7 @@ from gla.constants import LANGUAGES_SUPPORTED
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import BestResolver
 from gla.plugins.transformer.transformer import BaseTransformerValidator
+from gla.typings.alias import FileDescriptorOrPath
 from gla.utilities.strategy import ScoringStrategy
 
 
@@ -100,7 +101,7 @@ class JsonTransformer(BaseTransformerValidator, BestResolver):
         except JSONDecodeError:
             return None
 
-    def validate(self, data: str) -> bool:
+    def validate(self, data: FileDescriptorOrPath) -> bool:
         if data == "json":
             return True
         try:

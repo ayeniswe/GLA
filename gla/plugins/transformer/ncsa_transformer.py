@@ -10,6 +10,7 @@ from typing import Match, Optional
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
 from gla.plugins.transformer.transformer import BaseTransformerValidator
+from gla.typings.alias import FileDescriptorOrPath
 from gla.utilities.strategy import RegexStrategy
 
 
@@ -88,7 +89,7 @@ class NcsaTransformer(BaseTransformerValidator, Resolver):
             )
         return None
 
-    def validate(self, data: str) -> bool:
+    def validate(self, data: FileDescriptorOrPath) -> bool:
         if data == "ncsa":
             return True
         try:

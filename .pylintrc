@@ -2,7 +2,7 @@
 
 # Files or directories matching the regex patterns are skipped. The regex
 # matches against base names, not paths.
-ignore-paths=.*tests
+ignore-paths=.*tests|setup.py
 
 # Pickle collected data for later comparisons.
 persistent=no

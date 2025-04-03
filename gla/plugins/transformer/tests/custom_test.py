@@ -1,4 +1,3 @@
-
 import dateparser
 from pytest import raises
 
@@ -35,27 +34,30 @@ def test_mismatched_entry_and_template():
     log_entry = "2024-05-09;WARNING"
 
     transformer = CustomTransformer(template, ";")
-    
-    with raises(ValueError, match="template \['time', 'lvl', 'msg'\] with delimiter ';' does not align with the log message: 2024-05-09;WARNING"):
+
+    with raises(
+        ValueError,
+        match="template \['time', 'lvl', 'msg'\] with delimiter ';' does not align with the log message: 2024-05-09;WARNING",
+    ):
         transformer.transform(log_entry)
 
 
 def test_extra_message_parts():
     template = ["time", "lvl", "msg"]
     log_entry = "2024-05-09;WARNING;this is a long message with extra words"
-    
+
     log_entry2 = "2024-05-09;this is a long message with extra words;WARNING"
     template2 = ["time", "msg", "lvl"]
-    
+
     log_entry3 = "this is a long message with extra words;2024-05-09;WARNING"
     template3 = ["msg", "time", "lvl"]
 
     transformer = CustomTransformer(template, ";")
     log = transformer.transform(log_entry)
-    
+
     transformer2 = CustomTransformer(template2, ";")
     log2 = transformer2.transform(log_entry2)
-    
+
     transformer3 = CustomTransformer(template3, ";")
     log3 = transformer3.transform(log_entry3)
 
@@ -70,7 +72,10 @@ def test_incorrect_delimiter():
 
     transformer = CustomTransformer(template, ",")
 
-    with raises(ValueError, match="template \['time', 'lvl', 'src', 'mod', 'msg'\] with delimiter ',' does not align with the log message: 2024-05-09;WARNING;dump.py;mod;hello world"):
+    with raises(
+        ValueError,
+        match="template \['time', 'lvl', 'src', 'mod', 'msg'\] with delimiter ',' does not align with the log message: 2024-05-09;WARNING;dump.py;mod;hello world",
+    ):
         transformer.transform(log_entry)
 
 
@@ -89,8 +94,11 @@ def test_empty_log_entry():
     log_entry = ""
 
     transformer = CustomTransformer(template, ";")
-    
-    with raises(ValueError, match="template \['time', 'lvl', 'msg'\] with delimiter ';' does not align with the log message: "):
+
+    with raises(
+        ValueError,
+        match="template \['time', 'lvl', 'msg'\] with delimiter ';' does not align with the log message: ",
+    ):
         transformer.transform(log_entry)
 
 

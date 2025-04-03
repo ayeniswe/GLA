@@ -8,6 +8,7 @@ from typing import Any, List, Optional
 
 from gla.models.log import Log
 from gla.plugins.validator.validator import Validator
+from gla.typings.alias import FileDescriptorOrPath
 
 
 class BaseTransformer:
@@ -24,8 +25,10 @@ class BaseTransformer:
             entry (Any): a log entry to transform
         """
 
+
 class BaseTransformerValidator(BaseTransformer, Validator):
     ...
+
 
 class Transformer:
     """
@@ -36,11 +39,12 @@ class Transformer:
     def __init__(self, transformers: List[BaseTransformerValidator]):
         self._transformers = transformers
 
-    def get_transformer(self, data: str) -> BaseTransformer:
+    def get_transformer(self, data: FileDescriptorOrPath) -> BaseTransformer:
         """Get a transformer to process log messages
 
         Args:
-            data (str): input data to validate against
+            data (FileDescriptorOrPath): input data to validate against rather a file
+            or simple string
 
         Raises:
             ValueError: if a transformer cannot be determined

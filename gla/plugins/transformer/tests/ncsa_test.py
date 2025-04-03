@@ -49,7 +49,7 @@ def test_ncsa_transformation():
         {
             "input": "[2001:db8::2] - - [10/Mar/2024:12:34:56 +0000] "
             '"DELETE /accounHTTP/1.1" 0 "curl/7.68.0" "-"',
-            "expected": None
+            "expected": None,
         },
     ]
 
