@@ -4,7 +4,7 @@ which is tasked with converting Log4j log messages into structured `Log` objects
 """
 
 import re
-from typing import Match, Optional
+from typing import Any, Dict, Match, Optional
 
 import dateparser
 
@@ -317,11 +317,12 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
             )
         return None
 
-    def validate(self, data: FileDescriptorOrPath) -> bool:
-        if data == "log4j":
+    def validate(self, data: Dict[str, Any]) -> bool:
+        if data["data"] == "log4j":
             return True
         try:
-            with open(data, "r", encoding="utf-8") as file:
+            path: FileDescriptorOrPath = data["data"]
+            with open(path, "r", encoding=data["encoding"]) as file:
                 return self.resolve(file.readline().strip()) is not None
         except (FileNotFoundError, UnicodeDecodeError):
             return False

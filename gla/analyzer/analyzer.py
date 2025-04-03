@@ -5,6 +5,8 @@ The `analyzer` module is responsible for analyzing log messages based on predefi
 
 from typing import List
 
+import cchardet
+
 from gla.analyzer.search.search import StrMatch
 from gla.plugins.transformer.cef_transformer import CefTransformer
 from gla.plugins.transformer.json_transformer import JsonTransformer
@@ -15,6 +17,7 @@ from gla.plugins.transformer.syslog_transformer import SyslogTransformer
 from gla.plugins.transformer.transformer import Transformer
 from gla.testcase.testcase import TestCase
 from gla.typings.alias import FileDescriptorOrPath
+from gla.utilities.iterator import LogProcessor
 
 
 class Analyzer:
@@ -25,39 +28,52 @@ class Analyzer:
     This class provides the ability to transform logs using different transformers
     (e.g., Json, Syslog, Log4j, etc.) and process each line of the log file to check for matches
     based on user-defined patterns.
+
+    Args:
+        `testcase` (TestCase): The test case containing the patterns and expected entries
+        to match against the log.
+        `file` (FileDescriptorOrPath): The log file to be processed (can be a file path or
+        file-like object).
+        `encoding` (str, optional): The encoding to use when reading the log file.
+        Defaults to "utf-8".
+        `custom_transformer` (BaseTransformer, optional): A user-defined transformer
+        for processing the log data.
+        If not provided, a default transformer will be selected based on the file information.
     """
 
     def __init__(
         self,
         testcase: TestCase,
-        file: FileDescriptorOrPath,
-        encoding: str = "utf-8",
+        path: FileDescriptorOrPath,
+        encoding: str = None,
         custom_transformer=None,
     ):
         self.testcase = testcase
-        self.file = file
-        self.encoding = encoding
+        self.file = path
+        self.encoding = encoding if encoding else self._detect_encoding(self.file)
         # Always use user defined template first
-        self.current_transformer = custom_transformer
-        # Support different logging styles
-        self.transformers = Transformer(
-            [
-                JsonTransformer(),
-                SyslogTransformer(),
-                Log4jTransformer(),
-                NcsaTransformer(),
-                SipTransformer(),
-                CefTransformer(),
-                # XMLTransformer(), NOT SUPPORTED YET
-            ]
+        self.current_transformer = (
+            custom_transformer
+            if custom_transformer
+            else Transformer(
+                [
+                    JsonTransformer(),
+                    SyslogTransformer(),
+                    Log4jTransformer(),
+                    NcsaTransformer(),
+                    SipTransformer(),
+                    CefTransformer(),
+                    # XMLTransformer(), # NOT SUPPORTED YET
+                ]
+            ).get_transformer(self.file, self.encoding)
         )
 
-    def _setup_transformer(self):
-        """
-        Sets up the transformer for processing the current file, if not already set.
-        """
-        if not self.current_transformer:
-            self.current_transformer = self.transformers.get_transformer(self.file)
+    def _detect_encoding(self, filename: FileDescriptorOrPath) -> str:
+        """Detect encoding and reject confidence levels below 99%"""
+        detection = cchardet.detect(open(filename, "rb").read(4))
+        if detection["confidence"] > 0.99:
+            return detection["encoding"]
+        raise UnicodeError("failed to auto-detect encoding. Please specify encoding to use")
 
     def _process_line(self, line: str, matcher: StrMatch):
         """
@@ -94,22 +110,11 @@ class Analyzer:
         return 0
 
     def run(self):
-        self._setup_transformer()
         matcher = StrMatch(self.testcase.patterns)
-
-        with open(self.file, "r", encoding=self.encoding) as f:
-            buffer = ""
-
+        for entry in LogProcessor(self.file, self.encoding):
             # Once all entries are found the search can end early
-            line = f.readline()
-            while line and len(self.testcase.entries) > 0:
-                # Some log message could expand multiple lines
-                if line is not "\n":
-                    buffer += line
-                else:
-                    transformed_line = self.current_transformer.transform(buffer)
-                    if self._process_line(transformed_line.message, matcher) is None:
-                        break
-                    buffer = ""
+            if len(self.testcase.entries) == 0:
+                break
 
-                line = f.readline()
+            if self._process_line(entry, matcher) is None:
+                break

@@ -4,11 +4,12 @@ which is responsible for transforming common event log (CEF) messages into struc
 `Log` objects.
 """
 import re
-from typing import Match, Optional, Union
+from typing import Any, Dict, Match, Optional, Union
 
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
 from gla.plugins.transformer.transformer import BaseTransformerValidator
+from gla.typings.alias import FileDescriptorOrPath
 from gla.utilities.strategy import RegexStrategy
 
 
@@ -81,11 +82,12 @@ class CefTransformer(BaseTransformerValidator, Resolver):
             )
         return None
 
-    def validate(self, data: str) -> bool:
-        if data == "cef":
+    def validate(self, data: Dict[str, Any]) -> bool:
+        if data["data"] == "cef":
             return True
         try:
-            with open(data, "r", encoding="utf-8") as file:
+            path: FileDescriptorOrPath = data["data"]
+            with open(path, "r", encoding=data["encoding"]) as file:
                 return self.resolve(file.readline().strip()) is not None
         except (FileNotFoundError, UnicodeDecodeError):
             return False

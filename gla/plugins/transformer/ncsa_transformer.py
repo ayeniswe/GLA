@@ -5,7 +5,7 @@ Log Format (CLF) and the standard NCSA CLF
 """
 import re
 from datetime import datetime
-from typing import Match, Optional
+from typing import Any, Dict, Match, Optional
 
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
@@ -89,11 +89,12 @@ class NcsaTransformer(BaseTransformerValidator, Resolver):
             )
         return None
 
-    def validate(self, data: FileDescriptorOrPath) -> bool:
-        if data == "ncsa":
+    def validate(self, data: Dict[str, Any]) -> bool:
+        if data["data"] == "ncsa":
             return True
         try:
-            with open(data, "r", encoding="utf-8") as file:
+            path: FileDescriptorOrPath = data["data"]
+            with open(path, "r", encoding=data["encoding"]) as file:
                 return self.resolve(file.readline().strip()) is not None
         except (FileNotFoundError, UnicodeDecodeError):
             return False

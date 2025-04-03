@@ -94,8 +94,8 @@ class CustomTransformer(BaseTransformer):
         pieces = entry.split(self.delim)
         if len(self.template) > len(pieces):
             raise ValueError(
-                f"template {self.template} with delimiter '{self.delim}' does not \
-                align with the log message: {entry}"
+                f"template {self.template} with delimiter '{self.delim}' does not "
+                f"align with the log message: {entry}"
             )
 
         msg, lvl, time, mod, src = [], [], [], [], []

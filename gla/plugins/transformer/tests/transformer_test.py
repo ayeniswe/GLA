@@ -25,24 +25,34 @@ def test_transformer_factory_by_path():
         ]
     )
     result = trans.get_transformer(
-        os.path.join(os.path.dirname(__file__), "logs", "test-log4j.log")
+        os.path.join(os.path.dirname(__file__), "logs", "test-log4j.log"), encoding="utf-8"
     )
     assert isinstance(result, Log4jTransformer), "Should resolve as log4j transformer"
     result = trans.get_transformer(
-        os.path.join(os.path.dirname(__file__), "logs", "test-syslog.log")
+        os.path.join(os.path.dirname(__file__), "logs", "test-syslog.log"), encoding="utf-8"
     )
     assert isinstance(result, SyslogTransformer), "Should resolve as syslog transformer"
-    result = trans.get_transformer(os.path.join(os.path.dirname(__file__), "logs", "test-sip.log"))
+    result = trans.get_transformer(
+        os.path.join(os.path.dirname(__file__), "logs", "test-sip.log"), encoding="utf-8"
+    )
     assert isinstance(result, SipTransformer), "Should resolve as sip transformer"
-    result = trans.get_transformer(os.path.join(os.path.dirname(__file__), "logs", "test-ncsa.log"))
+    result = trans.get_transformer(
+        os.path.join(os.path.dirname(__file__), "logs", "test-ncsa.log"), encoding="utf-8"
+    )
     assert isinstance(result, NcsaTransformer), "Should resolve as ncsa transformer"
-    result = trans.get_transformer(os.path.join(os.path.dirname(__file__), "logs", "test-cef.log"))
+    result = trans.get_transformer(
+        os.path.join(os.path.dirname(__file__), "logs", "test-cef.log"), encoding="utf-8"
+    )
     assert isinstance(result, CefTransformer), "Should resolve as cef transformer"
     # Hard to confidently resolve XML for Window events as of now
     with raises(ValueError, match="transformer could not be determined"):
-        trans.get_transformer(os.path.join(os.path.dirname(__file__), "logs", "test.xml"))
+        trans.get_transformer(
+            os.path.join(os.path.dirname(__file__), "logs", "test.xml"), encoding="utf-16"
+        )
     with raises(ValueError, match="transformer could not be determined"):
-        trans.get_transformer(os.path.join(os.path.dirname(__file__), "logs", "test-jlu.log"))
+        trans.get_transformer(
+            os.path.join(os.path.dirname(__file__), "logs", "test-jlu.log"), encoding="utf-8"
+        )
 
 
 def test_transformer_factory_undetermined():

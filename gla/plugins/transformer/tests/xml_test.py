@@ -23,10 +23,8 @@ def test_xml():
             line = f.readline()
     buffer = ""
 
-    for event, elem in iterparse(
-        os.path.join(os.path.dirname(__file__), "logs", "test-jlu.log"),
-        events=["end"],
-    ):
+    for event, elem in iterparse(os.path.join(os.path.dirname(__file__), "logs", "test-jlu.log")):
+
         res = xml.transform(elem)
         if res:
             assert res.message != ""

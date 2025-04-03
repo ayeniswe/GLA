@@ -5,7 +5,7 @@ schema mappings.
 """
 
 from json import JSONDecodeError, loads
-from typing import Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 import dateparser
 
@@ -101,11 +101,12 @@ class JsonTransformer(BaseTransformerValidator, BestResolver):
         except JSONDecodeError:
             return None
 
-    def validate(self, data: FileDescriptorOrPath) -> bool:
-        if data == "json":
+    def validate(self, data: Dict[str, Any]) -> bool:
+        if data["data"] == "json":
             return True
         try:
-            with open(data, "r", encoding="utf-8") as file:
+            path: FileDescriptorOrPath = data["data"]
+            with open(path, "r", encoding=data["encoding"]) as file:
                 try:
                     return loads(file.readline().strip()) is not None
                 except JSONDecodeError:

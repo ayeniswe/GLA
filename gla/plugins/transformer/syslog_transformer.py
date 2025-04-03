@@ -5,7 +5,7 @@ It supports parsing both the older BFG RFC 3164 format and the more modern
 IETF RFC 5424 format.
 """
 import re
-from typing import Match, Optional, Union
+from typing import Any, Dict, Match, Optional, Union
 
 import dateparser
 
@@ -101,11 +101,12 @@ class SyslogTransformer(BaseTransformerValidator, Resolver):
             return "DEBUG"
         return None
 
-    def validate(self, data: FileDescriptorOrPath) -> bool:
-        if data == "sys":
+    def validate(self, data: Dict[str, Any]) -> bool:
+        if data["data"] == "sys":
             return True
         try:
-            with open(data, "r", encoding="utf-8") as file:
+            path: FileDescriptorOrPath = data["data"]
+            with open(path, "r", encoding=data["encoding"]) as file:
                 return self.resolve(file.readline().strip()) is not None
         except (FileNotFoundError, UnicodeDecodeError):
             return False

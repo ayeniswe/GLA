@@ -39,17 +39,18 @@ class Transformer:
     def __init__(self, transformers: List[BaseTransformerValidator]):
         self._transformers = transformers
 
-    def get_transformer(self, data: FileDescriptorOrPath) -> BaseTransformer:
+    def get_transformer(self, data: FileDescriptorOrPath, encoding: str = None) -> BaseTransformer:
         """Get a transformer to process log messages
 
         Args:
             data (FileDescriptorOrPath): input data to validate against rather a file
             or simple string
+            encoding (str): The character encoding of the input data (e.g., 'utf-8', 'ascii', etc.).
 
         Raises:
             ValueError: if a transformer cannot be determined
         """
         for transformer in self._transformers:
-            if transformer.validate(data):
+            if transformer.validate({"data": data, "encoding": encoding}):
                 return transformer
         raise ValueError("transformer could not be determined")

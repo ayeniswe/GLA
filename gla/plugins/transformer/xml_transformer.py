@@ -3,7 +3,7 @@ The `xml_transformer` module is responsible for transforming XML-based log
 messages into structured `Log` objects. It supports various XML formats,
 including `Java Logging Util` (JLU) and `Windows Event Logs`
 """
-from typing import Optional, Union
+from typing import Any, Dict, Optional, Union
 from xml.etree.ElementTree import Element
 
 import dateparser
@@ -132,7 +132,7 @@ class XMLTransformer(BaseTransformerValidator, Resolver):
             )
         return None
 
-    def validate(self, data: str) -> bool:
-        if data == "xml":
+    def validate(self, data: Dict[str, Any]) -> bool:
+        if data["data"] == "xml":
             return True
         return False
