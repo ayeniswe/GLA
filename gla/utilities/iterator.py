@@ -4,13 +4,14 @@ rather structured or unstructured
 """
 
 from collections.abc import Iterator
+from xml.etree.ElementTree import iterparse
 
 from gla.typings.alias import FileDescriptorOrPath
 
 
-class LogProcessor(Iterator):
+class UnstructuredLogProcessor(Iterator):
     """
-    The `LogProcessor` iterator class that processes log files line by line, with the
+    The `UnstructuredLogProcessor` iterator class that processes log files line by line, with the
     ability to handle multi-line log entries.
     """
 
@@ -40,3 +41,15 @@ class LogProcessor(Iterator):
                 break
 
         return buffer
+
+
+class XMLStructure(Iterator):
+    def __init__(self, path: FileDescriptorOrPath):
+        self.file = path
+
+    def __iter__(self):
+        self.reader = iterparse(self.file)
+        return self
+
+    def __next__(self):
+        return self.reader.__next__()[1]
