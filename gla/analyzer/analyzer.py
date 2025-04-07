@@ -7,6 +7,7 @@ from typing import List
 
 import cchardet
 
+from gla.analyzer.iterator import Breaker, Unstructured, XMLStructure
 from gla.analyzer.search.search import StrMatch
 from gla.plugins.transformer.cef_transformer import CefTransformer
 from gla.plugins.transformer.json_transformer import JsonTransformer
@@ -14,11 +15,11 @@ from gla.plugins.transformer.log4j_transformer import Log4jTransformer
 from gla.plugins.transformer.ncsa_transformer import NcsaTransformer
 from gla.plugins.transformer.sip_transformer import SipTransformer
 from gla.plugins.transformer.syslog_transformer import SyslogTransformer
-from gla.plugins.transformer.transformer import Transformer
+from gla.plugins.transformer.transformer import BaseTransformer, Transformer
+from gla.plugins.transformer.xml_transformer import XMLTransformer
+from gla.plugins.transformer.xmlfragment_transformer import XMLFragmentTransformer
 from gla.testcase.testcase import TestCase
 from gla.typings.alias import FileDescriptorOrPath
-from gla.utilities.iterator import LogProcessor
-
 
 class Analyzer:
     """
@@ -46,7 +47,7 @@ class Analyzer:
         testcase: TestCase,
         path: FileDescriptorOrPath,
         encoding: str = None,
-        custom_transformer=None,
+        custom_transformer: BaseTransformer = None,
     ):
         self.testcase = testcase
         self.file = path
@@ -57,13 +58,14 @@ class Analyzer:
             if custom_transformer
             else Transformer(
                 [
-                    JsonTransformer(),
+                    # JsonTransformer(),
                     SyslogTransformer(),
                     Log4jTransformer(),
-                    NcsaTransformer(),
-                    SipTransformer(),
-                    CefTransformer(),
+                    # NcsaTransformer(),
+                    # SipTransformer(),
+                    # CefTransformer(),
                     # XMLTransformer(), # NOT SUPPORTED YET
+                    # XMLFragmentTransformer()
                 ]
             ).get_transformer(self.file, self.encoding)
         )
@@ -110,11 +112,23 @@ class Analyzer:
         return 0
 
     def run(self):
-        matcher = StrMatch(self.testcase.patterns)
-        for entry in LogProcessor(self.file, self.encoding):
-            # Once all entries are found the search can end early
-            if len(self.testcase.entries) == 0:
-                break
+        # matcher = StrMatch(self.testcase.patterns)
+        transformer_type = type(self.current_transformer)
+        iterator_cls = self.iterator.get(transformer_type, Unstructured)
 
-            if self._process_line(entry, matcher) is None:
-                break
+        #  Some log processing may be predefined with a set structure
+        if issubclass(iterator_cls, Unstructured) and isinstance(self.current_transformer, Breaker):
+            iterator = iterator_cls(self.file, self.encoding, self.current_transformer.breaker)
+        else:
+            iterator = iterator_cls()
+
+        for line in iterator:
+            print(self.current_transformer.transform(line))
+
+        # for entry in LogProcessor(self.file, self.encoding):
+        #     # Once all entries are found the search can end early
+        #     if len(self.testcase.entries) == 0:
+        #         break
+
+        #     if self._process_line(entry, matcher) is None:
+        #         break

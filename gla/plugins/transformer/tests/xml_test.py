@@ -3,10 +3,11 @@ import xml.etree.ElementTree as ET
 from xml.etree.ElementTree import iterparse
 
 from gla.plugins.transformer.xml_transformer import XMLTransformer
+from gla.plugins.transformer.xmlfragment_transformer import XMLFragmentTransformer
 
 
 def test_xml():
-    xml = XMLTransformer()
+    xmlfrag = XMLFragmentTransformer()
 
     buffer = ""
     with open(
@@ -16,13 +17,15 @@ def test_xml():
         while line:
             buffer += line
             if line.strip("\n") == "</Event>":
-                res = xml.transform(ET.fromstring(buffer))
+                res = xmlfrag.transform(ET.fromstring(buffer))
                 if res:
                     assert res.message != ""
                 buffer = ""
             line = f.readline()
     buffer = ""
 
+    xml = XMLTransformer()
+    
     for event, elem in iterparse(os.path.join(os.path.dirname(__file__), "logs", "test-jlu.log")):
 
         res = xml.transform(elem)

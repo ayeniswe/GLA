@@ -12,12 +12,12 @@ import dateparser
 from gla.constants import LANGUAGES_SUPPORTED
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import BestResolver
-from gla.plugins.transformer.transformer import BaseTransformerValidator
+from gla.plugins.transformer.transformer import BaseTransformerValidator, Breaker
 from gla.typings.alias import FileDescriptorOrPath
 from gla.utilities.strategy import ScoringStrategy
 
 
-class JsonStrategy(ScoringStrategy):
+class JsonStrategy(ScoringStrategy, Breaker):
     """
     The `JsonStrategy` class is responsible for handling strategies based on json key mappings
     """

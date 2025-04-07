@@ -8,15 +8,15 @@ from typing import Any, Dict, Match, Optional
 
 import dateparser
 
+from gla.analyzer.iterator import Breaker, UnstructuredBreakerMixIn
 from gla.constants import LANGUAGES_SUPPORTED
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
-from gla.plugins.transformer.transformer import BaseTransformerValidator
+from gla.plugins.transformer.transformer import BaseTransformerValidator, RegexBreakerStrategy
 from gla.typings.alias import FileDescriptorOrPath
-from gla.utilities.strategy import RegexStrategy
 
 
-class Log4jTransformer(BaseTransformerValidator, Resolver):
+class Log4jTransformer(BaseTransformerValidator, Resolver, UnstructuredBreakerMixIn):
     """
     The `Log4jTransformer` class is responsible for handling transformation
     of `log4j` log messages
@@ -30,7 +30,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
         """
         super().__init__(
             [
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<time>\d{4}-\d{2}-\d{2})\s+"
                         r"(?:\[(?P<thread>[^\s]+)\]\s+)*"
@@ -39,7 +39,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"(?P<msg>.+)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<time>\d{2}-\d{4}-\d{2})\s+"
                         r"(?:\[(?P<thread>[^\s]+)\]\s+)*"
@@ -48,7 +48,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"(?P<msg>.+)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
                         r"(?:\[(?P<thread>[^\s]+)\]\s+)*"
@@ -57,7 +57,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"(?P<msg>.+)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
@@ -66,7 +66,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"(?P<msg>.+)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
@@ -75,7 +75,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"\[(?P<thread>[^\s]+)\]"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
@@ -84,7 +84,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"-\s+(?P<msg>.+)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
                         r"(?P<mod>[\w.]+)\s+"
@@ -93,7 +93,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"\[(?P<thread>[^\s]+)\]"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
                         r"(?P<mod>[\w.]+)\s+-\s+"
@@ -102,7 +102,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"\[(?P<thread>[^\s]+)\]"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
                         r"(?P<mod>[\w.]+)\s+-\s+"
@@ -111,7 +111,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
                         r"-\s+(?P<msg>.+)\s+"
@@ -120,7 +120,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?:\[(?P<thread>[^\s]+)\]\s+)*"
                         r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
@@ -129,7 +129,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"(?P<msg>.+)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?:\[(?P<thread>[^\s]+)\]\s+)*"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
@@ -138,7 +138,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"(?P<msg>.+)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?:\[(?P<thread>[^\s]+)\]\s+)*"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
@@ -147,7 +147,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?:\[(?P<thread>[^\s]+)\]\s+)*"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
@@ -156,7 +156,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"-\s+(?P<msg>.+)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?:\[(?P<thread>[^\s]+)\]\s+)*"
                         r"(?P<mod>[\w.]+)\s+"
@@ -165,7 +165,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"-\s+(?P<msg>.+)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
                         r"(?:\[(?P<thread>[^\s]+)\]\s+)*"
@@ -174,7 +174,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
                         r"(?P<mod>[\w.]+)\s+"
@@ -183,7 +183,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
                         r"(?P<mod>[\w.]+)\s+-\s+"
@@ -192,7 +192,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
                         r"(?P<mod>[\w.]+)\s+-\s+"
@@ -201,7 +201,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"\[(?P<thread>[^\s]+)\]"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<mod>[\w.]+)\s+"
                         r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
@@ -210,7 +210,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<mod>[\w.]+)\s+"
                         r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
@@ -219,7 +219,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<mod>[\w.]+)\s+"
                         r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
@@ -228,7 +228,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"-\s+(?P<msg>.+)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<mod>[\w.]+)\s+"
                         r"(?:\[(?P<thread>[^\s]+)\]\s+)*"
@@ -237,7 +237,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"-\s+(?P<msg>.+)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<mod>[\w.]+)\s+"
                         r"(?:\[(?P<thread>[^\s]+)\]\s+)*"
@@ -246,7 +246,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"-\s+(?P<msg>.+)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<mod>[\w.]+)\s+"
                         r"(?:\[(?P<thread>[^\s]+)\]\s+)*"
@@ -255,7 +255,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<mod>[\w.]+)\s+"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
@@ -264,7 +264,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<mod>[\w.]+)\s+"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
@@ -273,7 +273,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<mod>[\w.]+)\s+"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
@@ -282,7 +282,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"\[(?P<thread>[^\s]+)\]"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<mod>[\w.]+)\s+"
                         r"-\s+(?P<msg>.+)\s+"
@@ -291,7 +291,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
                         r"\[(?P<thread>[^\s]+)\]"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<mod>[\w.]+)\s+"
                         r"-\s+(?P<msg>.+)\s+"

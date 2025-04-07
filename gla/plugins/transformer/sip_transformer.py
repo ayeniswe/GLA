@@ -6,14 +6,14 @@ import re
 from datetime import datetime, timezone
 from typing import Any, Dict, Match, Optional
 
+from gla.analyzer.iterator import UnstructuredBreakerMixIn, UnstructuredResolverBreakerMixIn
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
-from gla.plugins.transformer.transformer import BaseTransformerValidator
+from gla.plugins.transformer.transformer import BaseTransformerValidator, RegexBreakerStrategy
 from gla.typings.alias import FileDescriptorOrPath
-from gla.utilities.strategy import RegexStrategy
 
 
-class SipTransformer(BaseTransformerValidator, Resolver):
+class SipTransformer(BaseTransformerValidator, Resolver, UnstructuredResolverBreakerMixIn):
     """
     The `SipTransformer` class is responsible for handling transformation
     of `sip` common log messages
@@ -28,7 +28,7 @@ class SipTransformer(BaseTransformerValidator, Resolver):
         super().__init__(
             [
                 # SIP CLF
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<size>\d+) "
                         r"(?P<time>\d+(?:\.\d*)) "

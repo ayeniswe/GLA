@@ -7,14 +7,14 @@ import re
 from datetime import datetime
 from typing import Any, Dict, Match, Optional
 
+from gla.analyzer.iterator import UnstructuredBreakerMixIn
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
-from gla.plugins.transformer.transformer import BaseTransformerValidator
+from gla.plugins.transformer.transformer import BaseTransformerValidator, RegexBreakerStrategy
 from gla.typings.alias import FileDescriptorOrPath
-from gla.utilities.strategy import RegexStrategy
 
 
-class NcsaTransformer(BaseTransformerValidator, Resolver):
+class NcsaTransformer(BaseTransformerValidator, Resolver, UnstructuredResolverBreakerMixIn):
     """
     The `NcsaTransformer` class is responsible for handling transformation
     of common web servers `ncsa` log messages
@@ -29,7 +29,7 @@ class NcsaTransformer(BaseTransformerValidator, Resolver):
         super().__init__(
             [
                 # NCSA COMBINED CLF
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"(?P<host>[\w.:\]\[]+) "
                         r"(?:-|(?P<ident>[^\s-]+)) "
@@ -44,7 +44,7 @@ class NcsaTransformer(BaseTransformerValidator, Resolver):
                     )
                 ),
                 # NCSA CLF
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"(?P<host>[\w.:\]\[]+) "
                         r"(?:-|(?P<ident>[^\s-]+)) "

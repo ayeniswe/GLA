@@ -1,3 +1,5 @@
 <34>Mar 22 10:30:45 server1 sshd[23456]: Accepted password for user1 from 192.168.1.100 port 22 ssh2
+
 <34>Mar 22 10:31:00 server1 kernel: [1234567.890123] eth0: Link is Up
+
 <34>Mar 22 10:32:10 server1 systemd[1]: Started Session 1234 of user user1.

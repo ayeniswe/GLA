@@ -17,6 +17,17 @@ class Strategy(ABC):
         """Match the entry against the strategy"""
         ...
 
+class StrategyAction(Strategy):
+    """
+    The `StrategyAction` is an abstract class to promote
+    strategies that execute a given command
+    """
+
+    @abstractmethod
+    def do_action(self, entry: Any) -> Optional[Any]:
+        """Execute any given action for strategy"""
+        ...
+
 
 class ScoringStrategy(ABC):
     """
@@ -27,6 +38,17 @@ class ScoringStrategy(ABC):
     @abstractmethod
     def score(self, entry: Any) -> Tuple[int, Any]:
         """Score the entry against the strategy"""
+        ...
+
+class ScoringStrategyAction(ScoringStrategy):
+    """
+    The `ScoringStrategyAction` is an abstract class to promote
+    scoring strategies that execute a given command
+    """
+
+    @abstractmethod
+    def do_action(self, entry: Any) -> Optional[Any]:
+        """Execute any given action for strategy"""
         ...
 
 

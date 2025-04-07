@@ -9,15 +9,15 @@ from typing import Any, Dict, Match, Optional, Union
 
 import dateparser
 
+from gla.analyzer.iterator import Breaker, StructuredMixIn, UnstructuredBreakerMixIn
 from gla.constants import LANGUAGES_SUPPORTED
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
-from gla.plugins.transformer.transformer import BaseTransformerValidator
+from gla.plugins.transformer.transformer import BaseTransformerValidator, RegexBreakerStrategy, TransformerBreaker
 from gla.typings.alias import FileDescriptorOrPath
-from gla.utilities.strategy import RegexStrategy
 
 
-class SyslogTransformer(BaseTransformerValidator, Resolver):
+class SyslogTransformer(BaseTransformerValidator, Resolver, UnstructuredBreakerMixIn):
     """
     The `SyslogTransformer` class is responsible for handling transformation
     of `syslog` log messages
@@ -32,7 +32,7 @@ class SyslogTransformer(BaseTransformerValidator, Resolver):
         super().__init__(
             [
                 # BFG RFC 3164 (older)
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^<(?P<pri>\d{1,3})>"
                         r"(?P<time>[A-Z][a-z]{2}\s+\d{1,2} \d{2}:\d{2}:\d{2}) "
@@ -43,7 +43,7 @@ class SyslogTransformer(BaseTransformerValidator, Resolver):
                     )
                 ),
                 # IETF RFC 5424
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^<(?P<pri>\d{1,3})>(?P<ver>\d{1,2}) "
                         r"(?P<time>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}"
@@ -58,7 +58,7 @@ class SyslogTransformer(BaseTransformerValidator, Resolver):
         )
 
     def transform(self, entry: str) -> Optional[Log]:
-        match: Optional[Match[str]] = self.resolve(entry)
+        match: Optional[Match[str]] = self._cache_strategy.do_action(entry)
         if match:
             res = match.groupdict()
 
@@ -78,6 +78,7 @@ class SyslogTransformer(BaseTransformerValidator, Resolver):
                 timestamp=timedate,
                 message=res.get("msg"),
             )
+        
         return None
 
     def _priority_to_lvl(self, lvl: str) -> Union[str, None]:
@@ -105,8 +106,6 @@ class SyslogTransformer(BaseTransformerValidator, Resolver):
         if data["data"] == "sys":
             return True
         try:
-            path: FileDescriptorOrPath = data["data"]
-            with open(path, "r", encoding=data["encoding"]) as file:
-                return self.resolve(file.readline().strip()) is not None
+            return self.resolve((data["data"], data["encoding"])) is not None
         except (FileNotFoundError, UnicodeDecodeError):
             return False
