@@ -6,7 +6,7 @@ rather structured or unstructured
 from abc import ABC, abstractmethod
 from collections.abc import Iterator
 from xml.etree.ElementTree import iterparse
-from gla.plugins.resolver.resolver import Resolver
+from gla.plugins.resolver.resolver import BaseResolver, Resolver
 from gla.typings.alias import FileDescriptorOrPath
 
 class Breaker:
@@ -26,7 +26,7 @@ class UnstructuredMixIn(ABC):
     def breaker() -> str:
         ...
 
-class UnstructuredResolverBreakerMixIn(Resolver, UnstructuredMixIn):
+class UnstructuredResolverBreakerMixIn(BaseResolver, UnstructuredMixIn):
     
     @property
     def breaker(self):

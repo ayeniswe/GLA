@@ -112,18 +112,8 @@ class Analyzer:
         return 0
 
     def run(self):
+        ...
         # matcher = StrMatch(self.testcase.patterns)
-        transformer_type = type(self.current_transformer)
-        iterator_cls = self.iterator.get(transformer_type, Unstructured)
-
-        #  Some log processing may be predefined with a set structure
-        if issubclass(iterator_cls, Unstructured) and isinstance(self.current_transformer, Breaker):
-            iterator = iterator_cls(self.file, self.encoding, self.current_transformer.breaker)
-        else:
-            iterator = iterator_cls()
-
-        for line in iterator:
-            print(self.current_transformer.transform(line))
 
         # for entry in LogProcessor(self.file, self.encoding):
         #     # Once all entries are found the search can end early

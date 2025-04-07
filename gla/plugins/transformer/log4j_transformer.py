@@ -8,7 +8,7 @@ from typing import Any, Dict, Match, Optional
 
 import dateparser
 
-from gla.analyzer.iterator import Breaker, UnstructuredBreakerMixIn
+from gla.analyzer.iterator import Breaker, UnstructuredResolverBreakerMixIn
 from gla.constants import LANGUAGES_SUPPORTED
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
@@ -16,7 +16,7 @@ from gla.plugins.transformer.transformer import BaseTransformerValidator, RegexB
 from gla.typings.alias import FileDescriptorOrPath
 
 
-class Log4jTransformer(BaseTransformerValidator, Resolver, UnstructuredBreakerMixIn):
+class Log4jTransformer(BaseTransformerValidator, Resolver, UnstructuredResolverBreakerMixIn):
     """
     The `Log4jTransformer` class is responsible for handling transformation
     of `log4j` log messages

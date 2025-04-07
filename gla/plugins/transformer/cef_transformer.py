@@ -6,14 +6,14 @@ which is responsible for transforming common event log (CEF) messages into struc
 import re
 from typing import Any, Dict, Match, Optional, Union
 
-from gla.analyzer.iterator import UnstructuredBreakerMixIn
+from gla.analyzer.iterator import UnstructuredResolverBreakerMixIn
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
 from gla.plugins.transformer.transformer import BaseTransformerValidator, RegexBreakerStrategy
 from gla.typings.alias import FileDescriptorOrPath
 
 
-class CefTransformer(BaseTransformerValidator, Resolver, UnstructuredBreakerMixIn):
+class CefTransformer(BaseTransformerValidator, Resolver, UnstructuredResolverBreakerMixIn):
     """
     The `CefTransformer` class is responsible for handling transformation
     of common event  log messages

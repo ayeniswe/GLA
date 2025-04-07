@@ -6,7 +6,7 @@ import re
 from datetime import datetime, timezone
 from typing import Any, Dict, Match, Optional
 
-from gla.analyzer.iterator import UnstructuredBreakerMixIn, UnstructuredResolverBreakerMixIn
+from gla.analyzer.iterator import UnstructuredResolverBreakerMixIn
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
 from gla.plugins.transformer.transformer import BaseTransformerValidator, RegexBreakerStrategy

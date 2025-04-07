@@ -9,15 +9,14 @@ from typing import Any, Dict, Match, Optional, Union
 
 import dateparser
 
-from gla.analyzer.iterator import Breaker, StructuredMixIn, UnstructuredBreakerMixIn
+from gla.analyzer.iterator import UnstructuredResolverBreakerMixIn
 from gla.constants import LANGUAGES_SUPPORTED
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
-from gla.plugins.transformer.transformer import BaseTransformerValidator, RegexBreakerStrategy, TransformerBreaker
-from gla.typings.alias import FileDescriptorOrPath
+from gla.plugins.transformer.transformer import BaseTransformerValidator, RegexBreakerStrategy
 
 
-class SyslogTransformer(BaseTransformerValidator, Resolver, UnstructuredBreakerMixIn):
+class SyslogTransformer(BaseTransformerValidator, Resolver, UnstructuredResolverBreakerMixIn):
     """
     The `SyslogTransformer` class is responsible for handling transformation
     of `syslog` log messages

@@ -6,7 +6,7 @@ including `Windows Event Logs`
 from typing import Any, Dict, Optional, Union
 from xml.etree.ElementTree import Element
 
-from gla.analyzer.iterator import UnstructuredBreakerMixIn, UnstructuredResolverBreakerMixIn
+from gla.analyzer.iterator import UnstructuredResolverBreakerMixIn
 from gla.plugins.resolver.resolver import Resolver
 from lxml.etree import XMLSyntaxError
 from gla.plugins.transformer.transformer import Breaker
@@ -79,7 +79,7 @@ class WinEvent(Strategy, Breaker):
         return "</Event>"
 
 
-class XMLFragmentTransformer(BaseXMLTransformer, Resolver, UnstructuredResolverBreakerMixIn):
+class XMLFragmentTransformer(BaseXMLTransformer, UnstructuredResolverBreakerMixIn):
     """
     The `XMLFragmentTransformer` class is responsible for handling transformation
     of fragmented `xml` log messages

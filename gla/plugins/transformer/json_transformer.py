@@ -9,6 +9,7 @@ from typing import Any, Dict, Optional, Tuple
 
 import dateparser
 
+from gla.analyzer.iterator import UnstructuredResolverBreakerMixIn
 from gla.constants import LANGUAGES_SUPPORTED
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import BestResolver
@@ -32,7 +33,7 @@ class JsonStrategy(ScoringStrategy, Breaker):
         )
 
 
-class JsonTransformer(BaseTransformerValidator, BestResolver):
+class JsonTransformer(BaseTransformerValidator, BestResolver, UnstructuredResolverBreakerMixIn):
     """
     The `JsonTransformer` class is responsible for handling transformation
     of `json` log messages
