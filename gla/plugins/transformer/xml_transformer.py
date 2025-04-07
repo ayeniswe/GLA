@@ -10,14 +10,14 @@ import dateparser
 
 from gla.constants import LANGUAGES_SUPPORTED
 from gla.models.log import Log
-from gla.plugins.resolver.resolver import Resolver
-from gla.plugins.transformer.transformer import BaseTransformerValidator
+from gla.plugins.resolver.resolver import BaseResolver, Resolver
+from gla.plugins.transformer.transformer import BaseTransformer, BaseTransformerValidator
 from gla.utilities.strategy import Strategy
 
-class BaseXMLTransformer(BaseTransformerValidator):
+class BaseXMLTransformer(BaseTransformer, Resolver):
 
     def transform(self, entry: Element) -> Optional[Log]:
-        mapping: Optional[dict] = self.resolve(entry)
+        mapping: Optional[dict] = self._cache_strategy.do_action(entry)
         if mapping:
             time = mapping.get("timestamp")
             timedate = None

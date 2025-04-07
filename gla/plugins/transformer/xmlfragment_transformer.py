@@ -3,19 +3,16 @@ The `xmlfragment_transformer` module is responsible for transforming fragmented 
 messages into structured `Log` objects. It supports various XML formats,
 including `Windows Event Logs`
 """
-from typing import Any, Dict, Optional, Union
-from xml.etree.ElementTree import Element
-
-from gla.analyzer.iterator import UnstructuredResolverBreakerMixIn
-from gla.plugins.resolver.resolver import Resolver
-from lxml.etree import XMLSyntaxError
+from typing import Any, Dict, Optional, Tuple, Union, Match
+from gla.analyzer.iterator import Unstructured, UnstructuredBaseResolverBreakerMixIn
+from lxml.etree import XMLSyntaxError, fromstring, Element, iterparse
 from gla.plugins.transformer.transformer import Breaker
 from gla.plugins.transformer.xml_transformer import BaseXMLTransformer
-from gla.utilities.strategy import Strategy
+from gla.plugins.validator.validator import Validator
+from gla.utilities.strategy import StrategyAction
 from gla.typings.alias import FileDescriptorOrPath
-from lxml.etree import iterparse
 
-class WinEvent(Strategy, Breaker):
+class WinEvent(StrategyAction, Breaker):
     """
     The `WinEvent` class is responsible for handling transformations
     of `Windows Events` from `.evtx` logs
@@ -23,7 +20,15 @@ class WinEvent(Strategy, Breaker):
 
     NS = "{http://schemas.microsoft.com/win/2004/08/events/event}"
 
-    def match(self, entry: Element) -> Optional[dict]:
+    @property
+    def breaker(self) -> str:
+        return "</Event>\n"
+    
+    def match(self, entry: Tuple[FileDescriptorOrPath, str]) -> Optional[Match[str]]:
+        for line in Unstructured(entry[0], entry[1], self.breaker):
+            return self.do_action(fromstring(line + self.breaker))
+        
+    def do_action(self, entry: Element) -> Optional[dict]:
         if entry.tag != f"{self.NS}Event":
             return None
 
@@ -73,13 +78,9 @@ class WinEvent(Strategy, Breaker):
     def _get_attribute(self, entry: Element, path: str, attr: str) -> Optional[str]:
         element = entry.find(f"./{path}")
         return element.get(attr) if element is not None else None
-    
-    @property
-    def breaker(self) -> str:
-        return "</Event>"
 
 
-class XMLFragmentTransformer(BaseXMLTransformer, UnstructuredResolverBreakerMixIn):
+class XMLFragmentTransformer(BaseXMLTransformer, Validator, UnstructuredBaseResolverBreakerMixIn):
     """
     The `XMLFragmentTransformer` class is responsible for handling transformation
     of fragmented `xml` log messages
@@ -97,13 +98,16 @@ class XMLFragmentTransformer(BaseXMLTransformer, UnstructuredResolverBreakerMixI
         )
 
     def validate(self, data: Dict[str, Any]) -> bool:
-        if data["data"] == "xml-frag":
-            return True
+        path: FileDescriptorOrPath = data["data"]
+        encoding = data["encoding"]
         try:
-            path: FileDescriptorOrPath = data["data"]
             # We need to keep trying until a error occurs which should happen
             # pretty early more than not
-            for _ in iterparse(path):
-                ...
+            depth = 0
+            for depth, _ in enumerate(iterparse(path, encoding=encoding)):
+                if depth > 50:
+                    return False
+                depth += 1
         except XMLSyntaxError:
+            self.resolve((path, encoding))
             return True

@@ -7,7 +7,7 @@ from typing import List
 
 import cchardet
 
-from gla.analyzer.iterator import Breaker, Unstructured, XMLStructure
+from gla.analyzer.iterator import Breaker, Structured, StructuredMixIn, Unstructured, UnstructuredMixIn, XMLStructure
 from gla.analyzer.search.search import StrMatch
 from gla.plugins.transformer.cef_transformer import CefTransformer
 from gla.plugins.transformer.json_transformer import JsonTransformer
@@ -58,14 +58,14 @@ class Analyzer:
             if custom_transformer
             else Transformer(
                 [
-                    # JsonTransformer(),
+                    JsonTransformer(),
                     SyslogTransformer(),
                     Log4jTransformer(),
-                    # NcsaTransformer(),
-                    # SipTransformer(),
-                    # CefTransformer(),
+                    NcsaTransformer(),
+                    SipTransformer(),
+                    CefTransformer(),
                     # XMLTransformer(), # NOT SUPPORTED YET
-                    # XMLFragmentTransformer()
+                    XMLFragmentTransformer()
                 ]
             ).get_transformer(self.file, self.encoding)
         )
@@ -112,13 +112,20 @@ class Analyzer:
         return 0
 
     def run(self):
-        ...
-        # matcher = StrMatch(self.testcase.patterns)
-
-        # for entry in LogProcessor(self.file, self.encoding):
-        #     # Once all entries are found the search can end early
-        #     if len(self.testcase.entries) == 0:
-        #         break
-
-        #     if self._process_line(entry, matcher) is None:
-        #         break
+        matcher = StrMatch(self.testcase.patterns)
+        if isinstance(self.current_transformer, UnstructuredMixIn):
+            for entry in Unstructured(self.file, self.encoding, self.current_transformer.breaker):
+                # Once all entries are found the search can end early
+                if len(self.testcase.entries) == 0:
+                    break
+                
+                if self._process_line(entry, matcher) is None:
+                    break
+        elif isinstance(self.current_transformer, StructuredMixIn):
+            for entry in Structured(self.file, self.encoding, self.current_transformer.mode):
+                # Once all entries are found the search can end early
+                if len(self.testcase.entries) == 0:
+                    break
+                
+                if self._process_line(entry, matcher) is None:
+                    break

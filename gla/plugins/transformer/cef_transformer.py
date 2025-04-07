@@ -6,14 +6,13 @@ which is responsible for transforming common event log (CEF) messages into struc
 import re
 from typing import Any, Dict, Match, Optional, Union
 
-from gla.analyzer.iterator import UnstructuredResolverBreakerMixIn
+from gla.analyzer.iterator import UnstructuredBaseResolverBreakerMixIn
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
 from gla.plugins.transformer.transformer import BaseTransformerValidator, RegexBreakerStrategy
-from gla.typings.alias import FileDescriptorOrPath
 
 
-class CefTransformer(BaseTransformerValidator, Resolver, UnstructuredResolverBreakerMixIn):
+class CefTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolverBreakerMixIn):
     """
     The `CefTransformer` class is responsible for handling transformation
     of common event  log messages
@@ -58,7 +57,7 @@ class CefTransformer(BaseTransformerValidator, Resolver, UnstructuredResolverBre
 
     def transform(self, entry: str) -> Optional[Log]:
 
-        match: Optional[Match[str]] = self.resolve(entry)
+        match: Optional[Match[str]] = self._cache_strategy.do_action(entry)
 
         if match:
             res = match.groupdict()
@@ -83,11 +82,7 @@ class CefTransformer(BaseTransformerValidator, Resolver, UnstructuredResolverBre
         return None
 
     def validate(self, data: Dict[str, Any]) -> bool:
-        if data["data"] == "cef":
-            return True
         try:
-            path: FileDescriptorOrPath = data["data"]
-            with open(path, "r", encoding=data["encoding"]) as file:
-                return self.resolve(file.readline().strip()) is not None
+            return self.resolve((data["data"], data["encoding"])) is not None
         except (FileNotFoundError, UnicodeDecodeError):
             return False

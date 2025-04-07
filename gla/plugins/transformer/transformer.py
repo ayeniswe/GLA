@@ -9,7 +9,7 @@ from typing import Any, List, Optional, Tuple, Match
 from gla.analyzer.iterator import Breaker, Unstructured
 from gla.typings.alias import FileDescriptorOrPath
 from gla.models.log import Log
-from gla.plugins.resolver.resolver import BaseResolver, Resolver
+from gla.plugins.resolver.resolver import BaseResolver
 from gla.plugins.validator.validator import Validator
 from gla.typings.alias import FileDescriptorOrPath
 from gla.utilities.strategy import RegexStrategy, StrategyAction

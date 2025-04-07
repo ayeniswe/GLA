@@ -9,14 +9,14 @@ from typing import Any, Dict, Match, Optional, Union
 
 import dateparser
 
-from gla.analyzer.iterator import UnstructuredResolverBreakerMixIn
+from gla.analyzer.iterator import UnstructuredBaseResolverBreakerMixIn
 from gla.constants import LANGUAGES_SUPPORTED
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
 from gla.plugins.transformer.transformer import BaseTransformerValidator, RegexBreakerStrategy
 
 
-class SyslogTransformer(BaseTransformerValidator, Resolver, UnstructuredResolverBreakerMixIn):
+class SyslogTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolverBreakerMixIn):
     """
     The `SyslogTransformer` class is responsible for handling transformation
     of `syslog` log messages
@@ -102,8 +102,6 @@ class SyslogTransformer(BaseTransformerValidator, Resolver, UnstructuredResolver
         return None
 
     def validate(self, data: Dict[str, Any]) -> bool:
-        if data["data"] == "sys":
-            return True
         try:
             return self.resolve((data["data"], data["encoding"])) is not None
         except (FileNotFoundError, UnicodeDecodeError):

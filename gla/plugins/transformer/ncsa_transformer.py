@@ -7,14 +7,13 @@ import re
 from datetime import datetime
 from typing import Any, Dict, Match, Optional
 
-from gla.analyzer.iterator import UnstructuredResolverBreakerMixIn
+from gla.analyzer.iterator import UnstructuredBaseResolverBreakerMixIn
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
 from gla.plugins.transformer.transformer import BaseTransformerValidator, RegexBreakerStrategy
-from gla.typings.alias import FileDescriptorOrPath
 
 
-class NcsaTransformer(BaseTransformerValidator, Resolver, UnstructuredResolverBreakerMixIn):
+class NcsaTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolverBreakerMixIn):
     """
     The `NcsaTransformer` class is responsible for handling transformation
     of common web servers `ncsa` log messages
@@ -90,11 +89,7 @@ class NcsaTransformer(BaseTransformerValidator, Resolver, UnstructuredResolverBr
         return None
 
     def validate(self, data: Dict[str, Any]) -> bool:
-        if data["data"] == "ncsa":
-            return True
         try:
-            path: FileDescriptorOrPath = data["data"]
-            with open(path, "r", encoding=data["encoding"]) as file:
-                return self.resolve(file.readline().strip()) is not None
+            return self.resolve((data["data"], data["encoding"])) is not None
         except (FileNotFoundError, UnicodeDecodeError):
             return False

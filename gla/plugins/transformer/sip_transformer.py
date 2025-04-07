@@ -6,14 +6,13 @@ import re
 from datetime import datetime, timezone
 from typing import Any, Dict, Match, Optional
 
-from gla.analyzer.iterator import UnstructuredResolverBreakerMixIn
+from gla.analyzer.iterator import UnstructuredBaseResolverBreakerMixIn
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
 from gla.plugins.transformer.transformer import BaseTransformerValidator, RegexBreakerStrategy
-from gla.typings.alias import FileDescriptorOrPath
 
 
-class SipTransformer(BaseTransformerValidator, Resolver, UnstructuredResolverBreakerMixIn):
+class SipTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolverBreakerMixIn):
     """
     The `SipTransformer` class is responsible for handling transformation
     of `sip` common log messages
@@ -92,11 +91,7 @@ class SipTransformer(BaseTransformerValidator, Resolver, UnstructuredResolverBre
         return None
 
     def validate(self, data: Dict[str, Any]) -> bool:
-        if data["data"] == "sip":
-            return True
         try:
-            path: FileDescriptorOrPath = data["data"]
-            with open(path, "r", encoding=data["encoding"]) as file:
-                return self.resolve(file.readline().strip()) is not None
+            return self.resolve((data["data"], data["encoding"])) is not None
         except (FileNotFoundError, UnicodeDecodeError):
             return False

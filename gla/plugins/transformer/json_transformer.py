@@ -9,16 +9,16 @@ from typing import Any, Dict, Optional, Tuple
 
 import dateparser
 
-from gla.analyzer.iterator import UnstructuredResolverBreakerMixIn
+from gla.analyzer.iterator import Mode, Structured, StructuredMixIn, UnstructuredBaseResolverBreakerMixIn
 from gla.constants import LANGUAGES_SUPPORTED
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import BestResolver
 from gla.plugins.transformer.transformer import BaseTransformerValidator, Breaker
 from gla.typings.alias import FileDescriptorOrPath
-from gla.utilities.strategy import ScoringStrategy
+from gla.utilities.strategy import  ScoringStrategyAction
 
 
-class JsonStrategy(ScoringStrategy, Breaker):
+class JsonStrategy(ScoringStrategyAction, Breaker):
     """
     The `JsonStrategy` class is responsible for handling strategies based on json key mappings
     """
@@ -26,18 +26,26 @@ class JsonStrategy(ScoringStrategy, Breaker):
     def __init__(self, mapping: dict):
         self._mapping = mapping
 
-    def score(self, entry: dict) -> Tuple[int, dict]:
-        return (
-            sum(1 for field in self._mapping.values() if field in entry),
-            self._mapping,
-        )
+    def score(self, entry: Tuple[FileDescriptorOrPath, str]) -> Tuple[int, dict]:
+        for line in Structured(entry[0], entry[1], Mode.JSON):
+            return (
+                sum(1 for field in self._mapping.values() if field in line),
+                self._mapping,
+            )
+    
+    def do_action(self, _: dict):
+        return self._mapping
 
 
-class JsonTransformer(BaseTransformerValidator, BestResolver, UnstructuredResolverBreakerMixIn):
+class JsonTransformer(BaseTransformerValidator, BestResolver, StructuredMixIn):
     """
     The `JsonTransformer` class is responsible for handling transformation
     of `json` log messages
     """
+    
+    @property
+    def mode(self) -> str:
+        return Mode.JSON
 
     def __init__(self, cache: bool = False):
         """Create a new `JsonTransformer`
@@ -84,7 +92,7 @@ class JsonTransformer(BaseTransformerValidator, BestResolver, UnstructuredResolv
     def transform(self, entry: str) -> Optional[Log]:
         try:
             res: dict = loads(entry.strip())
-            mapping: Optional[dict] = self.resolve(res)
+            mapping: dict = self._cache_strategy.do_action()
             if mapping:
                 time = res.get(mapping.get("timestamp"))
                 if time is not None:
@@ -103,14 +111,7 @@ class JsonTransformer(BaseTransformerValidator, BestResolver, UnstructuredResolv
             return None
 
     def validate(self, data: Dict[str, Any]) -> bool:
-        if data["data"] == "json":
-            return True
         try:
-            path: FileDescriptorOrPath = data["data"]
-            with open(path, "r", encoding=data["encoding"]) as file:
-                try:
-                    return loads(file.readline().strip()) is not None
-                except JSONDecodeError:
-                    return False
-        except (FileNotFoundError, UnicodeDecodeError):
+           return self.resolve((data["data"], data["encoding"])) is not None
+        except (FileNotFoundError, UnicodeDecodeError, JSONDecodeError):
             return False

@@ -8,15 +8,14 @@ from typing import Any, Dict, Match, Optional
 
 import dateparser
 
-from gla.analyzer.iterator import Breaker, UnstructuredResolverBreakerMixIn
+from gla.analyzer.iterator import Breaker, UnstructuredBaseResolverBreakerMixIn
 from gla.constants import LANGUAGES_SUPPORTED
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
 from gla.plugins.transformer.transformer import BaseTransformerValidator, RegexBreakerStrategy
-from gla.typings.alias import FileDescriptorOrPath
 
 
-class Log4jTransformer(BaseTransformerValidator, Resolver, UnstructuredResolverBreakerMixIn):
+class Log4jTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolverBreakerMixIn):
     """
     The `Log4jTransformer` class is responsible for handling transformation
     of `log4j` log messages
@@ -318,11 +317,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver, UnstructuredResolverB
         return None
 
     def validate(self, data: Dict[str, Any]) -> bool:
-        if data["data"] == "log4j":
-            return True
         try:
-            path: FileDescriptorOrPath = data["data"]
-            with open(path, "r", encoding=data["encoding"]) as file:
-                return self.resolve(file.readline().strip()) is not None
+            return self.resolve((data["data"], data["encoding"])) is not None
         except (FileNotFoundError, UnicodeDecodeError):
             return False

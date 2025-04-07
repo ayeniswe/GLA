@@ -96,5 +96,5 @@ class BestResolver(BaseResolver):
                 max_scorer = (score, strategy, value)
         # Save strategy result for redundant uses
         self._cache_value = max_scorer[2]
-        self._cache_strategy = max_score[1]
+        self._cache_strategy = max_scorer[1]
         return max_scorer[1]
