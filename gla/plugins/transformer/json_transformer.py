@@ -18,7 +18,7 @@ from gla.typings.alias import FileDescriptorOrPath
 from gla.utilities.strategy import  ScoringStrategyAction
 
 
-class JsonStrategy(ScoringStrategyAction, Breaker):
+class JsonStrategy(ScoringStrategyAction):
     """
     The `JsonStrategy` class is responsible for handling strategies based on json key mappings
     """

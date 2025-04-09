@@ -64,7 +64,7 @@ class Analyzer:
                     NcsaTransformer(),
                     SipTransformer(),
                     CefTransformer(),
-                    # XMLTransformer(), # NOT SUPPORTED YET
+                    XMLTransformer(),
                     XMLFragmentTransformer()
                 ]
             ).get_transformer(self.file, self.encoding)

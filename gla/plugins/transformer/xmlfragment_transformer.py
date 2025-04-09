@@ -80,7 +80,7 @@ class WinEvent(StrategyAction, Breaker):
         return element.get(attr) if element is not None else None
 
 
-class XMLFragmentTransformer(BaseXMLTransformer, Validator, UnstructuredBaseResolverBreakerMixIn):
+class XMLFragmentTransformer(BaseXMLTransformer, UnstructuredBaseResolverBreakerMixIn):
     """
     The `XMLFragmentTransformer` class is responsible for handling transformation
     of fragmented `xml` log messages
@@ -100,14 +100,6 @@ class XMLFragmentTransformer(BaseXMLTransformer, Validator, UnstructuredBaseReso
     def validate(self, data: Dict[str, Any]) -> bool:
         path: FileDescriptorOrPath = data["data"]
         encoding = data["encoding"]
-        try:
-            # We need to keep trying until a error occurs which should happen
-            # pretty early more than not
-            depth = 0
-            for depth, _ in enumerate(iterparse(path, encoding=encoding)):
-                if depth > 50:
-                    return False
-                depth += 1
-        except XMLSyntaxError:
+        if BaseXMLTransformer.isfrag(path, encoding):
             self.resolve((path, encoding))
             return True
