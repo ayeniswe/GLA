@@ -11,13 +11,14 @@ import dateparser
 from gla.analyzer.iterator import Mode, Structured, StructuredMixIn
 from gla.constants import LANGUAGES_SUPPORTED
 from gla.models.log import Log
-from gla.plugins.resolver.resolver import BaseResolver, Resolver
+from gla.plugins.resolver.resolver import BaseResolver, BestResolver, Resolver
 from gla.plugins.transformer.transformer import BaseTransformer, BaseTransformerValidator
-from gla.utilities.strategy import Strategy, StrategyAction
+from gla.utilities.strategy import ScoringStrategyAction, Strategy, StrategyAction
 from lxml.etree import iterparse, XMLSyntaxError
 from gla.typings.alias import FileDescriptorOrPath
+from lxml.etree import _Element
 
-class BaseXMLTransformer(BaseTransformerValidator, Resolver):
+class BaseXMLTransformer(BaseTransformerValidator):
 
     def isfrag(path: FileDescriptorOrPath, encoding: str) -> bool:
         """
@@ -60,27 +61,34 @@ class BaseXMLTransformer(BaseTransformerValidator, Resolver):
         return None
 
 
-class JLU(StrategyAction):
+class JLU(ScoringStrategyAction):
     """
     The `JLU` class is responsible for handling transformations
     of `Java Logging Util` xml DTD schema
     """
 
-    def match(self, entry: Tuple[FileDescriptorOrPath, str]) -> Optional[dict]:
+    def score(self, entry: Tuple[FileDescriptorOrPath, str]) -> Optional[dict]:
         for depth, elem in enumerate(Structured(entry[0], entry[1], Mode.XML)):
+            elem: _Element = elem
             # Check may run too deep
             if depth > 12:
                 return False
-            
+                        
             if elem.tag == "record":
                 # Core tags that are typically always present in JUL logs
-                required_tags = {"date", "logger", "level", "message"}
-                child_tags = {child.tag for child in elem}
+                required_tags = {
+                    "date", "logger", "level", "message", 
+                    "millis", "nanos", "sequence", "thread"
+                    "method", "class"
+                }
                 # Check if the required subset exists
-                if required_tags.issubset(child_tags):
-                    return True
+                child_tags = {child.tag for child in elem}
+                # JACCARD Similarity
+                intersect = len(required_tags.intersection(child_tags))
+                union = len(required_tags.union(child_tags))
+                return intersect / union
 
-    def do_action(self, entry: Element) -> Optional[dict]:
+    def do_action(self, entry: _Element) -> Optional[dict]:
         if entry.tag == "record":
             res = {}
             for child in entry.getiterator():
@@ -98,7 +106,7 @@ class JLU(StrategyAction):
         return None
 
 
-class XMLTransformer(BaseXMLTransformer, Resolver, StructuredMixIn):
+class XMLTransformer(BaseXMLTransformer, BestResolver, StructuredMixIn):
     """
     The `XMLTransformer` class is responsible for handling transformation
     of `xml` log messages

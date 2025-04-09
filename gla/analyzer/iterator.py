@@ -10,6 +10,7 @@ from json import JSONDecodeError, loads
 from lxml.etree import iterparse
 from gla.plugins.resolver.resolver import BaseResolver, Resolver
 from gla.typings.alias import FileDescriptorOrPath
+from lxml.etree import _Element
 
 class Mode(Enum):
     XML = "xml"
@@ -118,7 +119,7 @@ class XMLStructure(Iterator):
         self.reader = iterparse(self.file, encoding=self.encoding)
         return self
 
-    def __next__(self):
+    def __next__(self) -> _Element:
         return self.reader.__next__()[1]
 
 class JSONStructure(Iterator):
@@ -130,7 +131,7 @@ class JSONStructure(Iterator):
         self.reader = open(self.file, "r", encoding=self.encoding)
         return self
 
-    def __next__(self):
+    def __next__(self) -> dict:
         line = self.reader.readline()
 
         if not line:

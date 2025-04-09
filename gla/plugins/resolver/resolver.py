@@ -46,7 +46,7 @@ class Resolver(BaseResolver):
     def resolve(self, entry: Any) -> Optional[Any]:
         """Resolves to the correct strategy for the given entry"""
         if self._cache and self._cache_strategy:
-            return self._cache_strategy.match(entry)
+            return self._cache_strategy
 
         for strategy in self._strategies:
             match = strategy.match(entry)
@@ -66,7 +66,6 @@ class BestResolver(BaseResolver):
     def __init__(self, strategies: List[ScoringStrategyAction], cache: bool):
         self._cache = cache
         self._strategies: List[ScoringStrategyAction] = strategies
-        self._cache_value: Optional[Any] = None
         self._cache_strategy = None
 
 
@@ -79,13 +78,13 @@ class BestResolver(BaseResolver):
 
         NOTE: No tie-breaker..the chosen strategy is the first seen
         """
-        if self._cache and self._cache_value:
-            return self._cache_value
+        if self._cache and self._cache_strategy:
+            return self._cache_strategy
 
-        max_scorer = (-sys.maxsize - 1, None, None)
+        max_scorer = (-sys.maxsize - 1, None)
         for strategy in self._strategies:
-            (max_score, _, _) = max_scorer
-            (score, value) = strategy.score(entry)
+            (max_score, _) = max_scorer
+            score = strategy.score(entry)
             if (
                 max(
                     max_score,
@@ -93,8 +92,8 @@ class BestResolver(BaseResolver):
                 )
                 != max_score
             ):
-                max_scorer = (score, strategy, value)
+                max_scorer = (score, strategy)
         # Save strategy result for redundant uses
-        self._cache_value = max_scorer[2]
+
         self._cache_strategy = max_scorer[1]
         return max_scorer[1]

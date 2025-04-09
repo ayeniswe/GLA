@@ -5,7 +5,8 @@ including `Windows Event Logs`
 """
 from typing import Any, Dict, Optional, Tuple, Union, Match
 from gla.analyzer.iterator import Unstructured, UnstructuredBaseResolverBreakerMixIn
-from lxml.etree import XMLSyntaxError, fromstring, Element, iterparse
+from lxml.etree import XMLSyntaxError, fromstring, _Element, iterparse
+from gla.plugins.resolver.resolver import Resolver
 from gla.plugins.transformer.transformer import Breaker
 from gla.plugins.transformer.xml_transformer import BaseXMLTransformer
 from gla.plugins.validator.validator import Validator
@@ -28,7 +29,7 @@ class WinEvent(StrategyAction, Breaker):
         for line in Unstructured(entry[0], entry[1], self.breaker):
             return self.do_action(fromstring(line + self.breaker))
         
-    def do_action(self, entry: Element) -> Optional[dict]:
+    def do_action(self, entry: _Element) -> Optional[dict]:
         if entry.tag != f"{self.NS}Event":
             return None
 
@@ -71,16 +72,16 @@ class WinEvent(StrategyAction, Breaker):
         else:
             return None
 
-    def _get_text(self, entry: Element, path: str) -> Optional[str]:
-        element = entry.find(f".//{path}")
+    def _get_text(self, entry: _Element, path: str) -> Optional[str]:
+        element: _Element = entry.find(f".//{path}")
         return element.text if element is not None else None
 
-    def _get_attribute(self, entry: Element, path: str, attr: str) -> Optional[str]:
-        element = entry.find(f"./{path}")
+    def _get_attribute(self, entry: _Element, path: str, attr: str) -> Optional[str]:
+        element: _Element = entry.find(f"./{path}")
         return element.get(attr) if element is not None else None
 
 
-class XMLFragmentTransformer(BaseXMLTransformer, UnstructuredBaseResolverBreakerMixIn):
+class XMLFragmentTransformer(BaseXMLTransformer, Resolver, UnstructuredBaseResolverBreakerMixIn):
     """
     The `XMLFragmentTransformer` class is responsible for handling transformation
     of fragmented `xml` log messages
@@ -101,5 +102,8 @@ class XMLFragmentTransformer(BaseXMLTransformer, UnstructuredBaseResolverBreaker
         path: FileDescriptorOrPath = data["data"]
         encoding = data["encoding"]
         if BaseXMLTransformer.isfrag(path, encoding):
-            self.resolve((path, encoding))
-            return True
+            try:
+                self.resolve((path, encoding))
+                return True
+            except XMLSyntaxError:
+                return False

@@ -28,10 +28,13 @@ class JsonStrategy(ScoringStrategyAction):
 
     def score(self, entry: Tuple[FileDescriptorOrPath, str]) -> Tuple[int, dict]:
         for line in Structured(entry[0], entry[1], Mode.JSON):
-            return (
-                sum(1 for field in self._mapping.values() if field in line),
-                self._mapping,
-            )
+            line_keys: set = set(line.keys())
+            mapping_values: set = set(self._mapping.values())
+            
+            # Overlap Coefficient Similiarity Heuristic
+            intersect = len(line_keys.intersection(mapping_values)) 
+            min_size = min(len(mapping_values), len(line_keys)) 
+            return intersect / min_size
     
     def do_action(self, _: dict):
         return self._mapping
