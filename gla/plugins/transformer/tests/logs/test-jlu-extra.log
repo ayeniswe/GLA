@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<log>
+  <record>
+    <date>2015-02-27T09:35:44.885562Z</date>
+    <millis>1425029744885</millis>
+    <extra1>extracontent</extra1>
+    <more>somemore</more>
+    <okmoreee>somemore</okmoreee>
+    <nanos>562000</nanos>
+    <sequence>1256</sequence>
+    <logger>kgh.test.fred</logger>
+    <level>INFO</level>
+    <class>kgh.test.XMLTest</class>
+    <method>writeLog</method>
+    <thread>10</thread>
+    <message>Hello world!</message>
+  </record>
+  <record>
+    <date>2015-02-27T09:35:44.885562Z</date>
+    <millis>1425029744885</millis>
+    <nanos>562000</nanos>
+    <sequence>1256</sequence>
+    <logger>kgh.test.fred</logger>
+    <level>INFO</level>
+    <class>kgh.test.XMLTest</class>
+    <method>writeLog</method>
+    <thread>10</thread>
+    <message>Hello world!</message>
+  </record>
+  <record>
+    <date>2015-02-27T09:35:44.885562Z</date>
+    <millis>1425029744885</millis>
+    <nanos>562000</nanos>
+    <sequence>1256</sequence>
+    <logger>kgh.test.fred</logger>
+    <level>INFO</level>
+    <class>kgh.test.XMLTest</class>
+    <method>writeLog</method>
+    <thread>10</thread>
+    <message>Hello world!</message>
+  </record>
+  <record>
+    <date>2015-02-27T09:35:44.885562Z</date>
+    <millis>1425029744885</millis>
+    <nanos>562000</nanos>
+    <sequence>1256</sequence>
+    <logger>kgh.test.fred</logger>
+    <level>INFO</level>
+    <class>kgh.test.XMLTest</class>
+    <method>writeLog</method>
+    <thread>10</thread>
+    <message>Hello world!</message>
+  </record>
+  <record>
+    <date>2015-02-27T09:35:44.885562Z</date>
+    <millis>1425029744885</millis>
+    <nanos>562000</nanos>
+    <sequence>1256</sequence>
+    <logger>kgh.test.fred</logger>
+    <level>INFO</level>
+    <class>kgh.test.XMLTest</class>
+    <method>writeLog</method>
+    <thread>10</thread>
+    <message>Hello world!</message>
+  </record>
+  <record>
+    <date>2015-02-27T09:35:44.885562Z</date>
+    <millis>1425029744885</millis>
+    <nanos>562000</nanos>
+    <sequence>1256</sequence>
+    <logger>kgh.test.fred</logger>
+    <level>INFO</level>
+    <class>kgh.test.XMLTest</class>
+    <method>writeLog</method>
+    <thread>10</thread>
+    <message>Hello world!</message>
+  </record>
+  <record>
+    <date>2015-02-27T09:35:44.885562Z</date>
+    <millis>1425029744885</millis>
+    <nanos>562000</nanos>
+    <sequence>1256</sequence>
+    <logger>kgh.test.fred</logger>
+    <level>INFO</level>
+    <class>kgh.test.XMLTest</class>
+    <method>writeLog</method>
+    <thread>10</thread>
+    <message>Hello world!</message>
+  </record>
+</log>

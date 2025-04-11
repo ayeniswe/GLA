@@ -133,3 +133,4 @@ class XMLTransformer(BaseXMLTransformer, BestResolver, StructuredMixIn):
         if not BaseXMLTransformer.isfrag(path, encoding):
             self.resolve((path, encoding))
             return True
+        return False
