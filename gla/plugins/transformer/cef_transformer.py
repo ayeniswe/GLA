@@ -30,11 +30,8 @@ class CefTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolve
             return "VERY HIGH"
         return None
 
-    def __init__(self, cache: bool = False):
+    def __init__(self):
         """Create a new `CefTransformer`
-
-        NOTE: cache set to `True` will enable the use of the same strategy for
-        future log entries seen by this instance
         """
         super().__init__(
             [
@@ -52,7 +49,7 @@ class CefTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolve
                     )
                 ),
             ],
-            cache,
+            False
         )
 
     def transform(self, entry: str) -> Optional[Log]:

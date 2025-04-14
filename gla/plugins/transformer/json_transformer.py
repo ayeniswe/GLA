@@ -50,11 +50,8 @@ class JsonTransformer(BaseTransformerValidator, BestResolver, StructuredMixIn):
     def mode(self) -> str:
         return Mode.JSON
 
-    def __init__(self, cache: bool = False):
+    def __init__(self):
         """Create a new `JsonTransformer`
-
-        NOTE: cache set to `True` will enable the use of the same strategy for
-        future log entries seen by this instance
         """
         super().__init__(
             [
@@ -89,7 +86,7 @@ class JsonTransformer(BaseTransformerValidator, BestResolver, StructuredMixIn):
                     }
                 ),
             ],
-            cache,
+            False
         )
 
     def transform(self, entry: str) -> Optional[Log]:

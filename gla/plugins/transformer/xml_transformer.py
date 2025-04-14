@@ -116,15 +116,12 @@ class XMLTransformer(BaseXMLTransformer, BestResolver, StructuredMixIn):
     def mode(self) -> str:
         return Mode.XML
     
-    def __init__(self, cache: bool = False):
+    def __init__(self):
         """Create a new `XMLTransformer`
-
-        NOTE: cache set to `True` will enable the use of the same strategy for
-        future log entries seen by this instance
         """
         super().__init__(
             [JLU()],
-            cache,
+            False
         )
 
     def validate(self, data: Dict[str, Any]) -> bool:

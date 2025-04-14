@@ -1,10 +1,11 @@
+from gla.analyzer.iterator import Unstructured
 from gla.plugins.transformer.sip_transformer import SipTransformer
 
 
-def test_sip_transformation():
+def test_sip_transformation(get_log_path):
+    # ARRANGE
     sip = SipTransformer()
-
-    test_cases = [
+    cases = [
         {
             "input": "172 1275930743.699 R s REGISTER-1 sip:example.com 198.51.100.10:5060:udp "
             "198.51.100.1:5060:udp sip:example.com sip:alice@example.com;tag=76yhh "
@@ -40,6 +41,7 @@ def test_sip_transformation():
             " - Received a INVITE-43 request from sip:alice@example.com;tag=a1-1 "
             "(198.51.100.1:5060:udp) to sip:bob@example.net (203.0.113.200:5060:udp)",
         },
+        # STOP her
         {
             "input": "159 1275930744.001 r s INVITE-43 - 198.51.100.1:5060:udp "
             "203.0.113.200:5060:udp sip:bob@example.net sip:alice@example.com;tag=a1-1 "
@@ -173,17 +175,15 @@ def test_sip_transformation():
             "expected": None,
         },
     ]
+    iterator = Unstructured(get_log_path("test-sip.log"), "utf-8", "\n")
+    # Select correct strategy
+    sip.resolve((get_log_path("test-sip.log"), "utf-8"))
 
-    for case in test_cases:
-        input_log = case["input"]
-        expected_result = case["expected"]
-        result = sip.transform(input_log)
+    for idx, entry in enumerate(iterator):
+        # ACT
+        result = sip.transform(entry)
+        result = str(result) if result else result
 
-        if expected_result:
-            assert (
-                str(result) == expected_result
-            ), f"Failed for input: {input_log}, Expected: {expected_result}, Got: {str(result)}"
-        else:
-            assert (
-                result is None
-            ), f"Failed for input: {input_log}, Expected: None, Got: {str(result)}"
+        # ASSERT
+        actual = cases[idx]["actual"]
+        assert (result == actual), f"Failed for input: {entry}, expected: {actual}, Got: {result}"

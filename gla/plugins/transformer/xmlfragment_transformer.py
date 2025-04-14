@@ -87,15 +87,12 @@ class XMLFragmentTransformer(BaseXMLTransformer, Resolver, UnstructuredBaseResol
     of fragmented `xml` log messages
     """
 
-    def __init__(self, cache: bool = False):
+    def __init__(self):
         """Create a new `XMLFragmentTransformer`
-
-        NOTE: cache set to `True` will enable the use of the same strategy for
-        future log entries seen by this instance
         """
         super().__init__(
             [WinEvent()],
-            cache,
+            False
         )
 
     def validate(self, data: Dict[str, Any]) -> bool:

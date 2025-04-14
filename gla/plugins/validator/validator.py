@@ -13,9 +13,9 @@ class Validator(ABC):
     """
 
     @abstractmethod
-    def validate(self, data: Dict[str, Any]) -> bool:
+    def validate(self, data: Any) -> bool:
         """Validate some input data
 
         Args:
-            data (dict[str, Any]): input data to validate against
+            data (Any): input data to validate against
         """

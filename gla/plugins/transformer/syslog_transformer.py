@@ -22,11 +22,8 @@ class SyslogTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseReso
     of `syslog` log messages
     """
 
-    def __init__(self, cache: bool = False):
+    def __init__(self):
         """Create a new `SyslogTransformer`
-
-        NOTE: cache set to `True` will enable the use of the same strategy for
-        future log entries seen by this instance
         """
         super().__init__(
             [
@@ -53,7 +50,7 @@ class SyslogTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseReso
                     )
                 ),
             ],
-            cache,
+            False
         )
 
     def transform(self, entry: str) -> Optional[Log]:
@@ -99,7 +96,6 @@ class SyslogTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseReso
             return "INFO"
         elif res == 7:
             return "DEBUG"
-        return None
 
     def validate(self, data: Dict[str, Any]) -> bool:
         try:

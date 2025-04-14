@@ -19,11 +19,8 @@ class NcsaTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolv
     of common web servers `ncsa` log messages
     """
 
-    def __init__(self, cache: bool = False):
+    def __init__(self):
         """Create a new `NcsaTransformer`
-
-        NOTE: cache set to `True` will enable the use of the same strategy for
-        future log entries seen by this instance
         """
         super().__init__(
             [
@@ -55,7 +52,7 @@ class NcsaTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolv
                     )
                 ),
             ],
-            cache,
+            False
         )
 
     def transform(self, entry: str) -> Optional[Log]:

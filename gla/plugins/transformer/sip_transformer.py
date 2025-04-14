@@ -18,11 +18,8 @@ class SipTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolve
     of `sip` common log messages
     """
 
-    def __init__(self, cache: bool = False):
+    def __init__(self):
         """Create a new `SipTransformer`
-
-        NOTE: cache set to `True` will enable the use of the same strategy for
-        future log entries seen by this instance
         """
         super().__init__(
             [
@@ -46,7 +43,7 @@ class SipTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolve
                     )
                 )
             ],
-            cache,
+            False
         )
 
     def transform(self, entry: str) -> Optional[Log]:

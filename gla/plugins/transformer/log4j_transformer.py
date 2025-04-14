@@ -21,11 +21,8 @@ class Log4jTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResol
     of `log4j` log messages
     """
 
-    def __init__(self, cache: bool = False):
+    def __init__(self):
         """Create a new `Log4jTransformer`
-
-        NOTE: cache set to `True` will enable the use of the same strategy for
-        future log entries seen by this instance
         """
         super().__init__(
             [
@@ -300,7 +297,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResol
                     )
                 ),
             ],
-            cache,
+            False
         )
 
     def transform(self, entry: str) -> Optional[Log]:
