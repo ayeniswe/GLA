@@ -9,7 +9,8 @@ from typing import Any, Dict, Match, Optional
 from gla.analyzer.iterator import UnstructuredBaseResolverBreakerMixIn
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
-from gla.plugins.transformer.transformer import BaseTransformerValidator, RegexBreakerStrategy
+from gla.plugins.transformer.transformer import (BaseTransformerValidator,
+                                                 RegexBreakerStrategy)
 
 
 class SipTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolverBreakerMixIn):

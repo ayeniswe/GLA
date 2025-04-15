@@ -12,7 +12,8 @@ from gla.analyzer.iterator import Breaker, UnstructuredBaseResolverBreakerMixIn
 from gla.constants import LANGUAGES_SUPPORTED
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
-from gla.plugins.transformer.transformer import BaseTransformerValidator, RegexBreakerStrategy
+from gla.plugins.transformer.transformer import (BaseTransformerValidator,
+                                                 RegexBreakerStrategy)
 
 
 class Log4jTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolverBreakerMixIn):

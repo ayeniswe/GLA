@@ -1,7 +1,10 @@
 import os
 from typing import Any, Dict, Iterator
-from gla.plugins.transformer.transformer import BaseTransformer
+
 import pytest
+
+from gla.plugins.transformer.transformer import BaseTransformer
+
 
 @pytest.fixture
 def get_log_path():
