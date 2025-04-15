@@ -1,0 +1,7 @@
+03-01-2020 WARN database.connection - Failed to connect to database
+
+03-01-2020 ERROR user.auth - Invalid login credentials
+
+03-01-2020 DEBUG api.controller - Fetching user data
+
+03-01-2020 ERROR network.service - Server started successfully

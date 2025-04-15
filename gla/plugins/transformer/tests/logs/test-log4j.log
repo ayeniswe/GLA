@@ -1,1 +1,19 @@
-2020-02-01 [main] ERROR class.example - Error message goes here
+2020-02-01 [worker-thread] WARN database.connection - Failed to connect to database
+
+// Continue to make test logs for rest of these scenraio below
+
+ERROR [network-thread] api.request - Timeout error 2021-09-10
+
+[network-thread] api.request ERROR 2021-11-11 - Timeout error occurred
+
+[logging-thread] WARN logger.service 2022-12-05 - Missing log file
+
+class.example Error message goes here 02-01-2020 ERROR [main]
+
+class.example Error message goes here ERROR 02-01-2020 [main]
+
+2020-03-05 ERROR user.auth - Invalid session
+
+[api-thread] 2021-01-01 ERROR network.connect - Timeout
+
+2022-08-15 ERROR api.auth - Unauthorized access

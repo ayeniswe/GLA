@@ -47,7 +47,7 @@ class SipTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolve
         )
 
     def transform(self, entry: str) -> Optional[Log]:
-        match: Optional[Match[str]] = self.resolve(entry)
+        match: Optional[Match[str]] = self._cache_strategy.do_action(entry)
         if match:
             res = match.groupdict()
 
