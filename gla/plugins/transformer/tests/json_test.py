@@ -1,7 +1,10 @@
 from json import JSONDecodeError
+
+from pytest import raises
+
 from gla.analyzer.iterator import Mode, Structured
 from gla.plugins.transformer.json_transformer import JsonTransformer
-from pytest import raises
+
 
 def test_json_transformation_ecs(get_log_path, check_transformer_test_cases):
    # ARRANGE

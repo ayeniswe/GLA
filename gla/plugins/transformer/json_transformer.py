@@ -15,7 +15,7 @@ from gla.models.log import Log
 from gla.plugins.resolver.resolver import BestResolver
 from gla.plugins.transformer.transformer import BaseTransformerValidator
 from gla.typings.alias import FileDescriptorOrPath
-from gla.utilities.strategy import  ScoringStrategyArtifact
+from gla.utilities.strategy import ScoringStrategyArtifact
 
 
 class JsonStrategy(ScoringStrategyArtifact):

@@ -7,10 +7,12 @@ from abc import ABC, abstractmethod
 from collections.abc import Iterator
 from enum import Enum
 from json import JSONDecodeError, loads
-from lxml.etree import iterparse
+
+from lxml.etree import _Element, iterparse
+
 from gla.plugins.resolver.resolver import BaseResolver, Resolver
 from gla.typings.alias import FileDescriptorOrPath
-from lxml.etree import _Element
+
 
 class Mode(Enum):
     XML = "xml"

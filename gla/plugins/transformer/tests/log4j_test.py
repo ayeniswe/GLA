@@ -1,7 +1,6 @@
 from gla.analyzer.iterator import Unstructured
 from gla.plugins.transformer.log4j_transformer import Log4jTransformer
 
-
 # NOT EXHAUSTIVE TEST FOR ALL ARRANGMENTS BUT 
 # ENOUGH CONFIDENT
 

@@ -2,10 +2,13 @@
 The `resolver` module provides classes for resolving log entries based on a list of strategies.
 """
 
-from abc import ABC, abstractmethod
 import sys
+from abc import ABC, abstractmethod
 from typing import Any, List, Optional
-from gla.utilities.strategy import ScoringStrategyArtifact, Strategy, StrategyAction
+
+from gla.utilities.strategy import (ScoringStrategyArtifact, Strategy,
+                                    StrategyAction)
+
 
 class BaseResolver(ABC):
     """
