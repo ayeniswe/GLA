@@ -4,9 +4,8 @@ The `resolver` module provides classes for resolving log entries based on a list
 
 from abc import ABC, abstractmethod
 import sys
-from typing import Any, List, Optional, TextIO, Tuple
-
-from gla.utilities.strategy import ScoringStrategyAction, Strategy, StrategyAction
+from typing import Any, List, Optional
+from gla.utilities.strategy import ScoringStrategyArtifact, Strategy, StrategyAction
 
 class BaseResolver(ABC):
     """
@@ -63,9 +62,9 @@ class BestResolver(BaseResolver):
     resolution capabilities with a "highest scorer" scoring system
     """
         
-    def __init__(self, strategies: List[ScoringStrategyAction], cache: bool):
+    def __init__(self, strategies: List[ScoringStrategyArtifact], cache: bool):
         self._cache = cache
-        self._strategies: List[ScoringStrategyAction] = strategies
+        self._strategies: List[ScoringStrategyArtifact] = strategies
         self._cache_strategy = None
 
 

@@ -4,21 +4,21 @@ for transforming JSON log messages into structured `Log` objects based on predef
 schema mappings.
 """
 
-from json import JSONDecodeError, loads
+from json import JSONDecodeError
 from typing import Any, Dict, Optional, Tuple
 
 import dateparser
 
-from gla.analyzer.iterator import Mode, Structured, StructuredMixIn, UnstructuredBaseResolverBreakerMixIn
+from gla.analyzer.iterator import Mode, Structured, StructuredMixIn
 from gla.constants import LANGUAGES_SUPPORTED
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import BestResolver
-from gla.plugins.transformer.transformer import BaseTransformerValidator, Breaker
+from gla.plugins.transformer.transformer import BaseTransformerValidator
 from gla.typings.alias import FileDescriptorOrPath
-from gla.utilities.strategy import  ScoringStrategyAction
+from gla.utilities.strategy import  ScoringStrategyArtifact
 
 
-class JsonStrategy(ScoringStrategyAction):
+class JsonStrategy(ScoringStrategyArtifact):
     """
     The `JsonStrategy` class is responsible for handling strategies based on json key mappings
     """
@@ -36,7 +36,7 @@ class JsonStrategy(ScoringStrategyAction):
             min_size = min(len(mapping_values), len(line_keys)) 
             return intersect / min_size
     
-    def do_action(self, _: dict):
+    def artifact(self):
         return self._mapping
 
 
@@ -89,20 +89,19 @@ class JsonTransformer(BaseTransformerValidator, BestResolver, StructuredMixIn):
             False
         )
 
-    def transform(self, entry: str) -> Optional[Log]:
+    def transform(self, entry: dict) -> Optional[Log]:
         try:
-            res: dict = loads(entry.strip())
-            mapping: dict = self._cache_strategy.do_action()
+            mapping: dict = self._cache_strategy.artifact()
             if mapping:
-                time = res.get(mapping.get("timestamp"))
+                time = entry.get(mapping.get("timestamp"))
                 if time is not None:
                     time = dateparser.parse(time, languages=LANGUAGES_SUPPORTED)
                 return Log(
-                    level=res.get(mapping.get("level")),
-                    module=res.get(mapping.get("module")),
-                    source=res.get(mapping.get("source")),
+                    level=entry.get(mapping.get("level")),
+                    module=entry.get(mapping.get("module")),
+                    source=entry.get(mapping.get("source")),
                     timestamp=time,
-                    message=res.get(
+                    message=entry.get(
                         mapping.get("message"),
                     ),
                 )

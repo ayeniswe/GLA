@@ -51,6 +51,16 @@ class ScoringStrategyAction(ScoringStrategy):
         """Execute any given action for strategy"""
         ...
 
+class ScoringStrategyArtifact(ScoringStrategy):
+    """
+    The `ScoringStrategyArtifact` is an abstract class to promote
+    scoring strategies that return an artifact
+    """
+
+    @abstractmethod
+    def artifact(self) -> Optional[Any]:
+        """Return any given artifact for a strategy"""
+        ...
 
 class RegexStrategy(Strategy):
     """

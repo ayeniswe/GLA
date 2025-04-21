@@ -4,4 +4,4 @@
 
 03-01-2020 DEBUG api.controller - Fetching user data
 
-03-01-2020 ERROR network.service - Server started successfully
+03-01-2020 INFO network.service - Server started successfully

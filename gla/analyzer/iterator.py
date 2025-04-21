@@ -94,7 +94,6 @@ class Unstructured(Iterator):
 
         return buffer
 
-
 class Structured(Iterator):
     def __init__(self, path: FileDescriptorOrPath, encoding: str, mode: Mode):
         self.file = path
