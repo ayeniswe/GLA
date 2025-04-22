@@ -10,8 +10,10 @@ from typing import Any, Dict, Match, Optional
 from gla.analyzer.iterator import UnstructuredBaseResolverBreakerMixIn
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
-from gla.plugins.transformer.transformer import (BaseTransformerValidator,
-                                                 RegexBreakerStrategy)
+from gla.plugins.transformer.transformer import (
+    BaseTransformerValidator,
+    RegexBreakerStrategy,
+)
 
 
 class NcsaTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolverBreakerMixIn):
@@ -21,8 +23,7 @@ class NcsaTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolv
     """
 
     def __init__(self):
-        """Create a new `NcsaTransformer`
-        """
+        """Create a new `NcsaTransformer`"""
         super().__init__(
             [
                 # NCSA COMBINED CLF
@@ -53,7 +54,7 @@ class NcsaTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolv
                     )
                 ),
             ],
-            False
+            False,
         )
 
     def transform(self, entry: str) -> Optional[Log]:

@@ -10,7 +10,9 @@ from gla.plugins.transformer.transformer import BaseTransformer
 def get_log_path():
     def _inner(filename: str) -> str:
         return os.path.join(os.path.dirname(__file__), "logs", filename)
+
     return _inner
+
 
 @pytest.fixture
 def check_transformer_test_cases():
@@ -27,8 +29,11 @@ def check_transformer_test_cases():
                 except KeyError:
                     raise KeyError("Every expected case must have a single key named 'expected'")
                 except IndexError:
-                    raise IndexError("An expected case must be specified for each iteration of tests")
-                assert (result == actual)
+                    raise IndexError(
+                        "An expected case must be specified for each iteration of tests"
+                    )
+                assert result == actual
         except Exception as e:
             raise e
+
     return _inner

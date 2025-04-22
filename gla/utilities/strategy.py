@@ -3,7 +3,7 @@ The `strategy` module defines abstract and concrete strategy classes that implem
 various strategies, including matching and scoring.
 """
 from abc import ABC, abstractmethod
-from typing import Any, Match, Optional, Pattern, Tuple
+from typing import Any, Match, Optional, Pattern
 
 
 class Strategy(ABC):
@@ -16,6 +16,7 @@ class Strategy(ABC):
     def match(self, entry: Any) -> Optional[Any]:
         """Match the entry against the strategy"""
         ...
+
 
 class StrategyAction(Strategy):
     """
@@ -36,9 +37,10 @@ class ScoringStrategy(ABC):
     """
 
     @abstractmethod
-    def score(self, entry: Any) -> Tuple[int, Any]:
+    def score(self, entry: Any) -> Optional[int]:
         """Score the entry against the strategy"""
         ...
+
 
 class ScoringStrategyAction(ScoringStrategy):
     """
@@ -51,6 +53,7 @@ class ScoringStrategyAction(ScoringStrategy):
         """Execute any given action for strategy"""
         ...
 
+
 class ScoringStrategyArtifact(ScoringStrategy):
     """
     The `ScoringStrategyArtifact` is an abstract class to promote
@@ -61,6 +64,7 @@ class ScoringStrategyArtifact(ScoringStrategy):
     def artifact(self) -> Optional[Any]:
         """Return any given artifact for a strategy"""
         ...
+
 
 class RegexStrategy(Strategy):
     """

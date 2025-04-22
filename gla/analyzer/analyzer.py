@@ -8,7 +8,6 @@ from typing import List
 import cchardet
 
 from gla.analyzer.engine import Engine
-from gla.analyzer.iterator import Breaker, Structured, StructuredMixIn, Unstructured, UnstructuredMixIn, XMLStructure
 from gla.analyzer.search.search import StrMatch
 from gla.plugins.transformer.cef_transformer import CefTransformer
 from gla.plugins.transformer.json_transformer import JsonTransformer
@@ -21,6 +20,7 @@ from gla.plugins.transformer.xml_transformer import XMLTransformer
 from gla.plugins.transformer.xmlfragment_transformer import XMLFragmentTransformer
 from gla.testcase.testcase import TestCase
 from gla.typings.alias import FileDescriptorOrPath
+
 
 class Analyzer:
     """
@@ -37,7 +37,7 @@ class Analyzer:
         `file` (FileDescriptorOrPath): The log file to be processed (can be a file path or
         file-like object).
         `encoding` (str, optional): The encoding to use when reading the log file.
-        Defaults to "utf-8".
+        Encoding will auto-resolve.
         `custom_transformer` (BaseTransformer, optional): A user-defined transformer
         for processing the log data.
         If not provided, a default transformer will be selected based on the file information.
@@ -66,7 +66,7 @@ class Analyzer:
                     SipTransformer(),
                     CefTransformer(),
                     XMLTransformer(),
-                    XMLFragmentTransformer()
+                    XMLFragmentTransformer(),
                 ]
             ).get_transformer(self.file, self.encoding)
         )
@@ -81,6 +81,8 @@ class Analyzer:
     def _process_line(self, line: str, matcher: StrMatch):
         """
         Processes a line of text and checks for matches based on the test case criteria.
+
+        Modifies the test case entries in-place
         """
         result = matcher.search_substr_count(line)
         if result:
@@ -100,8 +102,8 @@ class Analyzer:
                         print(f"Failed here: {entry}")
                         return
 
-                # Match
-                if actual_cnt and actual_cnt == expected_cnt:
+                # Match TODO devide between exact count versus just a count
+                if actual_cnt and (expected_cnt == 1 or actual_cnt == expected_cnt):
                     matches.append(entry)
                     print(f"Match found: {entry}")
 
@@ -114,10 +116,10 @@ class Analyzer:
 
     def run(self):
         matcher = StrMatch(self.testcase.patterns)
-        for entry in Engine(self.file, self.encoding, self.current_transformer):
-            print(entry)
-            # # Once all entries are found the search can end early
-            # if len(self.testcase.entries) == 0:
-            #     break
-            # if self._process_line(entry, matcher) is None:
-            #     break
+        for entry in enumerate(Engine(self.file, self.encoding, self.current_transformer)):
+            # Once all entries are found the search can end early
+            if len(self.testcase.entries) == 0:
+                break
+
+            if self._process_line(entry, matcher) is None:
+                break

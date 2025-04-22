@@ -26,16 +26,16 @@ class JsonStrategy(ScoringStrategyArtifact):
     def __init__(self, mapping: dict):
         self._mapping = mapping
 
-    def score(self, entry: Tuple[FileDescriptorOrPath, str]) -> Tuple[int, dict]:
+    def score(self, entry: Tuple[FileDescriptorOrPath, str]) -> int:
         for line in Structured(entry[0], entry[1], Mode.JSON):
             line_keys: set = set(line.keys())
             mapping_values: set = set(self._mapping.values())
-            
+
             # Overlap Coefficient Similiarity Heuristic
-            intersect = len(line_keys.intersection(mapping_values)) 
-            min_size = min(len(mapping_values), len(line_keys)) 
+            intersect = len(line_keys.intersection(mapping_values))
+            min_size = min(len(mapping_values), len(line_keys))
             return intersect / min_size
-    
+
     def artifact(self):
         return self._mapping
 
@@ -45,14 +45,13 @@ class JsonTransformer(BaseTransformerValidator, BestResolver, StructuredMixIn):
     The `JsonTransformer` class is responsible for handling transformation
     of `json` log messages
     """
-    
+
     @property
     def mode(self) -> str:
         return Mode.JSON
 
     def __init__(self):
-        """Create a new `JsonTransformer`
-        """
+        """Create a new `JsonTransformer`"""
         super().__init__(
             [
                 # Elastic Common Schema
@@ -86,7 +85,7 @@ class JsonTransformer(BaseTransformerValidator, BestResolver, StructuredMixIn):
                     }
                 ),
             ],
-            False
+            False,
         )
 
     def transform(self, entry: dict) -> Optional[Log]:
@@ -111,6 +110,6 @@ class JsonTransformer(BaseTransformerValidator, BestResolver, StructuredMixIn):
 
     def validate(self, data: Dict[str, Any]) -> bool:
         try:
-           return self.resolve((data["data"], data["encoding"])) is not None
+            return self.resolve((data["data"], data["encoding"])) is not None
         except (FileNotFoundError, UnicodeDecodeError, JSONDecodeError):
             return False

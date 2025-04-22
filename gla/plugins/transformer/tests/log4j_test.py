@@ -1,8 +1,9 @@
 from gla.analyzer.iterator import Unstructured
 from gla.plugins.transformer.log4j_transformer import Log4jTransformer
 
-# NOT EXHAUSTIVE TEST FOR ALL ARRANGMENTS BUT 
+# NOT EXHAUSTIVE TEST FOR ALL ARRANGMENTS BUT
 # ENOUGH CONFIDENT
+
 
 def test_log4j_transformation(get_log_path, check_transformer_test_cases):
     # ARRANGE
@@ -184,7 +185,8 @@ def test_log4j_transformation7(get_log_path, check_transformer_test_cases):
 
     # ACT-ASSERT
     check_transformer_test_cases(cases, iterator, log4j)
-    
+
+
 def test_log4j_transformation8(get_log_path, check_transformer_test_cases):
     # ARRANGE
     log4j = Log4jTransformer()
@@ -209,6 +211,7 @@ def test_log4j_transformation8(get_log_path, check_transformer_test_cases):
 
     # ACT-ASSERT
     check_transformer_test_cases(cases, iterator, log4j)
+
 
 def test_log4j_transformation9(get_log_path, check_transformer_test_cases):
     # ARRANGE
@@ -235,6 +238,7 @@ def test_log4j_transformation9(get_log_path, check_transformer_test_cases):
     # ACT-ASSERT
     check_transformer_test_cases(cases, iterator, log4j)
 
+
 def test_log4j_transformation10(get_log_path, check_transformer_test_cases):
     # ARRANGE
     log4j = Log4jTransformer()
@@ -259,6 +263,7 @@ def test_log4j_transformation10(get_log_path, check_transformer_test_cases):
 
     # ACT-ASSERT
     check_transformer_test_cases(cases, iterator, log4j)
+
 
 def test_log4j_transformation11(get_log_path, check_transformer_test_cases):
     # ARRANGE
@@ -285,6 +290,7 @@ def test_log4j_transformation11(get_log_path, check_transformer_test_cases):
     # ACT-ASSERT
     check_transformer_test_cases(cases, iterator, log4j)
 
+
 def test_log4j_transformation12(get_log_path, check_transformer_test_cases):
     # ARRANGE
     log4j = Log4jTransformer()
@@ -309,6 +315,7 @@ def test_log4j_transformation12(get_log_path, check_transformer_test_cases):
 
     # ACT-ASSERT
     check_transformer_test_cases(cases, iterator, log4j)
+
 
 def test_log4j_transformation13(get_log_path, check_transformer_test_cases):
     # ARRANGE
@@ -335,6 +342,7 @@ def test_log4j_transformation13(get_log_path, check_transformer_test_cases):
     # ACT-ASSERT
     check_transformer_test_cases(cases, iterator, log4j)
 
+
 def test_log4j_transformation14(get_log_path, check_transformer_test_cases):
     # ARRANGE
     log4j = Log4jTransformer()
@@ -359,7 +367,8 @@ def test_log4j_transformation14(get_log_path, check_transformer_test_cases):
 
     # ACT-ASSERT
     check_transformer_test_cases(cases, iterator, log4j)
-    
+
+
 def test_log4j_transformation15(get_log_path, check_transformer_test_cases):
     # ARRANGE
     log4j = Log4jTransformer()
@@ -384,7 +393,8 @@ def test_log4j_transformation15(get_log_path, check_transformer_test_cases):
 
     # ACT-ASSERT
     check_transformer_test_cases(cases, iterator, log4j)
-    
+
+
 def test_log4j_transformation16(get_log_path, check_transformer_test_cases):
     # ARRANGE
     log4j = Log4jTransformer()

@@ -27,7 +27,7 @@ def test_transformer_factory_by_path(get_log_path):
             XMLFragmentTransformer(),
         ]
     )
-    
+
     # ACT
     result_log4j = trans.get_transformer(get_log_path("test-log4j.log"), encoding="utf-8")
     result_syslog = trans.get_transformer(get_log_path("test-syslog.log"), encoding="utf-8")
@@ -43,9 +43,10 @@ def test_transformer_factory_by_path(get_log_path):
     assert isinstance(result_sip, SipTransformer), "Should resolve as sip transformer"
     assert isinstance(result_ncsa, NcsaTransformer), "Should resolve as ncsa transformer"
     assert isinstance(result_cef, CefTransformer), "Should resolve as cef transformer"
-    assert isinstance(result_xmlfrag, XMLFragmentTransformer), "Should resolve as xml fragment transformer"
+    assert isinstance(
+        result_xmlfrag, XMLFragmentTransformer
+    ), "Should resolve as xml fragment transformer"
     assert isinstance(result_xml, XMLTransformer), "Should resolve as xml transformer"
-
 
 
 def test_transformer_factory_undetermined():
@@ -65,33 +66,3 @@ def test_transformer_factory_undetermined():
     # ACT-ASSERT
     with raises(ValueError, match="transformer could not be determined"):
         trans.get_transformer(os.path.join(os.path.dirname(__file__), "logs", "test-unk.log"))
-
-
-# def test_transformer_by_name():
-#     trans = Transformer(
-#         [
-#             JsonTransformer(),
-#             SyslogTransformer(),
-#             Log4jTransformer(),
-#             NcsaTransformer(),
-#             SipTransformer(),
-#             CefTransformer(),
-#             XMLTransformer(),
-#         ]
-#     )
-#     result = trans.get_transformer_by_name("xml")
-#     assert isinstance(result, XMLTransformer), "Should resolve as xml transformer"
-#     result = trans.get_transformer_by_name("xml-frag")
-#     assert isinstance(result, XMLFragmentTransformer), "Should resolve as xml fragment transformer"
-#     result = trans.get_transformer_by_name("sys")
-#     assert isinstance(result, SyslogTransformer), "Should resolve as syslog transformer"
-#     result = trans.get_transformer_by_name("json")
-#     assert isinstance(result, JsonTransformer), "Should resolve as json transformer"
-#     result = trans.get_transformer_by_name("cef")
-#     assert isinstance(result, CefTransformer), "Should resolve as cef transformer"
-#     result = trans.get_transformer_by_name("ncsa")
-#     assert isinstance(result, NcsaTransformer), "Should resolve as ncsa transformer"
-#     result = trans.get_transformer_by_name("sip")
-#     assert isinstance(result, SipTransformer), "Should resolve as sip transformer"
-#     result = trans.get_transformer_by_name("log4j")
-#     assert isinstance(result, Log4jTransformer), "Should resolve as log4j transformer"

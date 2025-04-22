@@ -3,15 +3,17 @@ The `xmlfragment_transformer` module is responsible for transforming fragmented 
 messages into structured `Log` objects. It supports various XML formats,
 including `Windows Event Logs`
 """
-from typing import Any, Dict, Optional, Tuple, Union, Match
+from typing import Any, Dict, Match, Optional, Tuple, Union
+
+from lxml.etree import XMLSyntaxError, _Element, fromstring
+
 from gla.analyzer.iterator import Unstructured, UnstructuredBaseResolverBreakerMixIn
-from lxml.etree import XMLSyntaxError, fromstring, _Element, iterparse
 from gla.plugins.resolver.resolver import Resolver
 from gla.plugins.transformer.transformer import Breaker
 from gla.plugins.transformer.xml_transformer import BaseXMLTransformer
-from gla.plugins.validator.validator import Validator
-from gla.utilities.strategy import StrategyAction
 from gla.typings.alias import FileDescriptorOrPath
+from gla.utilities.strategy import StrategyAction
+
 
 class WinEvent(StrategyAction, Breaker):
     """
@@ -24,11 +26,12 @@ class WinEvent(StrategyAction, Breaker):
     @property
     def breaker(self) -> str:
         return "</Event>\n"
-    
+
     def match(self, entry: Tuple[FileDescriptorOrPath, str]) -> Optional[Match[str]]:
         for line in Unstructured(entry[0], entry[1], self.breaker):
             return self.do_action(fromstring(line + self.breaker))
-        
+        return None
+
     def do_action(self, entry: _Element) -> Optional[dict]:
         if entry.tag != f"{self.NS}Event":
             return None
@@ -88,12 +91,8 @@ class XMLFragmentTransformer(BaseXMLTransformer, Resolver, UnstructuredBaseResol
     """
 
     def __init__(self):
-        """Create a new `XMLFragmentTransformer`
-        """
-        super().__init__(
-            [WinEvent()],
-            False
-        )
+        """Create a new `XMLFragmentTransformer`"""
+        super().__init__([WinEvent()], False)
 
     def validate(self, data: Dict[str, Any]) -> bool:
         path: FileDescriptorOrPath = data["data"]
@@ -104,3 +103,4 @@ class XMLFragmentTransformer(BaseXMLTransformer, Resolver, UnstructuredBaseResol
                 return True
             except XMLSyntaxError:
                 return False
+        return False

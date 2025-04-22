@@ -62,9 +62,8 @@ def test_syslog_transformation(get_log_path, check_transformer_test_cases):
             "expected": "2025-12-25T20:00:00 ALERT [loggingserver] logapp - Log rotation complete",
         },
         {
-            "expected": "2025-05-05T23:59:00 DEBUG [mainserver] myservice - "
-            "Service unavailable",
-        },        
+            "expected": "2025-05-05T23:59:00 DEBUG [mainserver] myservice - " "Service unavailable",
+        },
         {
             "expected": None,
         },

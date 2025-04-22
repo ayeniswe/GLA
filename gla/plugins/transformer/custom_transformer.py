@@ -8,6 +8,7 @@ from typing import List, Optional
 
 import dateparser
 
+from gla.analyzer.iterator import Breaker, UnstructuredMixIn
 from gla.constants import LANGUAGES_SUPPORTED
 from gla.models.log import Log
 from gla.plugins.transformer.transformer import BaseTransformer
@@ -24,17 +25,23 @@ LOG_HEADERS = {
 }
 
 
-class CustomTransformer(BaseTransformer):
+class CustomTransformer(BaseTransformer, UnstructuredMixIn, Breaker):
     """
     The `CustomTransformer` class is responsible for handling transformation
     of user templated log messages
+
+    Only supports `unstructured` logs
     """
+
+    @property
+    def breaker(self) -> str:
+        return Breaker().breaker
 
     def __init__(self, template: List[str], delim: str = " "):
         """
         A transformer for parsing structured log entries based on a user-defined template.
 
-        The `delim` is the delimiter used to split log entries.
+        The `delim` is the delimiter used to split pieces of info in a log entries.
         The `template` defines the expected structure of the log message.
 
         Template Keys:

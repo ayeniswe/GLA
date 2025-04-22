@@ -4,12 +4,23 @@ or optional task needed
 """
 
 from typing import Iterator
-from gla.analyzer.iterator import Structured, StructuredMixIn, Unstructured, UnstructuredMixIn
+
+from gla.analyzer.iterator import (
+    Structured,
+    StructuredMixIn,
+    Unstructured,
+    UnstructuredMixIn,
+)
 from gla.plugins.transformer.transformer import BaseTransformer
 from gla.typings.alias import FileDescriptorOrPath
 
 
 class Engine(Iterator):
+    """
+    The Engine class wraps the appropriate iterator (`Unstructured` or `Structured`)
+    based on the type of transformer passed.
+    """
+
     def __init__(self, path: FileDescriptorOrPath, encoding: str, transformer: BaseTransformer):
         self.transformer = transformer
         self.file = path
@@ -18,9 +29,9 @@ class Engine(Iterator):
             self.iterator = Unstructured(self.file, self.encoding, self.transformer.breaker)
         elif isinstance(self.transformer, StructuredMixIn):
             self.iterator = Structured(self.file, self.encoding, self.transformer.mode)
-        
+
     def __iter__(self):
         return self.iterator.__iter__()
-    
+
     def __next__(self):
         return self.iterator.__next__()

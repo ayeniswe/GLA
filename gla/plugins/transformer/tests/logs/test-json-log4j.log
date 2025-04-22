@@ -1,5 +1,5 @@
 {
-    "timestamp":"2019-08-06T14:08:40.199Z", 
+    "timestamp":"2019-08-06T14:08:40.199Z",
     "level":"INFO",
     "message":"User login successful",
     "loggerName":"auth.service"

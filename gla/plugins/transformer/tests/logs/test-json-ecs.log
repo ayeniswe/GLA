@@ -1,5 +1,5 @@
 {
-    "@timestamp":"2019-08-06T14:08:40.199Z", 
+    "@timestamp":"2019-08-06T14:08:40.199Z",
     "log.level":"DEBUG",
     "message":"init find form",
     "service.name":"spring-petclinic","process.thread.name":"http-nio-8080-exec-8",

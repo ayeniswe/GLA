@@ -9,7 +9,10 @@ from typing import Any, Dict, Match, Optional, Union
 from gla.analyzer.iterator import UnstructuredBaseResolverBreakerMixIn
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
-from gla.plugins.transformer.transformer import BaseTransformerValidator, RegexBreakerStrategy
+from gla.plugins.transformer.transformer import (
+    BaseTransformerValidator,
+    RegexBreakerStrategy,
+)
 
 
 class CefTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolverBreakerMixIn):
@@ -31,8 +34,7 @@ class CefTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolve
         return None
 
     def __init__(self):
-        """Create a new `CefTransformer`
-        """
+        """Create a new `CefTransformer`"""
         super().__init__(
             [
                 # CEF
@@ -49,7 +51,7 @@ class CefTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolve
                     )
                 ),
             ],
-            False
+            False,
         )
 
     def transform(self, entry: str) -> Optional[Log]:

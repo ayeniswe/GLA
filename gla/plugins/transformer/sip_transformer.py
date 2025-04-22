@@ -9,8 +9,10 @@ from typing import Any, Dict, Match, Optional
 from gla.analyzer.iterator import UnstructuredBaseResolverBreakerMixIn
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
-from gla.plugins.transformer.transformer import (BaseTransformerValidator,
-                                                 RegexBreakerStrategy)
+from gla.plugins.transformer.transformer import (
+    BaseTransformerValidator,
+    RegexBreakerStrategy,
+)
 
 
 class SipTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolverBreakerMixIn):
@@ -20,8 +22,7 @@ class SipTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolve
     """
 
     def __init__(self):
-        """Create a new `SipTransformer`
-        """
+        """Create a new `SipTransformer`"""
         super().__init__(
             [
                 # SIP CLF
@@ -44,7 +45,7 @@ class SipTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolve
                     )
                 )
             ],
-            False
+            False,
         )
 
     def transform(self, entry: str) -> Optional[Log]:

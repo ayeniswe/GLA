@@ -8,12 +8,14 @@ from typing import Any, Dict, Match, Optional
 
 import dateparser
 
-from gla.analyzer.iterator import Breaker, UnstructuredBaseResolverBreakerMixIn
+from gla.analyzer.iterator import UnstructuredBaseResolverBreakerMixIn
 from gla.constants import LANGUAGES_SUPPORTED
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
-from gla.plugins.transformer.transformer import (BaseTransformerValidator,
-                                                 RegexBreakerStrategy)
+from gla.plugins.transformer.transformer import (
+    BaseTransformerValidator,
+    RegexBreakerStrategy,
+)
 
 
 class Log4jTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolverBreakerMixIn):
@@ -23,8 +25,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResol
     """
 
     def __init__(self):
-        """Create a new `Log4jTransformer`
-        """
+        """Create a new `Log4jTransformer`"""
         super().__init__(
             [
                 RegexBreakerStrategy(
@@ -307,7 +308,7 @@ class Log4jTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResol
                     )
                 ),
             ],
-            False
+            False,
         )
 
     def transform(self, entry: str) -> Optional[Log]:

@@ -6,7 +6,7 @@
 
 175 1275930743.699 R r INVITE-43 sip:bob@example.net 203.0.113.200:5060:udp 198.51.100.1:5060:udp sip:bob@example.net sip:alice@example.com;tag=a1-1 tr-88h@example.com - s-1-tr - Subject,13,"Call me ASAP!"
 
-159 1275930744.001 r s INVITE-43 - 198.51.100.1:5060:udp 203.0.113.200:5060:udp sip:bob@example.net sip:alice@example.com;tag=a1-1 tr-88h@example.com 100 s-1-tr - 
+159 1275930744.001 r s INVITE-43 - 198.51.100.1:5060:udp 203.0.113.200:5060:udp sip:bob@example.net sip:alice@example.com;tag=a1-1 tr-88h@example.com 100 s-1-tr -
 
 184 1275930744.998 R s INVITE-43 sip:bob@bob1.example.net 203.0.113.1:5060:udp 203.0.113.200:5060:udp sip:bob@example.net sip:alice@example.com;tag=a1-1 tr-88h@example.com - s-1-tr c-1-tr
 

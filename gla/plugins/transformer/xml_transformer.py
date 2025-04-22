@@ -7,24 +7,29 @@ from typing import Any, Dict, Optional, Tuple
 from xml.etree.ElementTree import Element
 
 import dateparser
+from lxml.etree import XMLSyntaxError, _Element, iterparse
 
 from gla.analyzer.iterator import Mode, Structured, StructuredMixIn
 from gla.constants import LANGUAGES_SUPPORTED
 from gla.models.log import Log
-from gla.plugins.resolver.resolver import BaseResolver, BestResolver, Resolver
-from gla.plugins.transformer.transformer import BaseTransformer, BaseTransformerValidator
-from gla.utilities.strategy import ScoringStrategyAction, Strategy, StrategyAction
-from lxml.etree import iterparse, XMLSyntaxError
+from gla.plugins.resolver.resolver import BestResolver
+from gla.plugins.transformer.transformer import BaseTransformerValidator
 from gla.typings.alias import FileDescriptorOrPath
-from lxml.etree import _Element
+from gla.utilities.strategy import ScoringStrategyAction
+
 
 class BaseXMLTransformer(BaseTransformerValidator):
+    """
+    A `BaseXMLTransformer` is a common base class for transforming XML data between
+    fragment or valid xml data
+    """
 
+    @staticmethod
     def isfrag(path: FileDescriptorOrPath, encoding: str) -> bool:
         """
         Heuristically determines if the given XML file is a fragment.
 
-        Parses the file incrementally and treats it as a fragment if a parsing 
+        Parses the file incrementally and treats it as a fragment if a parsing
         error occurs early (i.e., shallow depth).
 
         Args:
@@ -67,19 +72,25 @@ class JLU(ScoringStrategyAction):
     of `Java Logging Util` xml DTD schema
     """
 
-    def score(self, entry: Tuple[FileDescriptorOrPath, str]) -> Optional[dict]:
+    def score(self, entry: Tuple[FileDescriptorOrPath, str]) -> Optional[int]:
         for depth, elem in enumerate(Structured(entry[0], entry[1], Mode.XML)):
             elem: _Element = elem
             # Check may run too deep
             if depth > 12:
-                return False
-                        
+                return None
+
             if elem.tag == "record":
                 # Core tags that are typically always present in JUL logs
                 required_tags = {
-                    "date", "logger", "level", "message", 
-                    "millis", "nanos", "sequence", "thread"
-                    "method", "class"
+                    "date",
+                    "logger",
+                    "level",
+                    "message",
+                    "millis",
+                    "nanos",
+                    "sequence",
+                    "thread" "method",
+                    "class",
                 }
                 # Check if the required subset exists
                 child_tags = {child.tag for child in elem}
@@ -115,14 +126,10 @@ class XMLTransformer(BaseXMLTransformer, BestResolver, StructuredMixIn):
     @property
     def mode(self) -> str:
         return Mode.XML
-    
+
     def __init__(self):
-        """Create a new `XMLTransformer`
-        """
-        super().__init__(
-            [JLU()],
-            False
-        )
+        """Create a new `XMLTransformer`"""
+        super().__init__([JLU()], False)
 
     def validate(self, data: Dict[str, Any]) -> bool:
         path: FileDescriptorOrPath = data["data"]

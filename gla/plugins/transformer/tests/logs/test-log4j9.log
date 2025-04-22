@@ -2,6 +2,6 @@ WARN [worker-thread] database.connection - Failed to connect to database 2020-03
 
 ERROR [main-thread] user.auth - Invalid login credentials 2020-03-01
 
-DEBUG [api-thread] api.controller - Fetching user data 2020-03-01 
+DEBUG [api-thread] api.controller - Fetching user data 2020-03-01
 
 INFO [network-thread] network.service - Server started successfully 2020-03-01

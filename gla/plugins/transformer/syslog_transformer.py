@@ -13,7 +13,10 @@ from gla.analyzer.iterator import UnstructuredBaseResolverBreakerMixIn
 from gla.constants import LANGUAGES_SUPPORTED
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
-from gla.plugins.transformer.transformer import BaseTransformerValidator, RegexBreakerStrategy
+from gla.plugins.transformer.transformer import (
+    BaseTransformerValidator,
+    RegexBreakerStrategy,
+)
 
 
 class SyslogTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolverBreakerMixIn):
@@ -23,8 +26,7 @@ class SyslogTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseReso
     """
 
     def __init__(self):
-        """Create a new `SyslogTransformer`
-        """
+        """Create a new `SyslogTransformer`"""
         super().__init__(
             [
                 # BFG RFC 3164 (older)
@@ -50,7 +52,7 @@ class SyslogTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseReso
                     )
                 ),
             ],
-            False
+            False,
         )
 
     def transform(self, entry: str) -> Optional[Log]:
@@ -74,7 +76,7 @@ class SyslogTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseReso
                 timestamp=timedate,
                 message=res.get("msg"),
             )
-        
+
         return None
 
     def _priority_to_lvl(self, lvl: str) -> Union[str, None]:
