@@ -126,6 +126,7 @@ class Analyzer:
         return Result.Ok
 
     def _run(self):
+        # Process every entry 
         matcher = StrMatch(self.testcase.patterns)
         for i, log_entry in enumerate(Engine(self.file, self.encoding, self.current_transformer)):
             # Once all entries are found the search can end early
@@ -135,4 +136,5 @@ class Analyzer:
             
             if self._process_entry(i, log_entry, matcher) is Result.Error:
                 break
-            
+        # Share results
+        # TODO
