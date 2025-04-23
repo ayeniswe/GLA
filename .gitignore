@@ -16,3 +16,6 @@ dist
 *.so
 # Packaging
 *.egg-info
+# Logging
+logging.conf
+app.log

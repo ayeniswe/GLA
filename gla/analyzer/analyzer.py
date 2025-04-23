@@ -3,8 +3,6 @@ The `analyzer` module is responsible for analyzing log messages based on predefi
 """
 
 
-from typing import List
-
 import cchardet
 
 from gla.analyzer.engine import Engine
@@ -20,7 +18,10 @@ from gla.plugins.transformer.xml_transformer import XMLTransformer
 from gla.plugins.transformer.xmlfragment_transformer import XMLFragmentTransformer
 from gla.testcase.testcase import TestCase
 from gla.typings.alias import FileDescriptorOrPath
+from gla.utilities.result import Result
+import logging
 
+logger = logging.getLogger(__name__)
 
 class Analyzer:
     """
@@ -78,48 +79,60 @@ class Analyzer:
             return detection["encoding"]
         raise UnicodeError("failed to auto-detect encoding. Please specify encoding to use")
 
-    def _process_line(self, line: str, matcher: StrMatch):
+    def _process_entry(self, line_num: int, log_entry: str, matcher: StrMatch) -> int:
         """
-        Processes a line of text and checks for matches based on the test case criteria.
+        Processes a log entry and checks for matches based on the test case criteria.
 
         Modifies the test case entries in-place
         """
-        result = matcher.search_substr_count(line)
-        if result:
-            matches: List[str] = []
-            entries_as_list = list(self.testcase.entries.keys())
-            for idx, entry in enumerate(entries_as_list):
-                actual_cnt = result.get(entry)
-                expected_cnt = self.testcase.entries.get(entry)
-
-                # Fail fast happens when previous
-                # entry encounter never happens before current entry
-                if idx > 0:
-                    prev_text = entries_as_list[idx - 1]
-                    exists = self.testcase.entries.get(prev_text)
-                    prev_found = result.get(matches[-1]) if len(matches) > 0 else None
-                    if exists and self.testcase.seq and prev_found is None and actual_cnt:
-                        print(f"Failed here: {entry}")
-                        return
-
-                # Match TODO devide between exact count versus just a count
-                if actual_cnt and (expected_cnt == 1 or actual_cnt == expected_cnt):
-                    matches.append(entry)
-                    print(f"Match found: {entry}")
-
-            # No longer need to track items found
+        # All substrings that can be located in the current piece of text
+        matches = matcher.search_substr(log_entry)
+        if matches:
+            # At most, only a few matches should be returned—typically just one on average.
+            # In practice, this results in closer to O(n) complexity, since every log line
+            # still needs to be parsed.
+            logger.debug(f"ENTRY {line_num}: found substrings: {matches}")
             for match in matches:
-                del self.testcase.entries[match]
+                if match in self.testcase.entries:
+                    entry = self.testcase.entries[match]
+                    
+                    # Previous test should always pass current test 
+                    # when sequential mode is on
+                    if entry.prev and self.testcase.seq:
+                        if self.testcase.entries.get(entry.prev.val.text):
+                            logger.debug(f"failed to find previous entry: {entry.prev.val.text}")
+                            return Result.Error
+                        
+                    # Some entries may need to be seen multiple times
+                    # to validate passing
+                    logger.debug(f"dropping the count of an entry: {match}")
+                    self.testcase.entries[match].val.cnt -= 1
+                    cnt = self.testcase.entries[match].val.cnt
+                    
+                    # We no longer need to track entries that are found
+                    # they can...poof disappear
+                    if cnt == 0:
+                        logger.debug(f"dumping a entry: {match}")
+                        del self.testcase.entries[match]
+                    # Some matches should never appear the
+                    # only logical way to arrive here is
+                    # if the entry is testing absences
+                    elif cnt == -1:
+                        logger.debug(f"failed to not find entry: {match}")
+                        return Result.Error
+        else:
+            logger.debug(f"ENTRY {line_num}: nothing found")
+        
+        return Result.Ok
 
-        # Successful processing
-        return 0
-
-    def run(self):
+    def _run(self):
         matcher = StrMatch(self.testcase.patterns)
-        for entry in enumerate(Engine(self.file, self.encoding, self.current_transformer)):
+        for i, log_entry in enumerate(Engine(self.file, self.encoding, self.current_transformer)):
             # Once all entries are found the search can end early
             if len(self.testcase.entries) == 0:
+                logger.debug(f"all entries found")
                 break
-
-            if self._process_line(entry, matcher) is None:
+            
+            if self._process_entry(i, log_entry, matcher) is Result.Error:
                 break
+            

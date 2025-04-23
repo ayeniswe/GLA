@@ -5,10 +5,11 @@ for evaluating log entries.
 
 from typing import List, Tuple, Union
 
+from gla.models.entry import Entry
 from pydantic import Field
 
 from gla.models.criteria import Criteria
-
+    
 
 class TestCase(Criteria):
     """
@@ -40,11 +41,9 @@ class TestCase(Criteria):
         """Add a single or multiple log entries to the search criteria where order is irrelevant"""
         if isinstance(entry, list):
             for e in entry:
-                self.patterns.append(e)
-                self.entries[e] = 1
+                self.find_entries_count((e, 1))
         elif isinstance(entry, str):
-            self.patterns.append(entry)
-            self.entries[entry] = 1
+            self.find_entries_count((entry, 1))
 
     def find_entries_count(self, entry: Union[List[Tuple[str, int]], Tuple[str, int]]):
         """
@@ -53,18 +52,24 @@ class TestCase(Criteria):
         """
         if isinstance(entry, list):
             for e in entry:
-                self.patterns.append(e[0])
-                self.entries[e[0]] = e[1]
+                node = self.entries.get(e[0])
+                if node:
+                    node.val.cnt += e[1]
+                else:
+                    self.patterns.append(e[0])
+                    self.entries[e[0]] = Entry(text=e[0], cnt=e[1])
         elif isinstance(entry, tuple):
-            self.patterns.append(entry[0])
-            self.entries[entry[0]] = entry[1]
+            node = self.entries.get(entry[0])
+            if node:
+                node.val.cnt += entry[1]
+            else:
+                self.patterns.append(entry[0])
+                self.entries[entry[0]] = Entry(text=entry[0], cnt=entry[1])
 
     def find_entries_absent(self, entry: Union[List[str], str]):
         """Find if a single or multiple log entries are absent from the search criteria"""
         if isinstance(entry, list):
             for e in entry:
-                self.patterns.append(e)
                 self.find_entries_count((e, 0))
         elif isinstance(entry, str):
-            self.patterns.append(entry)
             self.find_entries_count((entry, 0))
