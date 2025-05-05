@@ -8,7 +8,7 @@ import cchardet
 
 from gla.analyzer.engine import Engine
 from gla.analyzer.search.search import StrMatch
-from gla.models.log import Log
+from gla.output import console
 from gla.plugins.transformer.cef_transformer import CefTransformer
 from gla.plugins.transformer.json_transformer import JsonTransformer
 from gla.plugins.transformer.log4j_transformer import Log4jTransformer
@@ -24,7 +24,6 @@ from gla.utilities.result import Result
 import logging
 
 logger = logging.getLogger(__name__)
-
 
 class Analyzer:
     """
@@ -142,11 +141,11 @@ class Analyzer:
             if transformed_log_entry:
                 result = self._process_entry(i, transformed_log_entry.message, matcher)
             else:
-                logger.debug(f"ENTRY {i}: skipping transformation")
+                logger.debug(f"ENTRY {i}: skipping transformation - {log_entry}")
                 result = self._process_entry(i, log_entry, matcher)
             # Fail early to avoid full log search
             if result is Result.Error:
                 break
 
         # Share results
-        return (self.findings, self.testcase.entries)
+        console.show(self.findings, self.testcase.entries, self.testcase.seq)

@@ -5,6 +5,7 @@ __pycache__
 # Testing
 .coverage
 cov.xml
+/app.py
 # Working Testing Rapid
 workspace.log
 # Environment
