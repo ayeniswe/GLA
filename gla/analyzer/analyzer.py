@@ -3,6 +3,7 @@ The `analyzer` module is responsible for analyzing log messages based on predefi
 """
 
 
+from copy import deepcopy
 import cchardet
 
 from gla.analyzer.engine import Engine
@@ -54,6 +55,7 @@ class Analyzer:
         custom_transformer: BaseTransformer = None,
     ):
         self.testcase = testcase
+        self.findings = deepcopy(testcase.entries)
         self.file = path
         self.encoding = encoding if encoding else self._detect_encoding(self.file)
         # Always use user defined template first
@@ -95,27 +97,27 @@ class Analyzer:
             # still needs to be parsed.
             logger.debug(f"ENTRY {line_num}: found substrings: {matches}")
             for match in matches:
-                if match in self.testcase.entries:
+                if match in self.findings:
                     entry = self.testcase.entries[match]
 
                     # Previous test should always pass current test
                     # when sequential mode is on
                     if entry.prev and self.testcase.seq:
-                        if self.testcase.entries.get(entry.prev.val.text):
+                        if self.findings.get(entry.prev.val.text):
                             logger.debug(f"failed to find previous entry: {entry.prev.val.text}")
                             return Result.Error
 
                     # Some entries may need to be seen multiple times
                     # to validate passing
                     logger.debug(f"dropping the count of an entry: {match}")
-                    self.testcase.entries[match].val.cnt -= 1
-                    cnt = self.testcase.entries[match].val.cnt
+                    self.findings[match].val.cnt -= 1
+                    cnt = self.findings[match].val.cnt
 
                     # We no longer need to track entries that are found
                     # they can...poof disappear
                     if cnt == 0:
                         logger.debug(f"dumping a entry: {match}")
-                        del self.testcase.entries[match]
+                        del self.findings[match]
                     # Some matches should never appear the
                     # only logical way to arrive here is
                     # if the entry is testing absences
@@ -143,7 +145,4 @@ class Analyzer:
                 break
 
         # Share results
-        if len(self.testcase.entries) == 0:
-            return None
-        else:
-            return self.testcase.entries
+        return (self.findings, self.testcase.entries)

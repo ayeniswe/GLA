@@ -10,6 +10,7 @@ workspace.log
 # Environment
 .venv
 # Build
+build
 target
 dist
 # Dynamic library
@@ -18,4 +19,4 @@ dist
 *.egg-info
 # Logging
 logging.conf
-app.log
+logs

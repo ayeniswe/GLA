@@ -53,8 +53,8 @@ class LinkedOrderedDict(Generic[K, T], Iterable[T]):
         return key in self._list
 
     def __iter__(self) -> Iterator[T]:
-        for node in self._list.values():
-            yield node.value
+        for key, node in self._list.items():
+            yield (key, node)
 
     def __delitem__(self, key: K):
         if key in self._list:
