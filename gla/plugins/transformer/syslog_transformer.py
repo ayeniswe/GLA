@@ -5,33 +5,32 @@ It supports parsing both the older BFG RFC 3164 format and the more modern
 IETF RFC 5424 format.
 """
 import re
-from typing import Match, Optional, Union
+from typing import Any, Dict, Match, Optional, Union
 
 import dateparser
 
+from gla.analyzer.iterator import UnstructuredBaseResolverBreakerMixIn
 from gla.constants import LANGUAGES_SUPPORTED
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
-from gla.plugins.transformer.transformer import BaseTransformerValidator
-from gla.utilities.strategy import RegexStrategy
+from gla.plugins.transformer.transformer import (
+    BaseTransformerValidator,
+    RegexBreakerStrategy,
+)
 
 
-class SyslogTransformer(BaseTransformerValidator, Resolver):
+class SyslogTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolverBreakerMixIn):
     """
     The `SyslogTransformer` class is responsible for handling transformation
     of `syslog` log messages
     """
 
-    def __init__(self, cache: bool = False):
-        """Create a new `SyslogTransformer`
-
-        NOTE: cache set to `True` will enable the use of the same strategy for
-        future log entries seen by this instance
-        """
+    def __init__(self):
+        """Create a new `SyslogTransformer`"""
         super().__init__(
             [
                 # BFG RFC 3164 (older)
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^<(?P<pri>\d{1,3})>"
                         r"(?P<time>[A-Z][a-z]{2}\s+\d{1,2} \d{2}:\d{2}:\d{2}) "
@@ -42,7 +41,7 @@ class SyslogTransformer(BaseTransformerValidator, Resolver):
                     )
                 ),
                 # IETF RFC 5424
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^<(?P<pri>\d{1,3})>(?P<ver>\d{1,2}) "
                         r"(?P<time>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}"
@@ -53,11 +52,11 @@ class SyslogTransformer(BaseTransformerValidator, Resolver):
                     )
                 ),
             ],
-            cache,
+            False,
         )
 
     def transform(self, entry: str) -> Optional[Log]:
-        match: Optional[Match[str]] = self.resolve(entry)
+        match: Optional[Match[str]] = self._cache_strategy.do_action(entry)
         if match:
             res = match.groupdict()
 
@@ -77,6 +76,7 @@ class SyslogTransformer(BaseTransformerValidator, Resolver):
                 timestamp=timedate,
                 message=res.get("msg"),
             )
+
         return None
 
     def _priority_to_lvl(self, lvl: str) -> Union[str, None]:
@@ -98,13 +98,9 @@ class SyslogTransformer(BaseTransformerValidator, Resolver):
             return "INFO"
         elif res == 7:
             return "DEBUG"
-        return None
 
-    def validate(self, data: str) -> bool:
-        if data == "sys":
-            return True
+    def validate(self, data: Dict[str, Any]) -> bool:
         try:
-            with open(data, "r", encoding="utf-8") as file:
-                return self.resolve(file.readline().strip()) is not None
+            return self.resolve((data["data"], data["encoding"])) is not None
         except (FileNotFoundError, UnicodeDecodeError):
             return False

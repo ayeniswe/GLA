@@ -4,19 +4,21 @@ for transforming JSON log messages into structured `Log` objects based on predef
 schema mappings.
 """
 
-from json import JSONDecodeError, loads
-from typing import Optional, Tuple
+from json import JSONDecodeError
+from typing import Any, Dict, Optional, Tuple
 
 import dateparser
 
+from gla.analyzer.iterator import Mode, Structured, StructuredMixIn
 from gla.constants import LANGUAGES_SUPPORTED
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import BestResolver
 from gla.plugins.transformer.transformer import BaseTransformerValidator
-from gla.utilities.strategy import ScoringStrategy
+from gla.typings.alias import FileDescriptorOrPath
+from gla.utilities.strategy import ScoringStrategyArtifact
 
 
-class JsonStrategy(ScoringStrategy):
+class JsonStrategy(ScoringStrategyArtifact):
     """
     The `JsonStrategy` class is responsible for handling strategies based on json key mappings
     """
@@ -24,25 +26,32 @@ class JsonStrategy(ScoringStrategy):
     def __init__(self, mapping: dict):
         self._mapping = mapping
 
-    def score(self, entry: dict) -> Tuple[int, dict]:
-        return (
-            sum(1 for field in self._mapping.values() if field in entry),
-            self._mapping,
-        )
+    def score(self, entry: Tuple[FileDescriptorOrPath, str]) -> int:
+        for line in Structured(entry[0], entry[1], Mode.JSON):
+            line_keys: set = set(line.keys())
+            mapping_values: set = set(self._mapping.values())
+
+            # Overlap Coefficient Similiarity Heuristic
+            intersect = len(line_keys.intersection(mapping_values))
+            min_size = min(len(mapping_values), len(line_keys))
+            return intersect / min_size
+
+    def artifact(self):
+        return self._mapping
 
 
-class JsonTransformer(BaseTransformerValidator, BestResolver):
+class JsonTransformer(BaseTransformerValidator, BestResolver, StructuredMixIn):
     """
     The `JsonTransformer` class is responsible for handling transformation
     of `json` log messages
     """
 
-    def __init__(self, cache: bool = False):
-        """Create a new `JsonTransformer`
+    @property
+    def mode(self) -> str:
+        return Mode.JSON
 
-        NOTE: cache set to `True` will enable the use of the same strategy for
-        future log entries seen by this instance
-        """
+    def __init__(self):
+        """Create a new `JsonTransformer`"""
         super().__init__(
             [
                 # Elastic Common Schema
@@ -76,23 +85,22 @@ class JsonTransformer(BaseTransformerValidator, BestResolver):
                     }
                 ),
             ],
-            cache,
+            False,
         )
 
-    def transform(self, entry: str) -> Optional[Log]:
+    def transform(self, entry: dict) -> Optional[Log]:
         try:
-            res: dict = loads(entry.strip())
-            mapping: Optional[dict] = self.resolve(res)
+            mapping: dict = self._cache_strategy.artifact()
             if mapping:
-                time = res.get(mapping.get("timestamp"))
+                time = entry.get(mapping.get("timestamp"))
                 if time is not None:
                     time = dateparser.parse(time, languages=LANGUAGES_SUPPORTED)
                 return Log(
-                    level=res.get(mapping.get("level")),
-                    module=res.get(mapping.get("module")),
-                    source=res.get(mapping.get("source")),
+                    level=entry.get(mapping.get("level")),
+                    module=entry.get(mapping.get("module")),
+                    source=entry.get(mapping.get("source")),
                     timestamp=time,
-                    message=res.get(
+                    message=entry.get(
                         mapping.get("message"),
                     ),
                 )
@@ -100,14 +108,8 @@ class JsonTransformer(BaseTransformerValidator, BestResolver):
         except JSONDecodeError:
             return None
 
-    def validate(self, data: str) -> bool:
-        if data == "json":
-            return True
+    def validate(self, data: Dict[str, Any]) -> bool:
         try:
-            with open(data, "r", encoding="utf-8") as file:
-                try:
-                    return loads(file.readline().strip()) is not None
-                except JSONDecodeError:
-                    return False
-        except (FileNotFoundError, UnicodeDecodeError):
+            return self.resolve((data["data"], data["encoding"])) is not None
+        except (FileNotFoundError, UnicodeDecodeError, JSONDecodeError):
             return False

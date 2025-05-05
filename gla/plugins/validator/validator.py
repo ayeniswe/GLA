@@ -4,6 +4,7 @@ The `validator` module provides base classes for validating various inputs
 
 
 from abc import ABC, abstractmethod
+from typing import Any
 
 
 class Validator(ABC):
@@ -12,9 +13,9 @@ class Validator(ABC):
     """
 
     @abstractmethod
-    def validate(self, data: str) -> bool:
+    def validate(self, data: Any) -> bool:
         """Validate some input data
 
         Args:
-            data (str): input data to validate against
+            data (Any): input data to validate against
         """

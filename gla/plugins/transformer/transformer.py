@@ -4,10 +4,29 @@ log transformation. It serves as the base class for creating log transformers
 that convert log entries into structured `Log` objects and validate log files.
 """
 from abc import abstractmethod
-from typing import Any, List, Optional
+from typing import Any, List, Match, Optional, Tuple
 
+from gla.analyzer.iterator import Breaker, Unstructured
 from gla.models.log import Log
+from gla.plugins.resolver.resolver import BaseResolver
 from gla.plugins.validator.validator import Validator
+from gla.typings.alias import FileDescriptorOrPath
+from gla.utilities.strategy import RegexStrategy, StrategyAction
+
+
+class RegexBreakerStrategy(RegexStrategy, Breaker, StrategyAction):
+    """
+    The `RegexBreakerStrategy` strategy for breaking and matching
+    unstructured logs using regular expressions
+    """
+
+    def match(self, entry: Tuple[FileDescriptorOrPath, str]) -> Optional[Match[str]]:
+        for line in Unstructured(entry[0], entry[1], self.breaker):
+            return self._pattern.match(line)
+        return None
+
+    def do_action(self, entry: str):
+        return RegexStrategy.match(self, entry)
 
 
 class BaseTransformer:
@@ -24,8 +43,24 @@ class BaseTransformer:
             entry (Any): a log entry to transform
         """
 
+
+class ResolverBreaker(BaseResolver, Breaker):
+    """
+    The `ResolverBreaker` acts as a wrapper that delegates
+    the breaking logic to an internal strategy if that strategy also implements the
+    `Breaker` interface.
+    """
+
+    @property
+    def breaker(self) -> str:
+        if isinstance(self.strategy, Breaker):
+            return self.strategy.breaker
+        raise AttributeError("No valid strategy with a breaker has been selected.")
+
+
 class BaseTransformerValidator(BaseTransformer, Validator):
     ...
+
 
 class Transformer:
     """
@@ -36,16 +71,18 @@ class Transformer:
     def __init__(self, transformers: List[BaseTransformerValidator]):
         self._transformers = transformers
 
-    def get_transformer(self, data: str) -> BaseTransformer:
+    def get_transformer(self, data: FileDescriptorOrPath, encoding: str = None) -> BaseTransformer:
         """Get a transformer to process log messages
 
         Args:
-            data (str): input data to validate against
+            data (FileDescriptorOrPath): input data to validate against rather a file
+            or simple string
+            encoding (str): The character encoding of the input data (e.g., 'utf-8', 'ascii', etc.).
 
         Raises:
             ValueError: if a transformer cannot be determined
         """
         for transformer in self._transformers:
-            if transformer.validate(data):
+            if transformer.validate({"data": data, "encoding": encoding}):
                 return transformer
         raise ValueError("transformer could not be determined")

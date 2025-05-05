@@ -3,17 +3,18 @@ fail_fast: true
 default_language_version:
   python: python3.6
 repos:
-  - repo: https://github.com/PyCQA/isort
-    rev: 5.10.1
-    hooks:
-      - id: isort
-        name: Sorting import statements alphabetically
   - repo: https://github.com/psf/black
     rev: 22.8.0
     hooks:
       - id: black
         args: ['--line-length=100']
         name: Formating code to meet PEP-8 coding standard
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+        args: ['--profile=black']
+        name: Sorting import statements alphabetically
   - repo: meta
     hooks:
       - id: check-hooks-apply
@@ -43,8 +44,6 @@ repos:
       - id: no-commit-to-branch
         name: Checking this commit is not on the main branch
         args: [--branch, main]
-      - id: requirements-txt-fixer
-        name: Sorting requirements.txt
       - id: mixed-line-ending
         name: Checking for mixed line endings (should be LF)
         args: [--fix=lf]

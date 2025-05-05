@@ -4,15 +4,18 @@ which is responsible for transforming common event log (CEF) messages into struc
 `Log` objects.
 """
 import re
-from typing import Match, Optional, Union
+from typing import Any, Dict, Match, Optional, Union
 
+from gla.analyzer.iterator import UnstructuredBaseResolverBreakerMixIn
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
-from gla.plugins.transformer.transformer import BaseTransformerValidator
-from gla.utilities.strategy import RegexStrategy
+from gla.plugins.transformer.transformer import (
+    BaseTransformerValidator,
+    RegexBreakerStrategy,
+)
 
 
-class CefTransformer(BaseTransformerValidator, Resolver):
+class CefTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolverBreakerMixIn):
     """
     The `CefTransformer` class is responsible for handling transformation
     of common event  log messages
@@ -30,16 +33,12 @@ class CefTransformer(BaseTransformerValidator, Resolver):
             return "VERY HIGH"
         return None
 
-    def __init__(self, cache: bool = False):
-        """Create a new `CefTransformer`
-
-        NOTE: cache set to `True` will enable the use of the same strategy for
-        future log entries seen by this instance
-        """
+    def __init__(self):
+        """Create a new `CefTransformer`"""
         super().__init__(
             [
                 # CEF
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^CEF:(?P<cef>\d+)\|"
                         r"(?P<ven>.+?)\|"
@@ -52,12 +51,12 @@ class CefTransformer(BaseTransformerValidator, Resolver):
                     )
                 ),
             ],
-            cache,
+            False,
         )
 
     def transform(self, entry: str) -> Optional[Log]:
 
-        match: Optional[Match[str]] = self.resolve(entry)
+        match: Optional[Match[str]] = self._cache_strategy.do_action(entry)
 
         if match:
             res = match.groupdict()
@@ -81,11 +80,8 @@ class CefTransformer(BaseTransformerValidator, Resolver):
             )
         return None
 
-    def validate(self, data: str) -> bool:
-        if data == "cef":
-            return True
+    def validate(self, data: Dict[str, Any]) -> bool:
         try:
-            with open(data, "r", encoding="utf-8") as file:
-                return self.resolve(file.readline().strip()) is not None
+            return self.resolve((data["data"], data["encoding"])) is not None
         except (FileNotFoundError, UnicodeDecodeError):
             return False

@@ -1,49 +1,70 @@
+from json import JSONDecodeError
+
+from pytest import raises
+
+from gla.analyzer.iterator import Mode, Structured
 from gla.plugins.transformer.json_transformer import JsonTransformer
 
 
-def test_json_transformer():
+def test_json_transformation_ecs(get_log_path, check_transformer_test_cases):
+    # ARRANGE
     json = JsonTransformer()
-
-    test_cases = [
-        # ECS-compliant log (Elastic Common Schema)
+    cases = [
         {
-            "input": """{"@timestamp":"2019-08-06T14:08:40.199Z", "log.level":"DEBUG",
-            "message":"init find form",
-            "service.name":"spring-petclinic","process.thread.name":"http-nio-8080-exec-8",
-            "log.logger":"org.springframework.samples.petclinic.owner.OwnerController",
-            "transaction.id":"28b7fb8d5aba51f1","trace.id":"2869b25b5469590610fea49ac04af7da"}""",
             "expected": "2019-08-06T14:08:40.199000+00:00 DEBUG [spring-petclinic] "
             "org.springframework.samples.petclinic.owner.OwnerController - init find form",
         },
-        # Log4j log format
+    ]
+    path = get_log_path("test-json-ecs.log")
+    iterator = Structured(path, "utf-8", Mode.JSON)
+    # Select correct strategy
+    json.resolve((path, "utf-8"))
+
+    # ACT-ASSERT
+    check_transformer_test_cases(cases, iterator, json)
+
+
+def test_json_transformation_log4j(get_log_path, check_transformer_test_cases):
+    # ARRANGE
+    json = JsonTransformer()
+    cases = [
         {
-            "input": """{"timestamp":"2019-08-06T14:08:40.199Z", "level":"INFO",
-            "message":"User login successful", "loggerName":"auth.service"}""",
             "expected": "2019-08-06T14:08:40.199000+00:00 INFO auth.service "
             "- User login successful",
         },
-        # Syslog format
+    ]
+    path = get_log_path("test-json-log4j.log")
+    iterator = Structured(path, "utf-8", Mode.JSON)
+    # Select correct strategy
+    json.resolve((path, "utf-8"))
+
+    # ACT-ASSERT
+    check_transformer_test_cases(cases, iterator, json)
+
+
+def test_json_transformation_syslog(get_log_path, check_transformer_test_cases):
+    # ARRANGE
+    json = JsonTransformer()
+    cases = [
         {
-            "input": """{"timestamp":"2019-08-06T14:08:40.199", "severity":"WARN",
-            "msg":"Disk usage high", "host":"server-01"}""",
             "expected": "2019-08-06T14:08:40.199000 WARN [server-01] - Disk usage high",
         },
-        # Missing fields (should still parse with defaults)
-        {
-            "input": """{"@timestamp":"2019-08-06T14:08:40.199Z",
-            "message":"No log level", "service.name":"app"}""",
-            "expected": "2019-08-06T14:08:40.199000+00:00 [app] - No log level",
-        },
-        # Invalid json
-        {
-            "input": """"2019-08-06T14:08:40.199Z", "message":"No log level",
-            "service.name":"app"}""",
-            "expected": None,
-        },
     ]
+    path = get_log_path("test-json-syslog.log")
+    iterator = Structured(path, "utf-8", Mode.JSON)
+    # Select correct strategy
+    json.resolve((path, "utf-8"))
 
-    for case in test_cases:
-        result = json.transform(case["input"])
-        assert (
-            str(result) == case["expected"] if case["expected"] is not None else result is None
-        ), f"Test failed for input: {case['input']}"
+    # ACT-ASSERT
+    check_transformer_test_cases(cases, iterator, json)
+
+
+def test_json_transformation_invalid(get_log_path, check_transformer_test_cases):
+    # ARRANGE
+    json = JsonTransformer()
+    path = get_log_path("test-json-invalid.log")
+
+    # ACT-ASSERT
+    with raises(JSONDecodeError):
+        # ACT
+        json.resolve((path, "utf-8"))

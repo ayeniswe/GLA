@@ -5,30 +5,29 @@ Log Format (CLF) and the standard NCSA CLF
 """
 import re
 from datetime import datetime
-from typing import Match, Optional
+from typing import Any, Dict, Match, Optional
 
+from gla.analyzer.iterator import UnstructuredBaseResolverBreakerMixIn
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
-from gla.plugins.transformer.transformer import BaseTransformerValidator
-from gla.utilities.strategy import RegexStrategy
+from gla.plugins.transformer.transformer import (
+    BaseTransformerValidator,
+    RegexBreakerStrategy,
+)
 
 
-class NcsaTransformer(BaseTransformerValidator, Resolver):
+class NcsaTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolverBreakerMixIn):
     """
     The `NcsaTransformer` class is responsible for handling transformation
     of common web servers `ncsa` log messages
     """
 
-    def __init__(self, cache: bool = False):
-        """Create a new `NcsaTransformer`
-
-        NOTE: cache set to `True` will enable the use of the same strategy for
-        future log entries seen by this instance
-        """
+    def __init__(self):
+        """Create a new `NcsaTransformer`"""
         super().__init__(
             [
                 # NCSA COMBINED CLF
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"(?P<host>[\w.:\]\[]+) "
                         r"(?:-|(?P<ident>[^\s-]+)) "
@@ -43,7 +42,7 @@ class NcsaTransformer(BaseTransformerValidator, Resolver):
                     )
                 ),
                 # NCSA CLF
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"(?P<host>[\w.:\]\[]+) "
                         r"(?:-|(?P<ident>[^\s-]+)) "
@@ -55,11 +54,11 @@ class NcsaTransformer(BaseTransformerValidator, Resolver):
                     )
                 ),
             ],
-            cache,
+            False,
         )
 
     def transform(self, entry: str) -> Optional[Log]:
-        match: Optional[Match[str]] = self.resolve(entry)
+        match: Optional[Match[str]] = self._cache_strategy.do_action(entry)
         if match:
             res = match.groupdict()
 
@@ -88,11 +87,8 @@ class NcsaTransformer(BaseTransformerValidator, Resolver):
             )
         return None
 
-    def validate(self, data: str) -> bool:
-        if data == "ncsa":
-            return True
+    def validate(self, data: Dict[str, Any]) -> bool:
         try:
-            with open(data, "r", encoding="utf-8") as file:
-                return self.resolve(file.readline().strip()) is not None
+            return self.resolve((data["data"], data["encoding"])) is not None
         except (FileNotFoundError, UnicodeDecodeError):
             return False

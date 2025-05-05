@@ -4,307 +4,315 @@ which is tasked with converting Log4j log messages into structured `Log` objects
 """
 
 import re
-from typing import Match, Optional
+from typing import Any, Dict, Match, Optional
 
 import dateparser
 
+from gla.analyzer.iterator import UnstructuredBaseResolverBreakerMixIn
 from gla.constants import LANGUAGES_SUPPORTED
 from gla.models.log import Log
 from gla.plugins.resolver.resolver import Resolver
-from gla.plugins.transformer.transformer import BaseTransformerValidator
-from gla.utilities.strategy import RegexStrategy
+from gla.plugins.transformer.transformer import (
+    BaseTransformerValidator,
+    RegexBreakerStrategy,
+)
 
 
-class Log4jTransformer(BaseTransformerValidator, Resolver):
+class Log4jTransformer(BaseTransformerValidator, Resolver, UnstructuredBaseResolverBreakerMixIn):
     """
     The `Log4jTransformer` class is responsible for handling transformation
     of `log4j` log messages
     """
 
-    def __init__(self, cache: bool = False):
-        """Create a new `Log4jTransformer`
-
-        NOTE: cache set to `True` will enable the use of the same strategy for
-        future log entries seen by this instance
-        """
+    def __init__(self):
+        """Create a new `Log4jTransformer`"""
         super().__init__(
             [
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<time>\d{4}-\d{2}-\d{2})\s+"
-                        r"(?:\[(?P<thread>[^\s]+)\]\s+)*"
+                        r"(?:\[(?P<thread>[^\]\s]+)\]\s+)?"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
                         r"(?P<mod>[\w.]+)\s+-\s+"
                         r"(?P<msg>.+)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<time>\d{2}-\d{4}-\d{2})\s+"
-                        r"(?:\[(?P<thread>[^\s]+)\]\s+)*"
+                        r"(?:\[(?P<thread>[^\]\s]+)\]\s+)?"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
                         r"(?P<mod>[\w.]+)\s+-\s+"
                         r"(?P<msg>.+)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
-                        r"^(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
-                        r"(?:\[(?P<thread>[^\s]+)\]\s+)*"
+                        r"^(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))\s+"
+                        r"(?:\[(?P<thread>[^\]\s]+)\]\s+)?"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
                         r"(?P<mod>[\w.]+)\s+-\s+"
                         r"(?P<msg>.+)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
-                        r"^(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
+                        r"^(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))\s+"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
-                        r"(?:\[(?P<thread>[^\s]+)\]\s+)*"
+                        r"(?:\[(?P<thread>[^\]\s]+)\]\s+)?"
                         r"(?P<mod>[\w.]+)\s+-\s+"
                         r"(?P<msg>.+)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
-                        r"^(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
+                        r"^(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))\s+"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
                         r"(?P<mod>[\w.]+)\s+-\s+"
                         r"(?P<msg>.+)\s+"
-                        r"\[(?P<thread>[^\s]+)\]"
+                        r"\[*(?P<thread>[^\s\]]+)\]*"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
-                        r"^(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
+                        r"^(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))\s+"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
                         r"(?P<mod>[\w.]+)\s+"
-                        r"(?:\[(?P<thread>[^\s]+)\]\s+)*"
+                        r"(?:\[(?P<thread>[^\]\s]+)\]\s+)?"
                         r"-\s+(?P<msg>.+)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
-                        r"^(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
+                        r"^(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))\s+"
                         r"(?P<mod>[\w.]+)\s+"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
                         r"-\s+(?P<msg>.+)\s+"
-                        r"\[(?P<thread>[^\s]+)\]"
+                        r"\[*(?P<thread>[^\s\]]+)\]*"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
-                        r"^(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
+                        r"^(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))\s+"
                         r"(?P<mod>[\w.]+)\s+-\s+"
                         r"(?P<msg>.+)\s+"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
-                        r"\[(?P<thread>[^\s]+)\]"
+                        r"\[*(?P<thread>[^\s\]]+)\]*"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
-                        r"^(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
+                        r"^(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))\s+"
                         r"(?P<mod>[\w.]+)\s+-\s+"
                         r"(?P<msg>.+)\s+"
-                        r"(?:\[(?P<thread>[^\s]+)\]\s+)*"
+                        r"(?:\[(?P<thread>[^\]\s]+)\]\s+)?"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
-                        r"^(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
+                        r"^(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))\s+"
                         r"-\s+(?P<msg>.+)\s+"
-                        r"(?:\[(?P<thread>[^\s]+)\]\s+)*"
+                        r"(?:\[(?P<thread>[^\]\s]+)\]\s+)?"
                         r"(?P<mod>[\w.]+)\s+"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
-                        r"^(?:\[(?P<thread>[^\s]+)\]\s+)*"
-                        r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
+                        r"^(?:\[(?P<thread>[^\]\s]+)\]\s+)?"
+                        r"(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))\s+"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
                         r"(?P<mod>[\w.]+)\s+-\s+"
                         r"(?P<msg>.+)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
-                        r"^(?:\[(?P<thread>[^\s]+)\]\s+)*"
+                        r"^(?:\[(?P<thread>[^\]\s]+)\]\s+)?"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
-                        r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
+                        r"(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))\s+"
                         r"(?P<mod>[\w.]+)\s+-\s+"
                         r"(?P<msg>.+)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
-                        r"^(?:\[(?P<thread>[^\s]+)\]\s+)*"
+                        r"^(?:\[(?P<thread>[^\]\s]+)\]\s+)?"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
                         r"(?P<mod>[\w.]+)\s+-\s+"
                         r"(?P<msg>.+)\s+"
-                        r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})"
+                        r"(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
-                        r"^(?:\[(?P<thread>[^\s]+)\]\s+)*"
+                        r"^(?:\[(?P<thread>[^\]\s]+)\]\s+)?"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
                         r"(?P<mod>[\w.]+)\s+"
-                        r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
+                        r"(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))\s+"
                         r"-\s+(?P<msg>.+)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
-                        r"^(?:\[(?P<thread>[^\s]+)\]\s+)*"
+                        r"^(?:\[(?P<thread>[^\]\s]+)\]\s+)?"
                         r"(?P<mod>[\w.]+)\s+"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
-                        r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
+                        r"(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))\s+"
                         r"-\s+(?P<msg>.+)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
-                        r"(?:\[(?P<thread>[^\s]+)\]\s+)*"
+                        r"(?:\[(?P<thread>[^\]\s]+)\]\s+)?"
                         r"(?P<mod>[\w.]+)\s+-\s+"
                         r"(?P<msg>.+)\s+"
-                        r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})"
+                        r"(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
                         r"(?P<mod>[\w.]+)\s+"
-                        r"(?:\[(?P<thread>[^\s]+)\]\s+)*"
+                        r"(?:\[(?P<thread>[^\]\s]+)\]\s+)?"
                         r"(?P<msg>.+)\s+"
-                        r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})"
+                        r"(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))"
                     )
                 ),
-                RegexStrategy(
-                    re.compile(
-                        r"^(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
-                        r"(?P<mod>[\w.]+)\s+-\s+"
-                        r"(?P<msg>.+)\s+"
-                        r"(?:\[(?P<thread>[^\s]+)\]\s+)*"
-                        r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})"
-                    )
-                ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
                         r"(?P<mod>[\w.]+)\s+-\s+"
                         r"(?P<msg>.+)\s+"
-                        r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
-                        r"\[(?P<thread>[^\s]+)\]"
+                        r"(?:\[(?P<thread>[^\]\s]+)\]\s+)?"
+                        r"(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
+                    re.compile(
+                        r"^(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
+                        r"(?P<mod>[\w.]+)\s+-\s+"
+                        r"(?P<msg>.+)\s+"
+                        r"(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))\s+"
+                        r"\[*(?P<thread>[^\s\]]+)\]*"
+                    )
+                ),
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<mod>[\w.]+)\s+"
-                        r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
+                        r"(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))\s+"
                         r"-\s+(?P<msg>.+)\s+"
-                        r"(?:\[(?P<thread>[^\s]+)\]\s+)*"
+                        r"(?:\[(?P<thread>[^\]\s]+)\]\s+)?"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<mod>[\w.]+)\s+"
-                        r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
-                        r"(?:\[(?P<thread>[^\s]+)\]\s+)*"
+                        r"(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))\s+"
+                        r"(?:\[(?P<thread>[^\]\s]+)\]\s+)?"
                         r"(?P<msg>.+)\s+"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<mod>[\w.]+)\s+"
-                        r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
-                        r"(?:\[(?P<thread>[^\s]+)\]\s+)*"
+                        r"(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))\s+"
+                        r"(?:\[(?P<thread>[^\]\s]+)\]\s+)?"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
                         r"-\s+(?P<msg>.+)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<mod>[\w.]+)\s+"
-                        r"(?:\[(?P<thread>[^\s]+)\]\s+)*"
-                        r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
+                        r"(?:\[(?P<thread>[^\]\s]+)\]\s+)?"
+                        r"(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))\s+"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
                         r"-\s+(?P<msg>.+)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<mod>[\w.]+)\s+"
-                        r"(?:\[(?P<thread>[^\s]+)\]\s+)*"
+                        r"(?:\[(?P<thread>[^\]\s]+)\]\s+)?"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
-                        r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
+                        r"(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))\s+"
                         r"-\s+(?P<msg>.+)"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<mod>[\w.]+)\s+"
-                        r"(?:\[(?P<thread>[^\s]+)\]\s+)*"
+                        r"(?:\[(?P<thread>[^\]\s]+)\]\s+)?"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
                         r"-\s+(?P<msg>.+)\s+"
-                        r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})"
+                        r"(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<mod>[\w.]+)\s+"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
-                        r"(?:\[(?P<thread>[^\s]+)\]\s+)*"
+                        r"(?:\[(?P<thread>[^\]\s]+)\]\s+)?"
                         r"(?P<msg>.+)\s+"
-                        r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})"
+                        r"(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<mod>[\w.]+)\s+"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
                         r"-\s+(?P<msg>.+)\s+"
-                        r"(?:\[(?P<thread>[^\s]+)\]\s+)*"
-                        r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})"
+                        r"(?:\[(?P<thread>[^\]\s]+)\]\s+)?"
+                        r"(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<mod>[\w.]+)\s+"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
                         r"-\s+(?P<msg>.+)\s+"
-                        r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
-                        r"\[(?P<thread>[^\s]+)\]"
+                        r"(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))\s+"
+                        r"\[*(?P<thread>[^\s\]]+)\]*"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<mod>[\w.]+)\s+"
                         r"-\s+(?P<msg>.+)\s+"
-                        r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
+                        r"(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))\s+"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
-                        r"\[(?P<thread>[^\s]+)\]"
+                        r"\[*(?P<thread>[^\s\]]+)\]*"
                     )
                 ),
-                RegexStrategy(
+                RegexBreakerStrategy(
                     re.compile(
                         r"^(?P<mod>[\w.]+)\s+"
                         r"-\s+(?P<msg>.+)\s+"
-                        r"(?P<time>\d{2,4}-\d{2,4}-\d{2,4})\s+"
-                        r"(?:\[(?P<thread>[^\s]+)\]\s+)*"
+                        r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)\s+"
+                        r"(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))\s+"
+                        r"\[*(?P<thread>[^\s\]]+)\]*"
+                    )
+                ),
+                RegexBreakerStrategy(
+                    re.compile(
+                        r"^(?P<mod>[\w.]+)\s+"
+                        r"-\s+(?P<msg>.+)\s+"
+                        r"(?P<time>(\d{2,4}-\d{2,4}-\d{2,4})|(\d{2}:\d{2}:\d{2}(?:\.\d+)?))\s+"
+                        r"(?:\[(?P<thread>[^\]\s]+)\]\s+)?"
                         r"(?P<lvl>ERROR|WARN|INFO|DEBUG|TRACE)"
                     )
                 ),
             ],
-            cache,
+            False,
         )
 
     def transform(self, entry: str) -> Optional[Log]:
-        match: Optional[Match[str]] = self.resolve(entry)
+        match: Optional[Match[str]] = self._cache_strategy.do_action(entry)
         if match:
             res = match.groupdict()
             return Log(
@@ -316,11 +324,8 @@ class Log4jTransformer(BaseTransformerValidator, Resolver):
             )
         return None
 
-    def validate(self, data: str) -> bool:
-        if data == "log4j":
-            return True
+    def validate(self, data: Dict[str, Any]) -> bool:
         try:
-            with open(data, "r", encoding="utf-8") as file:
-                return self.resolve(file.readline().strip()) is not None
+            return self.resolve((data["data"], data["encoding"])) is not None
         except (FileNotFoundError, UnicodeDecodeError):
             return False
