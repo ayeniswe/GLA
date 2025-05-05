@@ -8,7 +8,6 @@ import cchardet
 
 from gla.analyzer.engine import Engine
 from gla.analyzer.search.search import StrMatch
-from gla.output import console
 from gla.plugins.transformer.cef_transformer import CefTransformer
 from gla.plugins.transformer.json_transformer import JsonTransformer
 from gla.plugins.transformer.log4j_transformer import Log4jTransformer
@@ -148,4 +147,4 @@ class Analyzer:
                 break
 
         # Share results
-        console.show(self.findings, self.testcase.entries, self.testcase.seq)
+        return self.findings, self.testcase.entries, self.testcase.seq
