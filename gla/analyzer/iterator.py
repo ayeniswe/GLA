@@ -28,7 +28,7 @@ class Breaker:
 
     @property
     def breaker(self) -> str:
-        return "\n"
+        return ""
 
 
 class UnstructuredMixIn(ABC):
@@ -90,12 +90,15 @@ class Unstructured(Iterator):
 
         # Some log message could expand multiple lines
         buffer = ""
-        while line != self.breaker:
-            buffer += line
-            line = self.reader.readline()
-            # Some files may not end in breaker
-            if not line:
-                break
+        if self.breaker:
+            while line != self.breaker:
+                buffer += line
+                line = self.reader.readline()
+                # Some files may not end in breaker
+                if not line:
+                    break
+        else: 
+            buffer = line
 
         return buffer
 

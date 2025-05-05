@@ -20,3 +20,4 @@ dist
 # Logging
 logging.conf
 logs
+/*.log

@@ -1,11 +1,6 @@
 CEF:0|Vendor|Product|1.0|100|Test event|3|src=192.168.1.1 dst=10.0.0.2
-
 CEF:1|Acme|Firewall|2.5|200|Blocked access|5|src=203.0.113.5 dst=198.51.100.1 msg=Blocked external access
-
 CEF:2|SecurityCorp|IDS|3.0|300|Intrusion detected|8|src=10.10.1.1 dst=10.10.1.2 proto=TCP
-
 CEF:0|Example|App|1.2|400|User login|9|src=192.168.2.2 user=jdoe
-
 CEF:1|Network|Monitor|1.5|500|High CPU Usage|4|device=router1 cpu=95%
-
 CEF:1|Network|Monitor1 cpu=95%

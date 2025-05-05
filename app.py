@@ -1,39 +1,35 @@
+import logging
 from gla.analyzer.analyzer import Analyzer
-from gla.plugins.transformer.custom_transformer import CustomTransformer
 from gla.testcase.testcase import TestCase
 from termcolor import colored
 
+logging.config.fileConfig("logging.conf")
 
-
-def compare_findings_and_entries(findings, entries):
-    print(colored("Comparing Findings and Entries:", "blue", attrs=["bold"]))
+def compare_findings_and_entries(findings, entries, seq):
+    mode = "sequence" if seq else "normal"
+    print(colored(f"Comparing findings and entries (Mode: {mode.capitalize()})", "blue", attrs=["bold"]))
     print(colored("-" * 50, "blue"))
-
+    
     # For each entry, check if it exists in findings
-    for key, node in entries._list.items():
+    for key, node in entries:
         entry = node.val
-        if key in findings._list:
-            finding = findings._list[key].val
-            if entry.cnt == 0:
-                print(colored(f"❌ '{entry.text}' was found, but it should not have been.", "red"))
+        if key in findings:
+            finding = findings[key].val
+            # Should have been missing
+            if entry.cnt == 0:          
+                print(colored(f"❌ '{entry.text}' was found, but it should not have been.", "red")) 
+            # Should have been found the exact number of times
             else:
-                # Here we compare the expected vs actual count of findings
-                diff = finding.cnt - entry.cnt
-                if diff == 0:
-                    print(colored(f"✅ '{entry.text}' was found the correct number of times: {entry.cnt}.", "green"))
-                else:
-                    print(colored(f"⚠️ Expected to find '{entry.text}' {entry.cnt} time(s), but found {finding.cnt} time(s) ({'+' if diff > 0 else ''}{diff}).", "yellow"))
+                print(colored(f"❌ Expected to find '{entry.text}' {entry.cnt} time(s), but it was found {entry.cnt - finding.cnt} time(s)", "red"))
+        # Should have been found the correct times or 0 if it was suppose to be missing
         else:
-            # If the entry isn't found in findings at all
-            print(colored(f"✅ '{entry.text}' was not found in findings as expected (cnt=0).", "green"))
+            print(colored(f"✅ Found '{entry.text}' {entry.cnt} time(s) in findings.", "green"))
 
-    print(colored("-" * 50, "blue"))
+    print("-" * 50)
 
-c = CustomTransformer(["ign", "time", "time", "lvl", "msg"])
-t = TestCase(seq=True)
-t.find_entries("Adding trusted root certificate authority")
-t.find_entries("Deploying SSL certificates")
-res = Analyzer(t, "workspace.log", custom_transformer=c)._run()
-print(res[0]._list)
-print(res[1]._list)
-compare_findings_and_entries(res[0], res[1])
+
+t = TestCase()
+t.find_entries("TAPCore Process Starting")
+res = Analyzer(t, "TAPCore.log")._run()
+
+compare_findings_and_entries(res[0], res[1], t.seq)

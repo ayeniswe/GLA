@@ -25,7 +25,7 @@ def test_item_does_show_after_entries_are_found(get_log_path):
     res = Analyzer(t, get_log_path("workspace.log"), custom_transformer=c)._run()
 
     assert "Deploying SSL certificates" in res[0]
-    assert "Adding trusted root certificate authority" in res[0]
+    assert "Adding trusted root certificate authority" not in res[0]
 
 
 def test_no_entries_exist_fail(get_log_path):

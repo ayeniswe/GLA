@@ -89,7 +89,7 @@ class XMLFragmentTransformer(BaseXMLTransformer, Resolver, UnstructuredBaseResol
     The `XMLFragmentTransformer` class is responsible for handling transformation
     of fragmented `xml` log messages
     """
-
+    
     def __init__(self):
         """Create a new `XMLFragmentTransformer`"""
         super().__init__([WinEvent()], False)

@@ -83,14 +83,14 @@ class Analyzer:
             return detection["encoding"]
         raise UnicodeError("failed to auto-detect encoding. Please specify encoding to use")
 
-    def _process_entry(self, line_num: int, log_entry: Log, matcher: StrMatch) -> int:
+    def _process_entry(self, line_num: int, log_entry: str, matcher: StrMatch) -> int:
         """
         Processes a log entry and checks for matches based on the test case criteria.
 
         Modifies the test case entries in-place
         """
         # All substrings that can be located in the current piece of text
-        matches = matcher.search_substr(log_entry.message)
+        matches = matcher.search_substr(log_entry)
         if matches:
             # At most, only a few matches should be returned—typically just one on average.
             # In practice, this results in closer to O(n) complexity, since every log line
@@ -99,14 +99,7 @@ class Analyzer:
             for match in matches:
                 if match in self.findings:
                     entry = self.testcase.entries[match]
-
-                    # Previous test should always pass current test
-                    # when sequential mode is on
-                    if entry.prev and self.testcase.seq:
-                        if self.findings.get(entry.prev.val.text):
-                            logger.debug(f"failed to find previous entry: {entry.prev.val.text}")
-                            return Result.Error
-
+                    
                     # Some entries may need to be seen multiple times
                     # to validate passing
                     logger.debug(f"dropping the count of an entry: {match}")
@@ -124,13 +117,19 @@ class Analyzer:
                     elif cnt == -1:
                         logger.debug(f"failed to not find entry: {match}")
                         return Result.Error
+                    
+                    # Previous test should always pass current test
+                    # when sequential mode is on
+                    if entry.prev and self.testcase.seq:
+                        if self.findings.get(entry.prev.val.text):
+                            logger.debug(f"failed to find previous entry: {entry.prev.val.text}")
+                            return Result.Error
         else:
             logger.debug(f"ENTRY {line_num}: nothing found")
 
         return Result.Ok
 
     def _run(self):
-        # Process every entry
         matcher = StrMatch(self.testcase.patterns)
         for i, log_entry in enumerate(Engine(self.file, self.encoding, self.current_transformer)):
             # Once all entries are found the search can end early
@@ -138,10 +137,15 @@ class Analyzer:
                 logger.debug(f"all entries found")
                 break
 
-            if (
-                self._process_entry(i, self.current_transformer.transform(log_entry), matcher)
-                is Result.Error
-            ):
+            result = Result.Ok
+            transformed_log_entry = self.current_transformer.transform(log_entry)
+            if transformed_log_entry:
+                result = self._process_entry(i, transformed_log_entry.message, matcher)
+            else:
+                logger.debug(f"ENTRY {i}: skipping transformation")
+                result = self._process_entry(i, log_entry, matcher)
+            # Fail early to avoid full log search
+            if result is Result.Error:
                 break
 
         # Share results
